@@ -1,0 +1,325 @@
+<?php
+
+$nextuid = 10325;
+
+require_once "MDB2.php";
+
+    $plugdsn = array(
+        "phptype" => "pgsql",
+        "username" => 'tim',
+        "password" => 'plug',
+        "hostspec" => 'localhost',
+        "database" => 'plug',
+        'portability' => MDB2_PORTABILITY_ALL ^ MDB2_PORTABILITY_FIX_CASE,
+        "new_link" => true
+        );
+
+
+    $plugpgsql =& MDB2::connect($plugdsn);
+    
+    if (PEAR::isError($plugpgsql)) {
+        die('Could not connect to SQL-server: '.$plugpgsql->getMessage());
+    }        
+    $plugpgsql->setFetchMode(MDB2_FETCHMODE_ASSOC);
+    
+require_once 'Net/LDAP2.php';
+    // The configuration array:
+    $config = array (
+        'binddn'    => 'cn=admin,dc=plug,dc=org,dc=au',
+        'bindpw'    => 'plug',
+        'basedn'    => 'dc=plug,dc=org,dc=au',
+        'host'      => 'localhost'
+    );
+
+    // Connecting using the configuration:
+    $ldap = Net_LDAP2::connect($config);
+
+    // Testing for connection error
+    if (PEAR::isError($ldap)) {
+        die('Could not connect to LDAP-server: '.$ldap->getMessage());
+    }        
+        
+    $results = $plugpgsql->queryAll('SELECT * FROM member');            
+
+    if (PEAR::isError($results)) {
+        die('error');
+    }
+    
+    foreach($results as $result){
+        $account = $plugpgsql->queryRow('SELECT * FROM account WHERE member_id = '. $result['id']);
+        
+        $payments = $plugpgsql->queryAll('SELECT * FROM payment WHERE member_id = '. $result['id']);
+
+        
+        if($account['uid'] == '')
+        {
+            $account['uid'] = $nextuid;
+            $nextuid ++;
+            
+        }
+        
+        if($account['username'] == '')
+        {
+            $account['username'] = ereg_replace(" ", "", $result['first_name']) . '.' . $result['last_name'];
+        }
+        
+        $alias = $plugpgsql->queryAll('SELECT destination FROM alias WHERE alias = \''.$account['username'].'\'');
+        
+        $user = array();
+
+        $dn = "uidNumber=${account['uid']},ou=Users,dc=plug,dc=org,dc=au";
+        
+        $user['objectClass'] = array('top',  'person', 'posixAccount', 'inetOrgPerson');
+        $user['uid'] = $account['username'];
+        $user['displayName'] = "${result['first_name']} ${result['last_name']}";
+        $user['uidNumber'] = $account['uid'];
+        $user['gidNumber'] = $account['uid'];        
+        $user['homeDirectory'] = $account['homedir'] ? $account['homedir'] : '/home/'.$account['username'];
+        $user['userPassword'] = "{crypt}".$account['password'];
+        $user['loginShell'] = $account['shell'];
+        
+        $user['mail'][] = strtolower($result['email_address']);
+        foreach($alias as $email)
+        {
+            if(strtolower($email['destination']) != strtolower($result['email_address']))
+                $user['mail'][] = $email['destination'];
+        }
+        
+        $user['givenName'] = $result['first_name'];
+        $user['sn'] = $result['last_name'] ? $result['last_name'] : '_';
+        $user['cn'] = "${result['first_name']} ${result['last_name']}";
+        $user['street'] = $result['street_address'];
+        $user['homePhone'] = format_ph($result['home_phone']);
+        $user['mobile'] = format_ph($result['mobile_phone']);
+        $user['pager'] = format_ph($result['work_phone']);
+        $user['description'] = $result['notes'];
+        $user['Expiry'] = $result['expiry'];
+        
+        $user = array_filter($user);
+        
+        echo "<p><h3>$dn</h3>";
+        
+        foreach($user as $attribute => $value){
+
+            if(is_array($value))
+            {  
+                foreach($value as $val)
+                    echo "$attribute: $val<br/>";
+            }else
+            {
+                echo "$attribute: $value<br/>";
+            }
+        }
+        foreach($payments as $payment)
+        {
+            if($payment['type_id'] == 2)
+            {
+                echo "Concession payment: ";
+            }else
+            {
+                echo "Normal payment: ";
+            }
+            echo $payment['id'] . ": ";
+            echo $payment['payment_date'];
+            echo "<br/>$" . $payment['amount']/100 . " | ";
+            echo $payment['receipt_number'];
+            echo "<br/>";
+        
+        }
+        
+        if(strtotime($result['expiry']) > time())
+        {
+            echo "<b>Valid user</b><br/>";
+            $valid ++;
+            valid_member($dn);
+        }
+        else
+        {   
+            echo "<b>Expired user</b><br/>";
+            $expired ++;
+            echo strtotime($result['expiry']);
+            if(strtotime($result['expiry']) <= 0)
+            {
+                 valid_member($dn, 'pendingmembers');
+            }
+            else
+            {
+                valid_member($dn, 'expiredmembers');
+            }
+        }
+        echo "</p>\n";
+        $ldap->delete($dn);
+        
+        unset($user['Expiry']);
+        $entry = Net_LDAP2_Entry::createFresh($dn, $user);
+        
+        $ldapres = $ldap->add($entry);
+        if (PEAR::isError($ldapres)) {
+            die('LDAP Error: '.$ldapres->getMessage());
+        }
+        
+        $userids[$user['uid']] = $dn;
+        
+        valid_member($dn, $user['uid'], $user['gidNumber'], TRUE);             
+        
+        // Members own group
+        /*$group = array();
+        $groupdn = "cn=${account['username']}, ou=Groups, dc=plug, dc=org, dc=au";
+        $group['objectClass'] = array('top',  'posixGroup');
+        $group['gidNumber'] = $account['uid'];
+        $group['cn'] = $account['username'];
+        $group['memberUid'] = $account['username'];*/
+
+        /*$ldap->delete($groupdn);
+        $entry = Net_LDAP2_Entry::createFresh($groupdn, $group);
+        
+        $ldapres = $ldap->add($entry);
+        if (PEAR::isError($ldapres)) {
+            die('LDAP Error: '.$ldapres->getMessage());
+        }       */  
+                   
+        /*?>
+<p>        
+gidNumber: 500<br/>
+</p>      <?*/
+
+        //print_r($result);
+        //echo $results['first_name']
+        flush();
+    }
+
+// System groups
+$groups = $plugpgsql->queryAll("SELECT * from public.group");
+foreach($groups as $group)
+{
+        $lgroup = array();
+        $groupdn = "cn=${group['name']},ou=Groups,dc=plug,dc=org,dc=au";
+        $lgroup['objectClass'] = array('top',  'posixGroup');
+        $lgroup['gidNumber'] = $group['gid'];
+        $lgroup['cn'] = $group['name'];
+        
+        $members = $plugpgsql->queryAll("select account.username from usergroup,account where usergroup.uid = account.uid and usergroup.gid=".$group['gid']);
+        
+        echo "<p><h3>Group ${group['name']}</h3>";
+        
+        foreach($members as $member)
+        {
+            echo $member['username'] . "<br/>\n";
+            //$lgroup['memberUid'][] = $member['username'];
+            valid_member($userids[$member['username']], $group['name'], $group['gid']);
+        }
+        
+        echo "</p>";
+            
+
+        /*$ldap->delete($groupdn);
+        $entry = Net_LDAP2_Entry::createFresh($groupdn, $lgroup);
+        
+        $ldapres = $ldap->add($entry);
+    if (PEAR::isError($ldapres)) {
+        die('LDAP Error: '.$ldapres->getMessage());
+    }*/         
+}
+
+// Aliases
+
+
+/* TODO: Aliases that aren't members
+select alias from alias where alias not in (select username from account)
+*/
+
+echo "'$valid' '$expired'";
+
+function format_ph($number)
+{
+    $output = '';
+    $number = ereg_replace("-", " ", $number);
+    if(strlen($number) == 15)
+        return $number; // Assume correct already
+    $number = ereg_replace("[^+0-9]", "", $number);
+    if(strlen($number) == 8)
+    {   // assume WA
+        $output = "+61 8 ".substr($number, 0, 4). " " . substr($number, 4, 4);
+    }elseif(strlen($number) == 10)
+    {
+        //Assume mob
+        $output = "+61 4 ".substr($number, 2, 4). " " . substr($number, 6, 4);        
+    }
+    elseif($number != ''){
+        //echo "BLAH" . $number. "BLAH";
+        $output = $number;
+    }
+    return $output;
+}    
+
+function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
+{
+    global $ldap;
+    
+/*    if($gid)
+    {
+        $groupdn = "gidNumber=$gid,ou=Groups,dc=plug,dc=org,dc=au";    */
+    if($upg){
+            $groupdn = "gidNumber=$gid,ou=UPG,ou=Groups,dc=plug,dc=org,dc=au";    
+    }else
+    {
+        $groupdn = "cn=$cn,ou=Groups,dc=plug,dc=org,dc=au";
+    }
+    
+    if($ldap->dnExists($groupdn))
+    {
+        echo "Adding member $dn ($cn)<br/>";
+        $entry = $ldap->getEntry($groupdn, array('member'));
+
+        if (PEAR::isError($entry)) {
+            die('LDAP Error: '.$entry->getMessage());
+        }
+        
+        $members = $entry->getValue('member');
+        
+        //print_r($members);
+        //echo gettype($members);
+        $result = in_array($dn, $members);
+        //print_r($result);
+        //echo "<br/>'$members'<br/>";
+        //echo "<br/>'$dn'<br/>";        
+        
+        if(!$result && $members != $dn)
+        {
+        
+            $ldapres= $entry->add(array('member' => $dn));
+            
+
+            if (PEAR::isError($ldapres)) {
+                die('LDAP Error: '.$ldapres->getMessage());
+            }
+            
+            $ldapres = $entry->update();
+            
+            if (PEAR::isError($ldapres)) {
+                die('LDAP Error: '.$ldapres->getMessage());
+            }  
+        }else{
+             echo "Already in group<br/>";      
+        }
+    
+    }else
+    {
+    
+        echo "Creating new group with member $dn ($cn)<br/>";
+        $attrs = array('objectClass' => 'groupOfNames', 'cn' => $cn, 'member' => $dn);
+        if($gid)
+            $attrs = array('objectClass' => array('groupOfNames', 'posixGroup'), 'cn' => $cn, 'member' => $dn, 'gidNumber' => $gid);
+        $entry = Net_LDAP2_Entry::createFresh($groupdn, $attrs);
+        
+        $ldapres = $ldap->add($entry);
+        if (PEAR::isError($ldapres)) {
+            die('LDAP Error: '.$ldapres->getMessage());
+        }   
+
+    }
+    
+    
+}
+?>
+
