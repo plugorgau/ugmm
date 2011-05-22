@@ -69,14 +69,14 @@ require_once 'Net/LDAP2.php';
 
         $dn = "uidNumber=${account['uid']},ou=Users,dc=plug,dc=org,dc=au";
         
-        $user['objectClass'] = array('top',  'person', 'posixAccount', 'inetOrgPerson');
+        $user['objectClass'] = array('top',  'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount');
         $user['uid'] = $account['username'];
         $user['displayName'] = "${result['first_name']} ${result['last_name']}";
         $user['uidNumber'] = $account['uid'];
         $user['gidNumber'] = $account['uid'];        
         $user['homeDirectory'] = $account['homedir'] ? $account['homedir'] : '/home/'.$account['username'];
-        $user['userPassword'] = "{crypt}".$account['password'];
-        $user['loginShell'] = $account['shell'];
+        $user['userPassword'] = "{crypt}".$account['password']; // TODO if empty
+        $user['loginShell'] = $account['shell'] ? $account['shell'] : '/usr/bin/zsh';
         
         $user['mail'][] = strtolower($result['email_address']);
         foreach($alias as $email)
@@ -93,11 +93,29 @@ require_once 'Net/LDAP2.php';
         $user['mobile'] = format_ph($result['mobile_phone']);
         $user['pager'] = format_ph($result['work_phone']);
         $user['description'] = $result['notes'];
-        $user['Expiry'] = $result['expiry'];
+        // NB: shadowExpire is number of DAYS not seconds since epoch
+        // -1 is taken as no expiry, so need to set to 1
+        $user['shadowExpire'] = ceil(strtotime($result['expiry'])/ 86400);
+        if($user['shadowExpire'] <= 0) $user['shadowExpire'] = 1;
         
         $user = array_filter($user);
         
         echo "<p><h3>$dn</h3>";
+        // Delete user before adding (to ensure sync for now)
+        $ldapres = $ldap->delete($dn, TRUE);
+        if (PEAR::isError($ldapres)) {
+            echo('LDAP Error: '.$ldapres->getMessage()).'<br/>';
+        }
+        
+        
+        // Add the entry
+        //unset($user['Expiry']);
+        $entry = Net_LDAP2_Entry::createFresh($dn, $user);
+        
+        $ldapres = $ldap->add($entry);
+        if (PEAR::isError($ldapres)) {
+            echo('LDAP Error: '.$ldapres->getMessage()).'<br/>';
+        }        
         
         foreach($user as $attribute => $value){
 
@@ -124,6 +142,7 @@ require_once 'Net/LDAP2.php';
             echo "<br/>$" . $payment['amount']/100 . " | ";
             echo $payment['receipt_number'];
             echo "<br/>";
+            member_payment($dn, $payment['id'], $payment['type_id'], $payment['amount'], $payment['payment_date'], $payment['receipt_number']);
         
         }
         
@@ -148,18 +167,13 @@ require_once 'Net/LDAP2.php';
             }
         }
         echo "</p>\n";
-        $ldap->delete($dn);
         
-        unset($user['Expiry']);
-        $entry = Net_LDAP2_Entry::createFresh($dn, $user);
+
         
-        $ldapres = $ldap->add($entry);
-        if (PEAR::isError($ldapres)) {
-            die('LDAP Error: '.$ldapres->getMessage());
-        }
-        
+        // Get all the userid's to dn for adding to groups later
         $userids[$user['uid']] = $dn;
         
+        // Add to own group
         valid_member($dn, $user['uid'], $user['gidNumber'], TRUE);             
         
         // Members own group
@@ -187,7 +201,7 @@ gidNumber: 500<br/>
         //echo $results['first_name']
         flush();
     }
-
+exit();
 // System groups
 $groups = $plugpgsql->queryAll("SELECT * from public.group");
 foreach($groups as $group)
@@ -250,7 +264,40 @@ function format_ph($number)
         $output = $number;
     }
     return $output;
-}    
+}
+
+function member_payment($memberdn, $paymentid, $paymenttype, $amount, $date, $description)
+{
+    global $ldap;
+    $dn = "x-plug-paymentID=$paymentid,$memberdn";
+    $payment['objectClass'] = array('top', 'x-plug-payment');
+    $payment['x-plug-paymentAmount'] = $amount;
+    $payment['x-plug-paymentDate'] = date('YmdHis',strtotime($date)). "+0800";
+    $payment['x-plug-paymentID'] = $paymentid;
+    $payment['x-plug-paymentType'] = $paymenttype;
+    $payment['x-plug-paymentDescription'] = $description;
+    if($paymenttype == 2)
+    {
+        // Concession
+        $payment['x-plug-paymentYears'] = $amount / 500;
+    }else
+    {
+        // Assume full
+        $payment['x-plug-paymentYears'] = $amount / 1000;        
+    }
+    
+    $payment = array_filter($payment);
+    
+    echo "Adding user payment $paymentid</br>";
+    //print_r($payment);
+    $ldap->delete($dn);
+    $entry = Net_LDAP2_Entry::createFresh($dn, $payment);
+    
+    $ldapres = $ldap->add($entry);
+    if (PEAR::isError($ldapres)) {
+        die('LDAP Error: '.$ldapres->getMessage());
+    }
+}
 
 function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
 {

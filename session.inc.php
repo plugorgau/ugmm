@@ -8,6 +8,7 @@
    $pagestarttime = $mtime; 
 
 /**/
+require_once('ldapconnection.inc.php');
 require_once('pagefunctions.inc.php');
 require_once('Auth.php');
 
@@ -74,7 +75,7 @@ $Auth->setSessionName("secureplug");
 $_POST['username'] = uid;
 */
 
-
+$Auth->start();
     
 if (!$Auth->checkAuth())
 {

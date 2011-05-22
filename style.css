@@ -1,0 +1,149 @@
+body {	
+	font-family: Trebuchet MS, Arial, Helvetica, sans-serif;
+	color: black;
+	background: white;
+	text-align: left;
+}
+
+h1 {
+	font-family: Georgia, Times New Roman, Times, serif;
+}
+
+img.logo {
+	border: none;
+	vertical-align: middle;
+}
+
+a:link, a:visited {
+	color: #226688;
+	text-decoration: underline;
+}
+
+a:link:hover, a:visited:hover, a:link:active, a:visited:active {
+	background: #ffffeee;
+	text-decoration: underline;
+}
+
+a.remove_link:link:hover, a.remove_link:visited:hover,
+		a.remove_link:link:active, a.remove_link:visited:active {
+	background: #f33;
+	color: #fff;
+	text-decoration: underline;
+}
+
+h1 {
+	text-align: left;
+	font-size: 180%;
+	font-variant: small-caps;
+	color: #113344;
+}
+
+h2 {
+	color: #226688;
+	border-bottom: 1.5pt solid #226688;
+	margin-left: -8%;
+}
+
+h3 {
+	margin-left: -4%;
+}
+
+h3, h4 {
+	color: #228866;
+}
+
+p.footer {
+	font-size: 80%;
+	color: #888888;
+	padding: 1ex 2em;
+}
+
+div.sponsor {
+	font-size: 80%;
+	text-align: center;
+	padding-top: 4ex;
+}
+
+div.search {
+	font-size: 80%;
+	text-align: left;
+	padding-top: 4ex;
+}
+
+td.content, .content {
+	padding: 0 8%;
+}
+
+td.membercontent {
+	padding: 0 8%;
+}
+
+td.menu {
+	padding: 0;
+}
+
+td.menu ul {
+	margin-left: 0;
+	padding-left: 0;
+}
+
+td.menu ul li {
+	padding-top: 1ex;
+	font-weight: bold;
+	list-style-type: none;
+}
+
+td.menu ul ul {
+	padding-left: 2em;
+}
+
+td.menu ul ul li {
+	padding-top: 0.3ex;
+	font-weight: normal;
+	font-size: 90%;
+	list-style-type: circle;
+}
+
+.important {
+	font-size: 125%;
+}
+
+.small {
+	font-size: 80%;
+}
+
+p.back {
+	text-align: right;
+}
+
+img.mugshot2 {
+	  border: solid 4px;
+	  border-color: #228866;
+	  height: 128px;
+	  /*float: right;*/
+}
+
+.person {
+	  float: left;
+	  clear: right;
+	  border: solid 2px;
+	  border-color: #226688;
+	  margin: 0.5em;
+	  padding: 0.5em;
+/*	  height: 250px;*/
+/*	  overflow: auto;*/
+}
+
+.person .name {
+	  display: block;
+	  text-align: center;
+}
+.person .positition {
+	  display: block;
+	  text-align: center;
+	  font-weight: bold;
+}
+
+.person .picture img {
+	  width: 128px;
+}

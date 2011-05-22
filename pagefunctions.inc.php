@@ -7,7 +7,7 @@ $smarty = new Smarty;
 $smarty->compile_check = true;
 
 
-function display_page($template, $pagetitle, $header = true, $footer = true)
+function display_page($template, $pagetitle = '', $header = true, $footer = true)
 {
         global $smarty;
         //assign_vars(); // Make assign_vars function if you need to assign vars after processing
