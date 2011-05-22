@@ -1,5 +1,13 @@
 <?php
 
+require_once('ldapconnection.inc.php');
+
+define('CONCESSION_AMOUNT', 500);
+define('FULL_AMOUNT', 1000);
+
+define('CONCESSION_TYPE', 2);
+define('FULL_TYPE', 1);
+
 class PLUG {
 
     // Class for plug, contains members of type Member/Person
@@ -70,8 +78,106 @@ class PLUG {
     {
         $this->load_pending_members();
         return $this->pendingmembers;
+    }
+    
+    function get_member($uidNumber)
+    {
+        $uidNumber = intval($uidNumber); // Sanitise 
+        $dn = "uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au";    
+        $thismember = new Person($this->ldap);
+        $thismember->load_ldap($dn);
+        $thismember->load_payments();
+        return $thismember->userarray();    
+    }
+    
+    
+    function check_username_available($username)
+    {
+    
+    }
+    
+    function new_member()
+    {
+    
     }     
 
+}
+
+class Payment
+{
+    private $dn;
+    private $ldap;
+    private $paymentarray = array(
+        'objectClass' => array('top', 'x-plug-payment'),
+        'x-plug-paymentAmount' => 0,
+        'x-plug-paymentDate' => '',
+        'x-plug-paymentID' => '',
+        'x-plug-paymentType' => '',
+        'x-plug-paymentDescription' => '',
+        'x-plug-paymentYears' => 0); 
+        
+    function __construct($ldap)
+    {
+        $this->ldap = $ldap;
+    }
+    
+    function load_ldap($dn)
+    {
+        $this->dn = $dn;
+        $this->ldapentry = $this->ldap->getEntry($dn, array(
+            'objectClass',
+            'x-plug-paymentAmount',
+            'x-plug-paymentDate',
+            'x-plug-paymentID',
+            'x-plug-paymentType',
+            'x-plug-paymentDescription',
+            'x-plug-paymentYears'
+            ));
+        if (PEAR::isError($this->ldapentry)) {
+            die('LDAP Error: '.$this->ldapentry->getMessage());
+        }        
+        
+        $this->paymentarray = $this->ldapentry->getValues();
+        //$this->userorigldaparray = $this->userldaparray;
+        //$this->explode_user_ldap_array();
+
+    }    
+    
+    function new_payment($parentdn, $id, $type, $amount, $date, $description)
+    {
+        $this->dn = "x-plug-paymentID=$id,$parentdn";
+        $this->paymentarray['x-plug-paymentAmount'] = $amount;
+        $this->paymentarray['x-plug-paymentDate'] = date('YmdHis',strtotime($date)). "+0800";
+        $this->paymentarray['x-plug-paymentID'] = $id;
+        $this->paymentarray['x-plug-paymentType'] = $type;
+        $this->paymentarray['x-plug-paymentDescription'] = $description;
+        if($type == CONCESSION_TYPE)
+        {
+            // Concession
+            $this->paymentarray['x-plug-paymentYears'] = $amount / CONCESSION_AMOUNT;
+        }else
+        {
+            // Assume full
+            $this->paymentarray['x-plug-paymentYears'] = $amount / FULL_AMOUNT;        
+        }
+        
+        $this->create_new_ldap_payment();
+    }
+    
+    function paymentarray()
+    {
+        return $this->paymentarray;
+    }    
+    
+    private function create_new_ldap_payment()
+    {
+        // TODO: Check if exists first
+        $entry = Net_LDAP2_Entry::createFresh($this->dn, array_filter($this->paymentarray));
+        $ldapres = $this->ldap->add($entry);
+        if (PEAR::isError($ldapres)) {
+            die('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
+        }           
+    }            
 }
 
 class Person {
@@ -99,6 +205,8 @@ class Person {
     private $userorigldaparray;   
     private $ldapentry; 
     
+    private $payments = array();
+    
     private $ldap;
     
     function __construct($ldap)
@@ -122,7 +230,8 @@ class Person {
             'mobileTelephoneNumber' => '',
             'pagerTelephoneNumber' => '',
             'description' => '',
-            'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson'),            
+            'shadowExpire' => '1', // Start all users off as expired
+            'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount'),            
             );
     }
     
@@ -147,6 +256,7 @@ class Person {
             'mobileTelephoneNumber',
             'pagerTelephoneNumber',
             'description',
+            'shadowExpire',
             'memberOf'));
         if (PEAR::isError($this->ldapentry)) {
             die('LDAP Error: '.$this->ldapentry->getMessage());
@@ -155,6 +265,7 @@ class Person {
         $this->userldaparray = $this->ldapentry->getValues();
         $this->userorigldaparray = $this->userldaparray;
         //$this->explode_user_ldap_array();
+        //$this->load_payments();
 
     }
     
@@ -170,6 +281,15 @@ class Person {
         $this->change_password($password);
         $this->create_user_ldap_array();
         $this->create_new_ldap_person();
+    }
+    
+    function change_expiry($date) // $date as
+    {
+        // TODO: UTC issues?
+        // $date needs to be converted to DAYS since epoch
+        // We strtotime the date, divide by 86400, round down
+        // Take the ABS so that -1 becomes 1 as -1 is never expire
+        $this->userldaparray['shadowExpire'] = abs(floor(strtotime($date)/ 86400));
     }
     
     function change_name($firstname, $lastname)
@@ -259,6 +379,7 @@ class Person {
     
     private function create_new_ldap_person()
     {
+        // TODO: Check if exists first
         $entry = Net_LDAP2_Entry::createFresh($this->dn, array_filter($this->userldaparray));
         $ldapres = $this->ldap->add($entry);
         if (PEAR::isError($ldapres)) {
@@ -304,6 +425,15 @@ class Person {
         return $validgroups;
     }
     
+    function expiry()
+    {
+        // * 86400 to get from days to seconds
+        return array(
+            'expiry' => date("d M y", $this->userldaparray['shadowExpire'] * 86400),
+            'formattedexpiry' => date("l, d F Y", $this->userldaparray['shadowExpire'] * 86400)
+            );
+    }
+    
     /* Display and Get functions */
     
     public function print_ldif()
@@ -329,8 +459,64 @@ class Person {
     function userarray()
     {
         //$this->create_user_ldap_array();
-        return array_merge($this->userldaparray, array('groups' => $this->memberOf_filter()));
+        return array_merge(
+            $this->userldaparray,
+            array( 'groups' => $this->memberOf_filter() ),
+            $this->expiry(),
+            array( 'payments' => $this->payments)
+            );
     }
+    
+    function load_payments()
+    {
+        $filter = Net_LDAP2_Filter::create('objectClass', 'equals',  'x-plug-payment');
+        $searchbase = $this->dn;
+        $options = array(
+            'scope' => 'sub',
+            'attributes' => array(
+                'dn',
+                'x-plug-paymentAmount',
+                'x-plug-paymentDate',
+                'x-plug-paymentID',
+                'x-plug-paymentType',
+                'x-plug-paymentDescription',
+                'x-plug-paymentYears')
+            );
+            
+        $search = $this->ldap->search($searchbase, $filter, $options);
+        
+        if (PEAR::isError($search)) {
+           die($search->getMessage() . "\n");
+        }
+        
+        $payments = $search->sorted_as_struct(array('x-plug-paymentID'));
+        
+        
+
+        foreach($payments as $payment)
+        {
+        
+            // smarty tempalte doesn't like - in var names        
+            $cleanpayment = array();
+            $cleanpayment['amount'] = $payment['x-plug-paymentAmount'][0];
+            $cleanpayment['date'] = $payment['x-plug-paymentDate'][0];
+            $cleanpayment['id'] = $payment['x-plug-paymentID'][0];
+            $cleanpayment['type'] = $payment['x-plug-paymentType'][0];
+            $cleanpayment['years'] = $payment['x-plug-paymentYears'][0];
+            $cleanpayment['dn'] = $payment['dn'];
+            $this->payments[] = $cleanpayment;
+        }
+        
+/*        echo "<pre>";
+        print_r($this->payments);
+        echo "</pre>"; */       
+    
+    }
+    
+    function paymentsarray()
+    {
+        return $this->payments;
+    }     
     
 /*    function dn() { return  $dn;}
     function username() { return $uid;}
@@ -351,9 +537,7 @@ class Person {
     private $description;*/
 }
 
-class Member extends Person {
-    private $expiry;
-}
+
 
 
 ?>
