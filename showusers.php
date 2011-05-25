@@ -1,6 +1,15 @@
 <?php
 
+/* Page load time */
+   $mtime = microtime();
+   $mtime = explode(" ",$mtime);
+   $mtime = $mtime[1] + $mtime[0];
+   $pagestarttime = $mtime; 
+
 $nextuid = 10325;
+
+$value = 0;
+$valid = FALSE;
 
 require_once "MDB2.php";
 
@@ -100,11 +109,11 @@ require_once 'Net/LDAP2.php';
         
         $user = array_filter($user);
         
-        echo "<p><h3>$dn</h3>";
+        eho("<p><h3>$dn</h3>");
         // Delete user before adding (to ensure sync for now)
         $ldapres = $ldap->delete($dn, TRUE);
         if (PEAR::isError($ldapres)) {
-            echo('LDAP Error: '.$ldapres->getMessage()).'<br/>';
+            eho('LDAP Error: '.$ldapres->getMessage());
         }
         
         
@@ -114,7 +123,7 @@ require_once 'Net/LDAP2.php';
         
         $ldapres = $ldap->add($entry);
         if (PEAR::isError($ldapres)) {
-            echo('LDAP Error: '.$ldapres->getMessage()).'<br/>';
+            eho('LDAP Error: '.$ldapres->getMessage());
         }        
         
         foreach($user as $attribute => $value){
@@ -122,41 +131,39 @@ require_once 'Net/LDAP2.php';
             if(is_array($value))
             {  
                 foreach($value as $val)
-                    echo "$attribute: $val<br/>";
+                    eho("$attribute: $val");
             }else
             {
-                echo "$attribute: $value<br/>";
+                eho("$attribute: $value");
             }
         }
         foreach($payments as $payment)
         {
             if($payment['type_id'] == 2)
             {
-                echo "Concession payment: ";
+                eho("Concession payment: ");
             }else
             {
-                echo "Normal payment: ";
+                eho("Normal payment: ");
             }
-            echo $payment['id'] . ": ";
-            echo $payment['payment_date'];
-            echo "<br/>$" . $payment['amount']/100 . " | ";
-            echo $payment['receipt_number'];
-            echo "<br/>";
+            eho($payment['id'] . ": " . $payment['payment_date']);
+            eho("$" . $payment['amount']/100 . " | " . $payment['receipt_number']);
+
             member_payment($dn, $payment['id'], $payment['type_id'], $payment['amount'], $payment['payment_date'], $payment['receipt_number']);
         
         }
         
         if(strtotime($result['expiry']) > time())
         {
-            echo "<b>Valid user</b><br/>";
+            eho("<b>Valid user</b>");
             $valid ++;
             valid_member($dn);
         }
         else
         {   
-            echo "<b>Expired user</b><br/>";
+            eho("<b>Expired user</b>");
             $expired ++;
-            echo strtotime($result['expiry']);
+            eho(strtotime($result['expiry']));
             if(strtotime($result['expiry']) <= 0)
             {
                  valid_member($dn, 'pendingmembers');
@@ -166,7 +173,7 @@ require_once 'Net/LDAP2.php';
                 valid_member($dn, 'expiredmembers');
             }
         }
-        echo "</p>\n";
+        eho("</p>\n");
         
 
         
@@ -201,7 +208,7 @@ gidNumber: 500<br/>
         //echo $results['first_name']
         flush();
     }
-exit();
+
 // System groups
 $groups = $plugpgsql->queryAll("SELECT * from public.group");
 foreach($groups as $group)
@@ -214,16 +221,21 @@ foreach($groups as $group)
         
         $members = $plugpgsql->queryAll("select account.username from usergroup,account where usergroup.uid = account.uid and usergroup.gid=".$group['gid']);
         
-        echo "<p><h3>Group ${group['name']}</h3>";
+        eho("<p><h3>Group ${group['name']}</h3>");
+        
+        $ldapres = $ldap->delete($groupdn);
+        if (PEAR::isError($ldapres)) {
+            eho('LDAP Error: '.$ldapres->getMessage() . "\n");
+        }        
         
         foreach($members as $member)
         {
-            echo $member['username'] . "<br/>\n";
+            eho($member['username'] . "\n");
             //$lgroup['memberUid'][] = $member['username'];
             valid_member($userids[$member['username']], $group['name'], $group['gid']);
         }
         
-        echo "</p>";
+        eho("</p>");
             
 
         /*$ldap->delete($groupdn);
@@ -242,7 +254,7 @@ foreach($groups as $group)
 select alias from alias where alias not in (select username from account)
 */
 
-echo "'$valid' '$expired'";
+eho("'$valid' '$expired'");
 
 function format_ph($number)
 {
@@ -288,7 +300,7 @@ function member_payment($memberdn, $paymentid, $paymenttype, $amount, $date, $de
     
     $payment = array_filter($payment);
     
-    echo "Adding user payment $paymentid</br>";
+    //echo "Adding user payment $paymentid</br>";
     //print_r($payment);
     $ldap->delete($dn);
     $entry = Net_LDAP2_Entry::createFresh($dn, $payment);
@@ -315,7 +327,7 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
     
     if($ldap->dnExists($groupdn))
     {
-        echo "Adding member $dn ($cn)<br/>";
+        eho("Adding member $dn ($cn)");
         $entry = $ldap->getEntry($groupdn, array('member'));
 
         if (PEAR::isError($entry)) {
@@ -326,7 +338,9 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
         
         //print_r($members);
         //echo gettype($members);
-        $result = in_array($dn, $members);
+        $result = FALSE;
+        if(is_array($members))
+            $result = in_array($dn, $members);
         //print_r($result);
         //echo "<br/>'$members'<br/>";
         //echo "<br/>'$dn'<br/>";        
@@ -347,13 +361,13 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
                 die('LDAP Error: '.$ldapres->getMessage());
             }  
         }else{
-             echo "Already in group<br/>";      
+             eho("Already in group");      
         }
     
     }else
     {
     
-        echo "Creating new group with member $dn ($cn)<br/>";
+        eho("Creating new group with member $dn ($cn)");
         $attrs = array('objectClass' => 'groupOfNames', 'cn' => $cn, 'member' => $dn);
         if($gid)
             $attrs = array('objectClass' => array('groupOfNames', 'posixGroup'), 'cn' => $cn, 'member' => $dn, 'gidNumber' => $gid);
@@ -368,5 +382,25 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
     
     
 }
+
+   $mtime = microtime();
+   $mtime = explode(" ",$mtime);
+   $mtime = $mtime[1] + $mtime[0];
+   $endtime = $mtime;
+   $totaltime = round(($endtime - $pagestarttime), 2);
+   eho("Page generated in ".$totaltime." seconds using " .  memory_get_peak_usage(true)/1024/1024 . "Mb mem");
+   
+function eho ($text)
+{
+    if(defined('STDIN'))
+    {
+        echo strip_tags("$text\n");
+    }
+    else
+    {
+        echo "$text<br/>";
+    }
+}
+   
 ?>
 
