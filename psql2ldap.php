@@ -1,5 +1,13 @@
 <?php
 
+//define('DEBUGLEVEL', 10);
+define('DEBUGLEVEL', 10);
+
+define('DEBUG', 100);
+define('INFO', 50);
+define('WARNING', 20);
+define('ERROR', 10);
+
 /* Page load time */
    $mtime = microtime();
    $mtime = explode(" ",$mtime);
@@ -9,7 +17,8 @@
 $nextuid = 10325;
 
 $value = 0;
-$valid = FALSE;
+$expired = 0;
+$valid = 0;
 
 require_once "MDB2.php";
 
@@ -35,9 +44,13 @@ require_once 'Net/LDAP2.php';
     // The configuration array:
     $config = array (
         'binddn'    => 'cn=admin,dc=plug,dc=org,dc=au',
-        'bindpw'    => 'plug',
         'basedn'    => 'dc=plug,dc=org,dc=au',
+        'bindpw'    => 'plugldap2011',        
         'host'      => 'localhost'
+        
+/*        'bindpw'    => 'plugldap2011',   
+        'host'      => '203.82.208.249'/*     
+        'host'      => '2402:8000:3:a3::1'*/
     );
 
     // Connecting using the configuration:
@@ -47,12 +60,29 @@ require_once 'Net/LDAP2.php';
     if (PEAR::isError($ldap)) {
         die('Could not connect to LDAP-server: '.$ldap->getMessage());
     }        
+
+
+/* Delete a few groups first */
+
+        $deletegroup = array('currentmembers', 'pendingmembers', 'expiredmembers');        
+        foreach($deletegroup as $group)
+        {
+            $groupdn = "cn=$group,ou=Groups,dc=plug,dc=org,dc=au";
+            $ldapres = $ldap->delete($groupdn);
+            if (PEAR::isError($ldapres)) {
+                eho(DEBUG, 'LDAP Error: '.$ldapres->getMessage() . "\n");
+            }
+        }
+        
+
         
     $results = $plugpgsql->queryAll('SELECT * FROM member');            
 
     if (PEAR::isError($results)) {
         die('error');
     }
+    
+  
     
     foreach($results as $result){
         $account = $plugpgsql->queryRow('SELECT * FROM account WHERE member_id = '. $result['id']);
@@ -78,7 +108,7 @@ require_once 'Net/LDAP2.php';
 
         $dn = "uidNumber=${account['uid']},ou=Users,dc=plug,dc=org,dc=au";
         
-        $user['objectClass'] = array('top',  'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount');
+        $user['objectClass'] = array('top',  'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount');
         $user['uid'] = $account['username'];
         $user['displayName'] = "${result['first_name']} ${result['last_name']}";
         $user['uidNumber'] = $account['uid'];
@@ -88,10 +118,12 @@ require_once 'Net/LDAP2.php';
         $user['loginShell'] = $account['shell'] ? $account['shell'] : '/usr/bin/zsh';
         
         $user['mail'][] = strtolower($result['email_address']);
+        $user['mailForward'] = array();
         foreach($alias as $email)
         {
-            if(strtolower($email['destination']) != strtolower($result['email_address']))
-                $user['mail'][] = $email['destination'];
+            // If statement was to filter out before mailForward. mailFoward can == mail
+            //if(strtolower($email['destination']) != strtolower($result['email_address']))
+                $user['mailForward'][] = $email['destination'];
         }
         
         $user['givenName'] = $result['first_name'];
@@ -109,11 +141,11 @@ require_once 'Net/LDAP2.php';
         
         $user = array_filter($user);
         
-        eho("<p><h3>$dn</h3>");
+        eho(INFO, "<p><h3>$dn</h3>");
         // Delete user before adding (to ensure sync for now)
         $ldapres = $ldap->delete($dn, TRUE);
         if (PEAR::isError($ldapres)) {
-            eho('LDAP Error: '.$ldapres->getMessage());
+            eho(DEBUG, 'LDAP Error: '.$ldapres->getMessage());
         }
         
         
@@ -123,7 +155,7 @@ require_once 'Net/LDAP2.php';
         
         $ldapres = $ldap->add($entry);
         if (PEAR::isError($ldapres)) {
-            eho('LDAP Error: '.$ldapres->getMessage());
+            eho(ERROR, 'LDAP Error: '.$ldapres->getMessage());
         }        
         
         foreach($user as $attribute => $value){
@@ -131,20 +163,20 @@ require_once 'Net/LDAP2.php';
             if(is_array($value))
             {  
                 foreach($value as $val)
-                    eho("$attribute: $val");
+                    eho(INFO, "$attribute: $val");
             }else
             {
-                eho("$attribute: $value");
+                eho(INFO, "$attribute: $value");
             }
         }
         foreach($payments as $payment)
         {
             if($payment['type_id'] == 2)
             {
-                eho("Concession payment: ");
+                eho(INFO, "Concession payment: ");
             }else
             {
-                eho("Normal payment: ");
+                eho(INFO, "Normal payment: ");
             }
             eho($payment['id'] . ": " . $payment['payment_date']);
             eho("$" . $payment['amount']/100 . " | " . $payment['receipt_number']);
@@ -155,15 +187,15 @@ require_once 'Net/LDAP2.php';
         
         if(strtotime($result['expiry']) > time())
         {
-            eho("<b>Valid user</b>");
+            eho(INFO, "<b>Valid user</b>");
             $valid ++;
             valid_member($dn);
         }
         else
         {   
-            eho("<b>Expired user</b>");
+            eho(INFO, "<b>Expired user</b>");
             $expired ++;
-            eho(strtotime($result['expiry']));
+            eho(INFO, strtotime($result['expiry']));
             if(strtotime($result['expiry']) <= 0)
             {
                  valid_member($dn, 'pendingmembers');
@@ -173,7 +205,7 @@ require_once 'Net/LDAP2.php';
                 valid_member($dn, 'expiredmembers');
             }
         }
-        eho("</p>\n");
+        eho(INFO, "</p>\n");
         
 
         
@@ -221,21 +253,21 @@ foreach($groups as $group)
         
         $members = $plugpgsql->queryAll("select account.username from usergroup,account where usergroup.uid = account.uid and usergroup.gid=".$group['gid']);
         
-        eho("<p><h3>Group ${group['name']}</h3>");
+        eho(INFO, "<p><h3>Group ${group['name']}</h3>");
         
         $ldapres = $ldap->delete($groupdn);
         if (PEAR::isError($ldapres)) {
-            eho('LDAP Error: '.$ldapres->getMessage() . "\n");
+            eho(DEBUG, 'LDAP Error: '.$ldapres->getMessage() . "\n");
         }        
         
         foreach($members as $member)
         {
-            eho($member['username'] . "\n");
+            eho(INFO, $member['username'] . "\n");
             //$lgroup['memberUid'][] = $member['username'];
             valid_member($userids[$member['username']], $group['name'], $group['gid']);
         }
         
-        eho("</p>");
+        eho(INFO, "</p>");
             
 
         /*$ldap->delete($groupdn);
@@ -254,7 +286,7 @@ foreach($groups as $group)
 select alias from alias where alias not in (select username from account)
 */
 
-eho("'$valid' '$expired'");
+eho(INFO, "'$valid' '$expired'");
 
 function format_ph($number)
 {
@@ -307,7 +339,7 @@ function member_payment($memberdn, $paymentid, $paymenttype, $amount, $date, $de
     
     $ldapres = $ldap->add($entry);
     if (PEAR::isError($ldapres)) {
-        die('LDAP Error: '.$ldapres->getMessage());
+        eho(ERROR, 'LDAP Error: '.$ldapres->getMessage());
     }
 }
 
@@ -327,7 +359,7 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
     
     if($ldap->dnExists($groupdn))
     {
-        eho("Adding member $dn ($cn)");
+        eho(DEBUG, "Adding member $dn ($cn)");
         $entry = $ldap->getEntry($groupdn, array('member'));
 
         if (PEAR::isError($entry)) {
@@ -361,13 +393,38 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
                 die('LDAP Error: '.$ldapres->getMessage());
             }  
         }else{
-             eho("Already in group");      
+            eho(DEBUG, "Already in group");   
+            /*$ldapres = $entry->delete(array('member' => $dn));   
+            
+            if (PEAR::isError($ldapres)) {
+                die('1LDAP Error: '.$ldapres->getMessage());
+            }    */        
+            
+/*            $ldapres = $entry->update();             
+            
+            if (PEAR::isError($ldapres)) {
+                die('LDAP Error: '.$ldapres->getMessage());
+            }            */
+
+           /* $ldapres= $entry->add(array('member' => $dn));
+
+
+            if (PEAR::isError($ldapres)) {
+                die('2LDAP Error: '.$ldapres->getMessage());
+            }*/
+
+            $ldapres = $entry->update();
+
+            if (PEAR::isError($ldapres)) {
+                die('3LDAP Error: '.$ldapres->getMessage());
+            }  
+             
         }
     
     }else
     {
     
-        eho("Creating new group with member $dn ($cn)");
+        eho(DEBUG, "Creating new group with member $dn ($cn)");
         $attrs = array('objectClass' => 'groupOfNames', 'cn' => $cn, 'member' => $dn);
         if($gid)
             $attrs = array('objectClass' => array('groupOfNames', 'posixGroup'), 'cn' => $cn, 'member' => $dn, 'gidNumber' => $gid);
@@ -375,7 +432,7 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
         
         $ldapres = $ldap->add($entry);
         if (PEAR::isError($ldapres)) {
-            die('LDAP Error: '.$ldapres->getMessage());
+            eho(ERROR, 'LDAP Error: '.$ldapres->getMessage());
         }   
 
     }
@@ -388,17 +445,25 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
    $mtime = $mtime[1] + $mtime[0];
    $endtime = $mtime;
    $totaltime = round(($endtime - $pagestarttime), 2);
-   eho("Page generated in ".$totaltime." seconds using " .  memory_get_peak_usage(true)/1024/1024 . "Mb mem");
+   eho(0, "Page generated in ".$totaltime." seconds using " .  memory_get_peak_usage(true)/1024/1024 . "Mb mem");
    
-function eho ($text)
+function eho ($debug, $text = 'x')
 {
-    if(defined('STDIN'))
+    if($text == 'x')
     {
-        echo strip_tags("$text\n");
+         $text = $debug;
+         $debug = DEBUG;
     }
-    else
+    if($debug <= DEBUGLEVEL)
     {
-        echo "$text<br/>";
+        if(defined('STDIN'))
+        {
+            echo strip_tags("$text\n");
+        }
+        else
+        {
+            echo "$text<br/>";
+        }
     }
 }
    

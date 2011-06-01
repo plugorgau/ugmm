@@ -28,6 +28,10 @@ class PLUG {
         // Fetch entry for group and all member attributes
         $dn = "cn=$group,ou=Groups,dc=plug,dc=org,dc=au";
         $entry = $this->ldap->getEntry($dn, array('member'));
+        
+        if (PEAR::isError($entry)) {
+            die('LDAP Error: '.$entry->getMessage());
+        }         
 
         // Load all members
         $members = $entry->getValue('member');
@@ -80,6 +84,17 @@ class PLUG {
         return $this->pendingmembers;
     }
     
+    function get_member_object($uidNumber)
+    {
+        $uidNumber = intval($uidNumber); // Sanitise 
+        $dn = "uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au";    
+        $thismember = new Person($this->ldap);
+        $thismember->load_ldap($dn);
+        $thismember->load_payments();
+        return $thismember;    
+    }
+    
+
     function get_member($uidNumber)
     {
         $uidNumber = intval($uidNumber); // Sanitise 
@@ -89,7 +104,7 @@ class PLUG {
         $thismember->load_payments();
         return $thismember->userarray();    
     }
-    
+
     
     function check_username_available($username)
     {
@@ -209,6 +224,10 @@ class Person {
     
     private $ldap;
     
+    private $errors;
+    private $messages;
+    private $errorstate = FALSE;
+    
     function __construct($ldap)
     {
         $this->ldap = $ldap;
@@ -222,16 +241,17 @@ class Person {
             'userPassword' => '',
             'loginShell' => '',
             'mail' => array(),
+            'mailForward' => '',
             'givenName' => '',
             'sn' => '',
             'cn' => '',
             'street' => '',
-            'homeTelephoneNumber' => '',
-            'mobileTelephoneNumber' => '',
-            'pagerTelephoneNumber' => '',
+            'homePhone' => '',
+            'mobile' => '',
+            'pager' => '',
             'description' => '',
             'shadowExpire' => '1', // Start all users off as expired
-            'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount'),            
+            'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForward'),            
             );
     }
     
@@ -248,13 +268,14 @@ class Person {
             'userPassword',
             'loginShell',
             'mail',
+            'mailForward',
             'givenName',
             'sn',
             'cn',
             'street',
-            'homeTelephoneNumber',
-            'mobileTelephoneNumber',
-            'pagerTelephoneNumber',
+            'homePhone',
+            'mobile',
+            'pager',
             'description',
             'shadowExpire',
             'memberOf'));
@@ -269,7 +290,7 @@ class Person {
 
     }
     
-    function create_person($uid, $username, $firstname, $lastname, $address, $email, $password)
+    function create_person($uid, $username, $firstname, $lastname, $address, $email, $forward, $password)
     {
         $this->dn = "uidNumber=$uid,ou=Users,dc=plug,dc=org,dc=au";
         $this->change_uid($uid, $uid);
@@ -278,6 +299,7 @@ class Person {
         $this->change_address($address);
         $this->change_shell("/usr/bin/zsh", "/home/$username");
         $this->change_email($email);
+        $this->change_forward($email);        
         $this->change_password($password);
         $this->create_user_ldap_array();
         $this->create_new_ldap_person();
@@ -328,9 +350,26 @@ class Person {
         $this->userldaparray['mail'] = $email;
     }
     
+    function change_forward($forward)
+    {
+        $this->userldaparray['mailForward'] = $forward;
+    }    
+    
     function change_password($password)
     {
         $this->userldaparray['userPassword'] = $password;
+    }
+    
+    function change_phone($home, $work, $mobile)
+    {
+        $this->userldaparray['homePhone'] = $home;
+        $this->userldaparray['mobile'] = $mobile;
+        $this->userldaparray['pager'] = $work;                
+    }
+    
+    function change_description($description)
+    {
+        $this->userldaparray['description'] = $description;
     }
     
     private function create_user_ldap_array()
@@ -393,14 +432,20 @@ class Person {
         /*print_r(array_diff_assoc(
                 $this->userldaparray,
                 $this->userorigldaparray
-            ));    */
+            ));*/
+
+
         $this->ldapentry->replace(
             array_diff_assoc(
                 $this->userldaparray,
                 $this->userorigldaparray
             )
         );
-        $this->ldapentry->update();
+        $result = $this->ldapentry->update();
+        
+        if (PEAR::isError($result)) {
+            die('LDAP Error: '.$result->getMessage());
+        }          
 
     }
     
@@ -504,9 +549,15 @@ class Person {
             $cleanpayment['type'] = $payment['x-plug-paymentType'][0];
             $cleanpayment['years'] = $payment['x-plug-paymentYears'][0];
             $cleanpayment['dn'] = $payment['dn'];
+            $cleanpayment['description'] = $payment['x-plug-paymentDescription'][0];
+            $cleanpayment['formatteddate'] = date('Y-m-d', strtotime($cleanpayment['date']));
+            $cleanpayment['formattedamount'] = sprintf("$%.2f",$cleanpayment['amount']/100);
+            $cleanpayment['formattedtype'] = $cleanpayment['type'] == FULL_TYPE ? "Full" : "Concession";
             $this->payments[] = $cleanpayment;
+
         }
         
+        arsort($this->payments);
 /*        echo "<pre>";
         print_r($this->payments);
         echo "</pre>"; */       

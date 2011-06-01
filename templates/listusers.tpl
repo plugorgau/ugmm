@@ -18,7 +18,7 @@
         <td>{$user.givenName}</td>                
         <td>{$user.sn}</td>
         <td>{foreach from=$user.mail item=mail}{$mail}<br/>{/foreach}</td>
-        <td><a href="edit?id={$user.uidNumber}">Edit</a></td>                
+        <td><a href="editmember?id={$user.uidNumber}">Edit</a></td>                
 </tr>        
 {/foreach}
 
@@ -50,7 +50,7 @@
         <td>{$user.type}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>
-        <td><a href="edit?id={$user.uidNumber}">Edit</a></td>                
+        <td><a href="editmember?id={$user.uidNumber}">Edit</a></td>                
 </tr>        
 {/foreach}
 </table>
@@ -80,7 +80,7 @@
         <td>{$user.type}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>
-        <td><a href="edit?id={$user.uidNumber}">Edit</a></td>                
+        <td><a href="editmember?id={$user.uidNumber}">Edit</a></td>                
 </tr>        
 {/foreach}
 </table>
