@@ -3,6 +3,7 @@
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="personals_form" value="1" type="hidden">
+    <input name="nonce" value="{'editmember'|nonce}" type="hidden">    
     <input name="id" value="{$member.uidNumber}" type="hidden">
 
     <table border="0">
@@ -12,6 +13,13 @@
 
           <td>{$member.uidNumber}</td>
         </tr>
+        
+        <tr>
+          <th>Username</th>
+
+          <td><input name="uid" value="{$member.uid}"
+          size="30" type="text"></td>
+        </tr>        
 
         <tr>
           <th>First Name</th>
@@ -30,10 +38,7 @@
         <tr>
           <th>E-mail Address</th>
 
-          <td>{foreach from=$member.mail item=mail}<input name=
-          "email_address[]" value="{$mail}" size="30" type=
-          "text"><br>
-          {/foreach}</td>
+          <td><input name="email_address" value="{$member.mail}" size="30" type="text"></td>
         </tr>
 
         <tr>
@@ -68,13 +73,13 @@
           <th>Membership Expires</th>
 
           <td><input name="membership_expiry" value=
-          "{$member.expiry}" size="10" type="text"> (dd/mm/yy)</td>
+          "{$member.expiry}" size="10" type="text" disabled> (dd/mm/yy)</td>
         </tr>
 
         <tr>
           <th>Groups</th>
 
-          <td>{foreach from=$member.groups item=group}{$group},
+          <td>{foreach from=$member.groups item=group name=groups}{$group}{if ! $smarty.foreach.groups.last},{/if}
           {/foreach}</td>
         </tr>
 
@@ -97,11 +102,12 @@
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="payment_form" value="1" type="hidden">
+    <input name="nonce" value="{'makepayment'|nonce}" type="hidden">    
     <input name="id" value="{$member.uidNumber}" type="hidden">
     Receive payment for <label><input name="membership_type" value=
-    "1" checked="checked" type="radio">Full ($10.00/yr)</label>
+    "1" checked="checked" type="radio">Full ({$FULL_AMOUNT}/yr)</label>
     <label><input name="membership_type" value="2" type=
-    "radio">Concession ($5.00/yr)</label> for <input name="years"
+    "radio">Concession ({$CONCESSION_AMOUNT}/yr)</label> for <input name="years"
     value="1" size="2" type="text"> year(s).<br>
     Backdate this payment to <input name="payment_date" size="10"
     type="text"> (dd/mm/yy) (leave blank for "now").<br>
@@ -118,8 +124,7 @@
     </div>
   </form>
 
-  <h4>Past Payments</h4>{foreach from=$member.payments
-  item=payment} {/foreach}
+  <h4>Past Payments</h4>
 
   <table>
     <tbody>
@@ -136,7 +141,7 @@
 
         <th></th>
       </tr>
-
+{foreach from=$member.payments item=payment} 
       <tr bgcolor="#DDDDFF">
         <td>{$payment.formatteddate}</td>
 
@@ -149,9 +154,11 @@
         <td>{$payment.description}</td>
 
         <td><a href=
-        "resend-payment-ack?payment_id={$payment.id}">Resend
+        "resendack?member_id={$member.uidNumber}&payment_id={$payment.id}">Resend
         Ack</a></td>
       </tr>
+      
+{/foreach}      
     </tbody>
   </table>
 
@@ -159,17 +166,29 @@
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
-    <input name="email_form" value="1" type="hidden"> <input name=
-    "id" value="{$member.uidNumber}" type="hidden"> E-mail
-    forwarded to <input name="email_forward" value=
-    "{$member.mailForward}" size="30" type="text"> <input name=
-    "go_go_button" value="Update Forwarding" type="submit"><br>
+    <input name="email_form" value="1" type="hidden">
+    <input name="nonce" value="{'updateemailforwarding'|nonce}" type="hidden">        
+    <input name="id" value="{$member.uidNumber}" type="hidden">
+    E-mail forwarded to <input name="email_forward" value="{$member.mailForward}" size="30" type="text">
+    <input name="go_go_button" value="Update Forwarding" type="submit"><br>
     A blank address means that email is delivered to their PLUG
     home directory. (Currently a blank email will deliver email to
     their email address in the user details section)
   </form>
 
-  <h3>Shell Access (linuxalien)</h3>This member's account is not
+  <h3>Shell Access ({$member.uid})</h3>
+  
+{if $member.loginShell eq "/bin/false"}
+  This users shell account is currently locked.
+  
+  <form method="post" action="" enctype=
+  "application/x-www-form-urlencoded">
+    <input name="unlock_form" value="1" type="hidden"> <input name=
+    "id" value="{$member.uidNumber}" type="hidden"> <input name=
+    "go_go_button" value="Unlock Account" type="submit">
+  </form>
+{else}  
+  This member's account is not
   locked. The member has enabled their account.
 
   <form method="post" action="" enctype=
@@ -178,6 +197,7 @@
     "id" value="{$member.uidNumber}" type="hidden"> <input name=
     "go_go_button" value="Lock Account" type="submit">
   </form>
+{/if}
 
   <h3>Reset Password</h3>
 

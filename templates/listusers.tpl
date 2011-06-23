@@ -33,7 +33,6 @@
  <th>First Name</th>
  <th>Last Name</th>
  <th>Email</th>
- <th>Type</th>
  <th>System Groups</th>
  <th>Member Exp</th>
  <th></th>
@@ -46,14 +45,15 @@
         <td>{$user.uid}</td>        
         <td>{$user.givenName}</td>                
         <td>{$user.sn}</td>
-        <td>{foreach from=$user.mail item=mail}{$mail}<br/>{/foreach}</td>
-        <td>{$user.type}</td>
+        <td>{$user.mail}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>
         <td><a href="editmember?id={$user.uidNumber}">Edit</a></td>                
 </tr>        
 {/foreach}
 </table>
+
+{if $expiredusers}
 
 <h3>Expired Members ({$expiredusers|@sizeof})</h3>
 <table>
@@ -84,3 +84,8 @@
 </tr>        
 {/foreach}
 </table>
+
+{else}
+<h3>Expired Members</h3>
+<p>Expired members are currently hidden. <a href="{$submenuitems.ctte.expiredmembers.link}">Click here to view expired members</a></p>
+{/if}

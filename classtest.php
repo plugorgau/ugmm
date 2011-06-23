@@ -19,12 +19,17 @@ require_once 'Net/LDAP2.php';
         die('Could not connect to LDAP-server: '.$ldap->getMessage());
     }
     
-    $testperson = new Person($ldap);
+    $plug = new PLUG($ldap);
     
-    $testperson->load_ldap("uidNumber=10063,ou=Users,dc=plug,dc=org,dc=au");/*
+    echo $plug->check_username_available('LinuxAlien2');
+    
+    //$testperson = new Person($ldap);
+    
+    //$testperson->load_ldap("uidNumber=10063,ou=Users,dc=plug,dc=org,dc=au");
+    /*
     $testperson->change_address("PO Box 470 Floreat WA 6014");
     $testperson->update_ldap();*/
 /*    $testperson->create_person('11111', 'blinkybill', 'blinky', 'bill', '', 'blinky@gmail.com', 'blah');*/
-    $testperson->print_ldif();
+    //$testperson->print_ldif();
     
 ?>

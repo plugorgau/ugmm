@@ -87,12 +87,62 @@ if (!$Auth->checkAuth())
 //    AdminLog::getInstance()->log("Log out");
     $Auth->logout();
     $Auth->start(); // restarts login process, so shows form
+    exit; // This should never run
 }else
 {
     $smarty->assign("LoggedInUsername", $Auth->getUsername());
 }
 
-print_r($Auth->getAuthData());
+//print_r($Auth->getAuthData());
+
+$_SESSION['loggedinusername'] = $Auth->getUsername();
+
+require_once('accesscheck.inc.php');
+
+
+// Nonce code based on Wordpress nonce code but adding storing in session
+
+function nonce_tick() {
+	$nonce_life = 86400 / 2;
+
+	return ceil(time() / ( $nonce_life / 2 ));
+}
+
+function verify_nonce($nonce, $action = -1) {
+
+    // Check if nonce exists
+    if(!isset($_SESSION['nonce'][$nonce]))
+        return false;
+    $valid = false;
+
+    // Check if nonce is still valid
+    $randnum = $_SESSION['nonce'][$nonce];
+	// Nonce generated 0-6 hours ago
+	if ( create_nonce($action, 0, $randnum) == $nonce )
+		$valid = true;
+	// Nonce generated 6-12 hours ago
+	if ( create_nonce($action, 1, $randnum) == $nonce )
+		$valid = true;	
+		
+	if ($valid)
+	    unset($_SESSION['nonce'][$nonce]); // Unlike WP, we only use it once
+    // $valid will be false if it's expired
+	return $valid;
+}
+
+function create_nonce($action = -1, $tick = 0, $randnum = 0) {
+	$user = $_SESSION['loggedinusername'];
+	$i = nonce_tick() - $tick;
+	
+	$randnum = $randnum ? $randnum : rand(); // 
+	
+	$nonce =  substr(sha1($i . $action . $user . $randnum . 'nonce'), -12, 10);
+	$_SESSION['nonce'][$nonce] = $randnum;
+	return $nonce;
+}
+
+$smarty->register_modifier('nonce', 'create_nonce');
+
 
 ?>
 

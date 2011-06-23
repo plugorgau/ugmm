@@ -1,5 +1,10 @@
 <?php
 
+$ACCESS_LEVEL = 'committee';
+$TOPLEVEL = 'ctte';
+$PAGETITLE = ' - Membership List';
+$TITLE = 'Membership List';
+
 require_once('session.inc.php');
 
 require_once 'PLUG.class.php';
@@ -8,7 +13,10 @@ require_once 'PLUG.class.php';
     
     $smarty->assign('currentusers', $PLUG->get_current_members());
     $smarty->assign('pendingusers', $PLUG->get_pending_members());
-    $smarty->assign('expiredusers', $PLUG->get_expired_members());        
+    if($_GET['expiredmembers'])
+    {
+        $smarty->assign('expiredusers', $PLUG->get_expired_members());        
+    }
     display_page('listusers.tpl');
 
 ?>
