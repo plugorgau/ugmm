@@ -5,9 +5,7 @@ $TOPLEVEL = 'ctte';
 $PAGETITLE = ' - Membership List';
 $TITLE = 'Membership List';
 
-require_once('session.inc.php');
-
-require_once 'PLUG.class.php';
+require_once('./PLUG/session.inc.php');
     
     $PLUG = new PLUG($ldap);
     

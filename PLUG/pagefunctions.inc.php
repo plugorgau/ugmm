@@ -17,6 +17,7 @@ include('smarty/Smarty.class.php');
 $smarty = new Smarty;
 $smarty->compile_check = true;
 
+
 // Need them defined as arrays for array_merge
 $error=array();
 $success = array();
@@ -31,6 +32,15 @@ function display_page($template, $pagetitle = '', $header = true, $footer = true
         
         $smarty->assign('topmenu', $topmenu);
         $smarty->assign('submenu', $menu);
+        
+        // Bring in messages from session
+        if(isset($_SESSION['errormessages']) || isset($_SESSION['successmessages']))
+        {
+            $error = array_merge($error, $_SESSION['errormessages']);
+            $success = array_merge($success, $_SESSION['successmessages']);
+            unset($_SESSION['errormessages']);
+            unset($_SESSION['successmessages']);
+        }        
         
         $smarty->assign('errors', $error);
         $smarty->assign('success', $success);
@@ -63,18 +73,24 @@ function assign_vars()
 
 $toplevelmenu['home'] = array('label' => "Home", 'link' => '/~tim/plugldap/memberself', 'level' => 'all');
 $toplevelmenu['admin'] = array('label' => "Admin", 'link' => '/~tim/plugldap/', 'level' => 'admin');
-$toplevelmenu['ctte'] = array('label' => "Committee", 'link' => '/~tim/plugldap/ldapusers', 'level' => 'committee');
+$toplevelmenu['ctte'] = array('label' => "Committee", 'link' => '/~tim/plugldap/ctte-members', 'level' => 'committee');
 $toplevelmenu['logout'] = array('label' => "Logout", 'link' => '/~tim/plugldap/logout', 'level' => 'all');
 //$toplevelmenu['web'] = array('label' => "Webmasters", 'link' => '/~tim/plugldap/', 'level' => array('admin', 'committee', 'webmaster'));
 
 // Submenu's level is defined by parent level
-$submenu['ctte']['members'] = array('label' => "Membership List", 'link' => '/~tim/plugldap/ldapusers.php');
-$submenu['ctte']['expiredmembers'] = array('link' => '/~tim/plugldap/ldapusers.php?expiredmembers=1');
-$submenu['ctte']['newmember'] = array('label' => "New Member", 'link' => '/~tim/plugldap/newmember');
-$submenu['ctte']['editmember'] = array('label' => '', 'link' => '/~tim/plugldap/editmember?id=');
+$submenu['ctte']['members'] = array('label' => "Membership List", 'link' => '/~tim/plugldap/ctte-members');
+$submenu['ctte']['expiredmembers'] = array('link' => '/~tim/plugldap/ctte-users.php?expiredmembers=1');
+$submenu['ctte']['newmember'] = array('label' => "New Member", 'link' => '/~tim/plugldap/ctte-newmember');
+$submenu['ctte']['editmember'] = array('label' => '', 'link' => '/~tim/plugldap/ctte-editmember?id=');
+$submenu['ctte']['resendack'] = array('label' => '', 'link' => '/~tim/plugldap/resendack?member_id=');
 
 $submenu['admin']['usergroups'] = array('label' => "Manage User Groups", 'link' => '/~tim/plugldap/');
 $submenu['admin']['emailaliases'] = array('label' => "Manage Email Aliases", 'link' => '/~tim/plugldap/');
+
+$submenu['home']['editselfdetails'] = array('link' => 'member-editdetails');
+$submenu['home']['editselfforwarding'] = array('link' => 'member-editforwarding');
+$submenu['home']['editselfshell'] = array('link' => 'member-editshell');
+
 
 function generate_menus($top = '')
 {
@@ -101,8 +117,19 @@ function generate_menus($top = '')
     return array($topmenu, $smenu);
 }
 
+function redirect_with_messages($url)
+{
+    global $error, $success;
+    $_SESSION['errormessages'] = $error;
+    $_SESSION['successmessages'] = $success;
+    header('Location: ' . $url);
+    exit();
+}
 
-
+// Shells
+$shells['zsh'] = '/usr/bin/zsh';
+$shells['bash'] = '/bin/bash';
+$shells['csh'] = '/bin/csh';
 
 // Clean functions from GRASE Hotspot
 function cleantext($text)
@@ -138,3 +165,5 @@ function clean_int($number)
     //return intval(clean_number($number));
     //ereg_replace("[^0-9]", "", clean_text($number));
 }
+
+

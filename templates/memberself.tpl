@@ -40,12 +40,17 @@ to edit them.
 </table>
 
 <p>
-<ul><li><a href="member-edit">Edit your personal details</a>
+<ul><li><a href="{$submenuitems.home.editselfdetails.link}">Edit your personal details</a>
 <li>Requests to change your name should be sent to <a href="mailto:&#99;&#111;&#109;&#109;&#105;&#116;&#116;&#101;&#101;&#64;&#112;&#108;&#117;&#103;&#46;&#111;&#114;&#103;&#46;&#97;&#117;">&#99;&#111;&#109;&#109;&#105;&#116;&#116;&#101;&#101;&#64;&#112;&#108;&#117;&#103;&#46;&#111;&#114;&#103;&#46;&#97;&#117;</a>.</ul></p>
 <h3><a name="email"></a>E-mail Forwarding</h3>
-<p>Mail sent to your PLUG email address (linuxalien@plug.org.au) is being redirected to weirdit@gmail.com.</p>
+{if $memberself.mailForward}
+<p>Mail sent to your PLUG email address ({$memberself.uid}@members.plug.org.au) is being redirected to {$memberself.mailForward}.</p>
+{else}
+<p>Mail sent to your PLUG email address ({$memberself.uid}@members.plug.org.au) is currently being delivered to your home directory</p>
+{/if}
+
 <p>
-<ul><li><a href="member-email">Change your e-mail forwarding</a></ul></p>
+<ul><li><a href="{$submenuitems.home.editselfforwarding.link}">Change your e-mail forwarding</a></ul></p>
 <h3><a name="shell"></a>Shell Account Details</h3>
 
 <table border="0">

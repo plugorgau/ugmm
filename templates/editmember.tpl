@@ -154,7 +154,7 @@
         <td>{$payment.description}</td>
 
         <td><a href=
-        "resendack?member_id={$member.uidNumber}&payment_id={$payment.id}">Resend
+        "{$submenuitems.ctte.resendack.link}{$member.uidNumber}&payment_id={$payment.id}">Resend
         Ack</a></td>
       </tr>
       

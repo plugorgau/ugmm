@@ -5,10 +5,8 @@ $TOPLEVEL = 'ctte';
 $PAGETITLE = ' - Edit Member';
 $TITLE = 'Edit Member';
 
-require_once('session.inc.php');
+require_once('./PLUG/session.inc.php');
 
-require_once 'PLUG.class.php';
-    
     $PLUG = new PLUG($ldap);
     
     if(intval($_GET['id']) < 10000)

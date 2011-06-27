@@ -1,8 +1,6 @@
 <?php
 
-require_once('session.inc.php');
-
-require_once 'PLUG.class.php';
+require_once('./PLUG/session.inc.php');
     
     $memberself = new Person($ldap);
     $memberauthdata = $Auth->getAuthData();
