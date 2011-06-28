@@ -1,12 +1,14 @@
 <?php
 
 //define('DEBUGLEVEL', 10);
-define('DEBUGLEVEL', 10);
+define('DEBUGLEVEL', 50);
 
 define('DEBUG', 100);
 define('INFO', 50);
 define('WARNING', 20);
 define('ERROR', 10);
+
+define('FORCE', true);
 
 /* Page load time */
    $mtime = microtime();
@@ -40,28 +42,11 @@ require_once "MDB2.php";
     }        
     $plugpgsql->setFetchMode(MDB2_FETCHMODE_ASSOC);
     
-require_once 'Net/LDAP2.php';
-    // The configuration array:
-    $config = array (
-        'binddn'    => 'cn=admin,dc=plug,dc=org,dc=au',
-        'basedn'    => 'dc=plug,dc=org,dc=au',
-        'bindpw'    => 'plugldap2011',        
-        'host'      => 'localhost'
-        
-/*        'bindpw'    => 'plugldap2011',   
-        'host'      => '203.82.208.249'/*     
-        'host'      => '2402:8000:3:a3::1'*/
-    );
+require_once('./PLUG/PLUG.class.php');    
+require_once('./PLUG/ldapconnection.inc.php');
 
-    // Connecting using the configuration:
-    $ldap = Net_LDAP2::connect($config);
-
-    // Testing for connection error
-    if (PEAR::isError($ldap)) {
-        die('Could not connect to LDAP-server: '.$ldap->getMessage());
-    }        
-
-
+$PLUG = new PLUG($ldap);
+    
 /* Delete a few groups first */
 
         $deletegroup = array('currentmembers', 'pendingmembers', 'expiredmembers');        
@@ -97,7 +82,7 @@ require_once 'Net/LDAP2.php';
             
         }
         
-        if($account['username'] == '')
+        if(@$account['username'] == '')
         {
             $account['username'] = ereg_replace(" ", "", $result['first_name']) . '.' . $result['last_name'];
         }
@@ -113,11 +98,11 @@ require_once 'Net/LDAP2.php';
         $user['displayName'] = "${result['first_name']} ${result['last_name']}";
         $user['uidNumber'] = $account['uid'];
         $user['gidNumber'] = $account['uid'];        
-        $user['homeDirectory'] = $account['homedir'] ? $account['homedir'] : '/home/'.$account['username'];
-        $user['userPassword'] = "{crypt}".$account['password']; // TODO if empty
-        $user['loginShell'] = $account['shell'] ? $account['shell'] : '/usr/bin/zsh';
+        $user['homeDirectory'] = @$account['homedir'] ? $account['homedir'] : '/home/'.$account['username'];
+        $user['userPassword'] = "{crypt}".@$account['password']; // TODO if empty
+        $user['loginShell'] = @$account['shell'] ? $account['shell'] : '/usr/bin/zsh';
         
-        $user['mail'][] = strtolower($result['email_address']);
+        $user['mail'] = strtolower($result['email_address']);
         $user['mailForward'] = array();
         foreach($alias as $email)
         {
@@ -127,9 +112,9 @@ require_once 'Net/LDAP2.php';
         }
         
         $user['givenName'] = $result['first_name'];
-        $user['sn'] = $result['last_name'] ? $result['last_name'] : '_';
+        $user['sn'] = @$result['last_name'] ? $result['last_name'] : '_';
         $user['cn'] = "${result['first_name']} ${result['last_name']}";
-        $user['street'] = $result['street_address'];
+        $user['street'] = @$result['street_address'] ? $result['street_address'] : "No Address on file";
         $user['homePhone'] = format_ph($result['home_phone']);
         $user['mobile'] = format_ph($result['mobile_phone']);
         $user['pager'] = format_ph($result['work_phone']);
@@ -143,101 +128,48 @@ require_once 'Net/LDAP2.php';
         
         eho(INFO, "<p><h3>$dn</h3>");
         // Delete user before adding (to ensure sync for now)
-        $ldapres = $ldap->delete($dn, TRUE);
+        $PLUG->delete_member($dn);
+        $PLUG->delete_member("gidNumber=${user['gidNumber']},ou=UPG, ou=Groups, dc=plug, dc=org, dc=au");
+        /*$ldapres = $ldap->delete($dn, TRUE);
         if (PEAR::isError($ldapres)) {
             eho(DEBUG, 'LDAP Error: '.$ldapres->getMessage());
-        }
-        
-        
-        // Add the entry
-        //unset($user['Expiry']);
-        $entry = Net_LDAP2_Entry::createFresh($dn, $user);
-        
-        $ldapres = $ldap->add($entry);
-        if (PEAR::isError($ldapres)) {
-            eho(ERROR, 'LDAP Error: '.$ldapres->getMessage());
-        }        
-        
-        foreach($user as $attribute => $value){
+        }*/
 
-            if(is_array($value))
-            {  
-                foreach($value as $val)
-                    eho(INFO, "$attribute: $val");
-            }else
-            {
-                eho(INFO, "$attribute: $value");
-            }
-        }
+        // Add the entry        
+        $person = new Person($ldap);
+        eho(INFO, "Creating person ". $user['uid']);
+        $person->create_person($user['uidNumber'], $user['uid'], $user['givenName'], $user['sn'], $user['street'], @$user['homePhone'], @$user['pager'], @$user['mobile'], $user['mail'], @$user['mailForward'], $user['userPassword'], @$user['description']);
+        
+        print_r($person->get_messages());
+        
+        if($person->is_error())
+        {
+            print_r($person->get_errors());
+            die('Error in creation of person');
+        }        
+
+
         foreach($payments as $payment)
         {
+            
             if($payment['type_id'] == 2)
             {
                 eho(INFO, "Concession payment: ");
+                $payment['years'] = $payment['amount'] / 500;
             }else
             {
                 eho(INFO, "Normal payment: ");
+                $payment['years'] = $payment['amount'] / 1000;                
             }
-            eho($payment['id'] . ": " . $payment['payment_date']);
-            eho("$" . $payment['amount']/100 . " | " . $payment['receipt_number']);
+            
+            $person->makePayment($payment['type_id'], $payment['years'], $payment['payment_date'], $payment['receipt_number'], false, $payment['id']);
+            
+        
+        }
 
-            member_payment($dn, $payment['id'], $payment['type_id'], $payment['amount'], $payment['payment_date'], $payment['receipt_number']);
-        
-        }
-        
-        if(strtotime($result['expiry']) > time())
-        {
-            eho(INFO, "<b>Valid user</b>");
-            $valid ++;
-            valid_member($dn);
-        }
-        else
-        {   
-            eho(INFO, "<b>Expired user</b>");
-            $expired ++;
-            eho(INFO, strtotime($result['expiry']));
-            if(strtotime($result['expiry']) <= 0)
-            {
-                 valid_member($dn, 'pendingmembers');
-            }
-            else
-            {
-                valid_member($dn, 'expiredmembers');
-            }
-        }
-        eho(INFO, "</p>\n");
-        
-
-        
         // Get all the userid's to dn for adding to groups later
         $userids[$user['uid']] = $dn;
-        
-        // Add to own group
-        valid_member($dn, $user['uid'], $user['gidNumber'], TRUE);             
-        
-        // Members own group
-        /*$group = array();
-        $groupdn = "cn=${account['username']}, ou=Groups, dc=plug, dc=org, dc=au";
-        $group['objectClass'] = array('top',  'posixGroup');
-        $group['gidNumber'] = $account['uid'];
-        $group['cn'] = $account['username'];
-        $group['memberUid'] = $account['username'];*/
-
-        /*$ldap->delete($groupdn);
-        $entry = Net_LDAP2_Entry::createFresh($groupdn, $group);
-        
-        $ldapres = $ldap->add($entry);
-        if (PEAR::isError($ldapres)) {
-            die('LDAP Error: '.$ldapres->getMessage());
-        }       */  
                    
-        /*?>
-<p>        
-gidNumber: 500<br/>
-</p>      <?*/
-
-        //print_r($result);
-        //echo $results['first_name']
         flush();
     }
 
@@ -263,20 +195,16 @@ foreach($groups as $group)
         foreach($members as $member)
         {
             eho(INFO, $member['username'] . "\n");
-            //$lgroup['memberUid'][] = $member['username'];
-            valid_member($userids[$member['username']], $group['name'], $group['gid']);
+            $person = new Person($ldap);
+            $person->load_ldap($userids[$member['username']]);
+            $person->add_to_group($group['name']);
+            
         }
         
         eho(INFO, "</p>");
             
 
-        /*$ldap->delete($groupdn);
-        $entry = Net_LDAP2_Entry::createFresh($groupdn, $lgroup);
-        
-        $ldapres = $ldap->add($entry);
-    if (PEAR::isError($ldapres)) {
-        die('LDAP Error: '.$ldapres->getMessage());
-    }*/         
+      
 }
 
 // Aliases
@@ -310,7 +238,7 @@ function format_ph($number)
     return $output;
 }
 
-function member_payment($memberdn, $paymentid, $paymenttype, $amount, $date, $description)
+/*function member_payment($memberdn, $paymentid, $paymenttype, $amount, $date, $description)
 {
     global $ldap;
     $dn = "x-plug-paymentID=$paymentid,$memberdn";
@@ -341,15 +269,15 @@ function member_payment($memberdn, $paymentid, $paymenttype, $amount, $date, $de
     if (PEAR::isError($ldapres)) {
         eho(ERROR, 'LDAP Error: '.$ldapres->getMessage());
     }
-}
+}*/
 
-function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
+/*function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
 {
     global $ldap;
     
-/*    if($gid)
-    {
-        $groupdn = "gidNumber=$gid,ou=Groups,dc=plug,dc=org,dc=au";    */
+//    if($gid)
+//    {
+//        $groupdn = "gidNumber=$gid,ou=Groups,dc=plug,dc=org,dc=au";    
     if($upg){
             $groupdn = "gidNumber=$gid,ou=UPG,ou=Groups,dc=plug,dc=org,dc=au";    
     }else
@@ -394,24 +322,10 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
             }  
         }else{
             eho(DEBUG, "Already in group");   
-            /*$ldapres = $entry->delete(array('member' => $dn));   
+                  
             
-            if (PEAR::isError($ldapres)) {
-                die('1LDAP Error: '.$ldapres->getMessage());
-            }    */        
-            
-/*            $ldapres = $entry->update();             
-            
-            if (PEAR::isError($ldapres)) {
-                die('LDAP Error: '.$ldapres->getMessage());
-            }            */
-
-           /* $ldapres= $entry->add(array('member' => $dn));
 
 
-            if (PEAR::isError($ldapres)) {
-                die('2LDAP Error: '.$ldapres->getMessage());
-            }*/
 
             $ldapres = $entry->update();
 
@@ -438,7 +352,7 @@ function valid_member($dn, $cn = "currentmembers", $gid = FALSE, $upg = FALSE)
     }
     
     
-}
+}*/
 
    $mtime = microtime();
    $mtime = explode(" ",$mtime);
