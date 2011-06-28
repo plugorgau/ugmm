@@ -24,10 +24,10 @@
   
   <p>Accounts detected with weak passwords will be disabled</p>
 
-  <form method="post" action="/members/member-password" enctype=
+  <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="nonce" value="{'editselfpassword'|nonce}" type="hidden">      
-    <input type="hidden" name="member_password" value="1">
+    <input type="hidden" name="edit_selfpassword" value="1">
 
     <table border="0">
       <tr>
@@ -40,14 +40,14 @@
       <tr>
         <th>New Password</th>
 
-        <td><input type="password" name="new_password" size=
+        <td><input type="password" name="newpassword" size=
         "30"></td>
       </tr>
 
       <tr>
         <th>Verify Password</th>
 
-        <td><input type="password" name="verify_password" size=
+        <td><input type="password" name="newpasswordconfirm" size=
         "30"></td>
       </tr>
     </table><input type="submit" name="go_go_button" value=

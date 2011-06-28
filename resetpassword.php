@@ -77,28 +77,13 @@ else if(isset($_GET['uid']) && isset($_GET['reset']))
     
         if(isset($_POST['newpasswordreset_form']))
         {
-            // Hash matched and we have a new password
-            $newpassword = cleanpassword($_POST['newpassword']);
-            if($newpassword == '')
-                $error[] = _('Blank password not allowed');
-                
-            if($newpassword != $_POST['newpassword'])
-                $error[] = _('Invalid characters used in password');
-            if(cleanpassword($_POST['newpasswordconfirm']) != $newpassword)
+            if($_POST['newpasswordconfirm'] != $_POST['newpassword'])
                 $error[] = _("Passwords don't match");
                 
-            if(strlen($newpassword) < 7)
-                $error[] = _("Password too short");
-                
-            if( !preg_match("#[0-9]+#", $newpassword) )
-            	$error[] = _("Password must include at least one number");
-            if( !preg_match("#[a-zA-Z]+#", $newpassword) )
-            	$error[] = _("Password must include at least one letter");            	
-                
-            if(sizeof($error) == 0)
+            if(! $error && $member->is_valid_password($_POST['newpassword']))
             {
                 // Change password
-                $member->change_password($newpassword);
+                $member->change_password(cleanpassword($_POST['newpassword']);
                 if($member->is_error())
                 {
                     $error = "Error changing password";
@@ -110,6 +95,10 @@ else if(isset($_GET['uid']) && isset($_GET['reset']))
                     
                 }
 
+            }else
+            {
+                $error = array_merge($error, $member->get_password_errors());
+            
             }
                 
 

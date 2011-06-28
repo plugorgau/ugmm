@@ -1,6 +1,6 @@
 <?php
 
-require_once 'PLUG.class.php';
+require_once 'PLUG/PLUG.class.php';
 
 require_once 'Net/LDAP2.php';
     // The configuration array:
@@ -21,11 +21,16 @@ require_once 'Net/LDAP2.php';
     
     $plug = new PLUG($ldap);
     
-    echo $plug->check_username_available('LinuxAlien2');
+    echo  $plug->check_username_available('LinuxAlien2');
     
     //$testperson = new Person($ldap);
     
     //$testperson->load_ldap("uidNumber=10063,ou=Users,dc=plug,dc=org,dc=au");
+    
+    $hash = createPasswordHash('password');
+    echo "$hash"; echo "</br>";
+    echo validate('password', $hash);
+    
     /*
     $testperson->change_address("PO Box 470 Floreat WA 6014");
     $testperson->update_ldap();*/

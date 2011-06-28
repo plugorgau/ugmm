@@ -2,8 +2,8 @@
 
 require_once('ldapconnection.inc.php');
 
-define('CONCESSION_AMOUNT', 1000);
-define('FULL_AMOUNT', 2000);
+define('CONCESSION_AMOUNT', 500);
+define('FULL_AMOUNT', 1000);
 
 define('CONCESSION_TYPE', 2);
 define('FULL_TYPE', 1);
@@ -14,9 +14,13 @@ define('CONTACT_EMAIL', "committee@plug.org.au");
 define('SCRIPTS_FROM_EMAIL', "PLUG Membership Scripts <admin@plug.org.au>");
 define('SCRIPTS_REPLYTO_EMAIL', "PLUG Committee <committee@plug.org.au>");
 
+define('DEFAULT_MEMBER', 'cn=admin,dc=plug,dc=org,dc=au');
 
 // For debugging, remove later TODO:
 define('ADMIN_EMAIL', "linuxalien@plug.org.au");
+
+if(!defined('FORCE'))
+    define('FORCE', false);
 
 class PLUG {
 
@@ -40,7 +44,7 @@ class PLUG {
         $entry = $this->ldap->getEntry($dn, array('member'));
         
         if (PEAR::isError($entry)) {
-            die('LDAP Error: '.$entry->getMessage());
+            throw new Exception('LDAP Error: '.$entry->getMessage());
         }         
 
         // Load all members
@@ -49,6 +53,8 @@ class PLUG {
         
         foreach($members as $member)
         {
+            if($member == DEFAULT_MEMBER) continue;
+            
             $thismember = new Person($this->ldap);
             $thismember->load_ldap($member);
             $memberdetails[] = $thismember->userarray();
@@ -124,7 +130,7 @@ class PLUG {
         $search = $this->ldap->search($searchbase, $filter, $options);
         
         if (PEAR::isError($search)) {
-           die($search->getMessage() . "\n");
+           throw new Exception($search->getMessage() . "\n");
         }
         
         if($search->count() != 1)
@@ -165,7 +171,7 @@ class PLUG {
         $search = $this->ldap->search($searchbase, $filter, $options);
 
         if (PEAR::isError($search)) {
-            die($search->getMessage() . "\n");
+            throw new Exception($search->getMessage() . "\n");
         }
 
         return $search->count();
@@ -179,7 +185,7 @@ class PLUG {
         $entry = $this->ldap->getEntry($dn, array('uidNumber'));
         
         if (PEAR::isError($entry)) {
-            die('LDAP Error: '.$entry->getMessage());
+            throw new Exception('LDAP Error: '.$entry->getMessage());
         }         
 
         $uidNumber = $entry->getValue('uidNumber');
@@ -194,7 +200,7 @@ class PLUG {
         $result = $entry->update();
         
         if (PEAR::isError($result)) {
-            die('LDAP Error: '.$result->getMessage());
+            throw new Exception('LDAP Error: '.$result->getMessage());
         }   
         
         return $uidNumber;        
@@ -217,7 +223,7 @@ class PLUG {
         $entry = $this->ldap->getEntry($dn, array('x-plug-paymentID'));
         
         if (PEAR::isError($entry)) {
-            die('LDAP Error: '.$entry->getMessage());
+            throw new Exception('LDAP Error: '.$entry->getMessage());
         }         
 
         $paymentID = $entry->getValue('x-plug-paymentID');
@@ -229,7 +235,7 @@ class PLUG {
         $result = $entry->update();
         
         if (PEAR::isError($result)) {
-            die('LDAP Error: '.$result->getMessage());
+            throw new Exception('LDAP Error: '.$result->getMessage());
         }   
         
         return $paymentID;        
@@ -250,7 +256,13 @@ class PLUG {
             unset($_SESSION['pendingID']);
         }
         return $newmember;        
-    }     
+    }
+    
+    function delete_member($dn)
+    {
+        if($this->ldap->dnExists($dn))
+            $this->ldap->delete($dn, TRUE);
+    } 
 
 }
 
@@ -285,7 +297,7 @@ class Payment
             'x-plug-paymentYears'
             ));
         if (PEAR::isError($this->ldapentry)) {
-            die('LDAP Error: '.$this->ldapentry->getMessage());
+            throw new Exception('LDAP Error: '.$this->ldapentry->getMessage());
         }        
         
         $this->paymentarray = $this->ldapentry->getValues();
@@ -314,9 +326,11 @@ class Payment
         
         $this->create_new_ldap_payment();
     }*/
-    function new_payment($parentdn, $type, $years, $date, $description)
+    function new_payment($parentdn, $type, $years, $date, $description, $id = false)
     {
-        $id = $this->next_paymentID();
+        if(! $id)
+            $id = $this->next_paymentID();
+            
         $this->dn = "x-plug-paymentID=$id,$parentdn";
         $this->paymentarray['x-plug-paymentYears'] = $years;
         $this->paymentarray['x-plug-paymentDate'] = date('YmdHis',strtotime($date)). "+0800";
@@ -347,7 +361,7 @@ class Payment
         $entry = Net_LDAP2_Entry::createFresh($this->dn, array_filter($this->paymentarray));
         $ldapres = $this->ldap->add($entry);
         if (PEAR::isError($ldapres)) {
-            die('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
+            throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
         }           
     }
     
@@ -359,7 +373,7 @@ class Payment
         $entry = $this->ldap->getEntry($dn, array('x-plug-paymentID'));
         
         if (PEAR::isError($entry)) {
-            die('LDAP Error: '.$entry->getMessage());
+            throw new Exception('LDAP Error: '.$entry->getMessage());
         }         
 
         $paymentID = $entry->getValue('x-plug-paymentID');
@@ -379,7 +393,7 @@ class Payment
             $search = $this->ldap->search($searchbase, $filter, $options);
             
             if (PEAR::isError($search)) {
-               die($search->getMessage() . "\n");
+               throw new Exception($search->getMessage() . "\n");
             }
             
             $paymentID ++;
@@ -394,7 +408,7 @@ class Payment
         $result = $entry->update();
         
         if (PEAR::isError($result)) {
-            die('LDAP Error: '.$result->getMessage());
+            throw new Exception('LDAP Error: '.$result->getMessage());
         }   
         
         return $paymentID - 1;        
@@ -434,6 +448,7 @@ class Person {
     private $errors = array();
     private $messages = array();
     private $errorstate = FALSE;
+    private $passworderrors = array();
     
     function __construct($ldap)
     {
@@ -487,7 +502,7 @@ class Person {
             'shadowExpire',
             'memberOf'));
         if (PEAR::isError($this->ldapentry)) {
-            die('LDAP Error: '.$this->ldapentry->getMessage());
+            throw new Exception('LDAP Error: load_ldap: '.$this->ldapentry->getMessage());
         }        
         
         $this->userldaparray = $this->ldapentry->getValues();
@@ -505,7 +520,8 @@ class Person {
         $this->change_name($firstname, $lastname);
         $this->change_address($address);
         $this->change_phone($home, $work, $mobile);
-        $this->change_shell("/usr/bin/zsh", "/home/$username");
+        $this->change_shell("/bin/bash");
+        $this->change_homedir("/home/$username");
         $this->change_email($email);
         $this->change_forward($email);        
         $this->change_password($password);
@@ -515,7 +531,11 @@ class Person {
             $this->create_new_ldap_person();
             $this->create_new_ldap_group();
             $this->set_status_group();
+            // Extra call, but allows us to continue working with a new object.
+            $this->load_ldap($this->dn);
+
         }
+        
     }
     
     function is_error()
@@ -537,7 +557,7 @@ class Person {
         return $this->messages;
     }    
     
-    function change_expiry($date) // $date as
+    function change_expiry($date) // $date as string
     {
         // TODO: UTC issues?
         // $date needs to be converted to DAYS since epoch
@@ -552,7 +572,7 @@ class Person {
         $date = date("YmdHis",$this->userldaparray['shadowExpire'] * 86400) . " + $years years";
         print_r(array($date));
         if(!strtotime($date))
-            die("Invalid date");
+            throw new Exception("Invalid date");
         $this->userldaparray['shadowExpire'] = abs(floor(strtotime($date)/ 86400));*/
         
         // Misses a day for leap years, oh well.
@@ -600,7 +620,7 @@ class Person {
             if($username == '')
             {
                 $this->errors[] = "Username required";
-            }elseif(strlen($username) < 3)
+            }elseif(strlen($username) < 3 && ! FORCE)
             {
                 $this->errors[] = "Username must be at least 3 characters long";
             }elseif($this->check_username_available($username))
@@ -626,31 +646,37 @@ class Person {
         }
     }
     
-    function change_shell($loginShell, $homedir)
+    function change_shell($loginShell)
     {
-        if($loginShell != $this->userldaparray['loginShell'] ||
-            $homedir != $this->userldaparray['homeDirectory'])
+        if($loginShell != $this->userldaparray['loginShell'])
         {
             $this->userldaparray['loginShell'] = $loginShell;
-            // TODO: Ensure directory is created? Leave up to pam?
-            $this->userldaparray['homeDirectory'] = $homedir;
-            
             $this->messages[] = "Shell details changed";
         }
     }
     
+    private function change_homedir($homedir)
+    {
+        if($homedir != $this->userldaparray['homeDirectory'])
+        {
+            $this->userldaparray['homeDirectory'] = $homedir;
+            $this->messages[] = "Home directory changed";
+        }    
+    
+    }
+    
     function change_email($email)
     {
-        if($email == '')
+        if($email == '' && ! FORCE)
         {
             $this->errors[] = 'Email address required';
         }
         if($email != $this->userldaparray['mail'])
         {
-            if($this->check_email_available($email) != 0)
+            if($this->check_email_available($email) != 0 && ! FORCE)
             {
                 // Check that email isn't already registered
-                $this->errors[] = "Email address is already registered. Please use another email address for password recovery purposes";
+                $this->errors[] = "Email address($email) is already registered. Please use another email address for password recovery purposes";
             }elseif(filter_var($email, FILTER_VALIDATE_EMAIL))
             {
                 $this->userldaparray['mail'] = $email;
@@ -682,8 +708,14 @@ class Person {
     function change_password($password)
     {
         // Can't check if password hasn't changed, so always do this
-        
-        $this->userldaparray['userPassword'] = '{crypt}'.md5crypt($password);
+        // Check if we are passing an already crypted password
+        if(substr($password, 0, 7) == '{crypt}')
+        {
+            $this->userldaparray['userPassword'] = $password;
+        }else
+        {
+            $this->userldaparray['userPassword'] = '{crypt}'.createPasswordHash($password);
+        }
         $this->messages[] = "Password changed";
     }
     
@@ -697,6 +729,16 @@ class Person {
     function change_description($description)
     {
         $this->userldaparray['description'] = $description;
+    }
+    
+    function disable_shell()
+    {
+        return $this->remove_from_group('shell');
+    }
+    
+    function enable_shell()
+    {
+        return $this->add_to_group('shell');
     }
     
     private function create_user_ldap_array()
@@ -749,7 +791,7 @@ class Person {
         $entry = Net_LDAP2_Entry::createFresh($this->dn, array_filter($this->userldaparray));
         $ldapres = $this->ldap->add($entry);
         if (PEAR::isError($ldapres)) {
-            die('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
+            throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
         }
         // Overwrite other messages in messages array
         $this->messages = array("New member created with id " . $this->userldaparray['uidNumber']);
@@ -773,11 +815,47 @@ class Person {
         $ldapres = $this->ldap->add($entry);
         
         if (PEAR::isError($ldapres)) {
-            die('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
+            throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
         }
         //$this->messages[] = "Group Created";
 
     }
+    
+    private function create_new_ldap_system_group($dn, $cn)
+    {
+        $gids = array(
+            'admin' => 1001,
+            'committee' => 1006,
+            'webslave' => 1003,
+            'librarian' => 1007,
+        );
+        
+        if(isset($gids[$cn])){
+            $gid = $gids[$cn];
+            $group = array(
+                'gidNumber' => $gid,
+                'cn' => $cn,
+                'member' => DEFAULT_MEMBER,
+                'objectClass' => array('groupOfNames', 'posixGroup')
+            );
+        }else{
+            $group = array(
+                'cn' => $cn,
+                'member' => DEFAULT_MEMBER,
+                'objectClass' => array('groupOfNames')
+            );
+        }
+        
+        $entry = Net_LDAP2_Entry::createFresh($dn, $group);
+        
+        $ldapres = $this->ldap->add($entry);
+        
+        if (PEAR::isError($ldapres)) {
+            throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
+        }
+        //$this->messages[] = "Group Created";
+
+    }    
     
     public function update_ldap()
     {
@@ -797,14 +875,14 @@ class Person {
         $result = $this->ldapentry->update();
         
         if (PEAR::isError($result)) {
-            die('LDAP Error: '.$result->getMessage());
+            throw new Exception('LDAP Error: '.$result->getMessage());
         }          
 
     }
     
     private function memberOf_filter()
     {
-        $filtergroups = array('expiredmembers', 'currentmembers', 'pendingmembers');
+        $filtergroups = array('expiredmembers', 'currentmembers', 'pendingmembers', 'shell');
         // Filters memberOf to just give system group names
         $groups = $this->userldaparray['memberOf'];
         if(!is_array($groups)) $groups = array($groups);
@@ -820,12 +898,27 @@ class Person {
                 {
                     $validgroups[] = $cn[1];
                 }
+                $allgroups[] = $cn[1];
             }
         }
         
         // Don't store this is userldaparray as it's not a valid attribute
-        return $validgroups;
+        return array($validgroups, $allgroups);
     }
+    
+    private function is_shell_enabled()
+    {
+        list($validgroups, $allgroups) = $this->memberOf_filter();
+        if(in_array('shell', $allgroups)) return true;
+        return false;
+    }
+    
+    private function is_membership_current()
+    {
+        list($validgroups, $allgroups) = $this->memberOf_filter();
+        if(in_array('currentmembers', $allgroups)) return true;
+        return false;
+    }    
     
     function expiry()
     {
@@ -871,59 +964,82 @@ class Person {
     function add_to_group($group)
     {
         $groupdn = "cn=$group,ou=Groups,dc=plug,dc=org,dc=au";
-        $groups = is_array($this->userldaparray['memberOf']) ? $this->userldaparray['memberOf'] : array($this->userldaparray['memberOf']);
+        $groups = is_array(@$this->userldaparray['memberOf']) ? @$this->userldaparray['memberOf'] : array(@$this->userldaparray['memberOf']);
         if(!in_array($groupdn, $groups))
         {
-            echo "Adding to group $groupdn";
-            print_r($this->userldaparray['memberOf']);
+            //echo "Adding to group $groupdn";
+            //print_r($this->userldaparray['memberOf']);
             // Fetch entry for group and all member attributes
+            if(! $this->ldap->dnExists($groupdn))
+                $this->create_new_ldap_system_group($groupdn, $group);
+                
             $entry = $this->ldap->getEntry($groupdn, array('member'));
             
             if (PEAR::isError($entry)) {
-               die($entry->getMessage() . "\n");
+               throw new Exception($entry->getMessage() . "\n");
             }
-           
-            $entry->add(
-                array(
-                    'member' => $this->dn
-                )
-            );
             
-            $res = $entry->update();
-            
-            if (PEAR::isError($res)) {
-               die($res->getMessage() . "\n");
+
+            $members = $entry->getValue('member', 'all');
+       
+            // Double check before attempt add. memberOf can be out of sync and it's cheap to check
+            if(! in_array($this->dn, $members))
+            {
+                $entry->add(
+                    array(
+                        'member' => $this->dn
+                    )
+                );
+                
+                $res = $entry->update();
+                
+                if (PEAR::isError($res)) {
+                   throw new Exception($res->getMessage() . "\n");
+                }
+                
             }
             
         }
+        
+        return TRUE; // TODO: return error if error?
     }
     
     function remove_from_group($group)
     {
         $groupdn = "cn=$group,ou=Groups,dc=plug,dc=org,dc=au";    
-        $groups = is_array($this->userldaparray['memberOf']) ? $this->userldaparray['memberOf'] : array($this->userldaparray['memberOf']);        
+        $groups = is_array(@$this->userldaparray['memberOf']) ? @$this->userldaparray['memberOf'] : array(@$this->userldaparray['memberOf']);
+        
         if(in_array($groupdn, $groups))
         {
             // Fetch entry for group and all member attributes
             $entry = $this->ldap->getEntry($groupdn, array('member'));
             
             if (PEAR::isError($entry)) {
-               die($entry->getMessage() . "\n");
-            }
-           
-            $entry->delete(
-                array(
-                    'member' => $this->dn
-                )
-            );
-            
-            $res = $entry->update();
-            
-            if (PEAR::isError($res)) {
-               die($res->getMessage() . "\n");
+               throw new Exception($entry->getMessage() . "\n");
             }
             
-        }    
+            $members = $entry->getValue('member', 'all');
+            
+            // Double check before attempt remove. memberOf can be out of sync and it's cheap to check
+            if(in_array($this->dn, $members))
+            {
+              
+                $entry->delete(
+                    array(
+                        'member' => $this->dn
+                    )
+                );
+                
+                $res = $entry->update();
+                
+                if (PEAR::isError($res)) {
+                   throw new Exception($res->getMessage() . "\n");
+                }
+            }
+            
+        }
+        
+        return TRUE; // TODO: return error if error?
     }
     
     /* Display and Get functions */
@@ -949,9 +1065,13 @@ class Person {
     
     function userarray()
     {
+        list($sysgroups, $allgroups) = $this->memberOf_filter();
         return array_merge(
             $this->userldaparray,
-            array( 'groups' => $this->memberOf_filter() ),
+            array( 'groups' => $sysgroups ),
+            array( 'allgroups' => $allgroups ), 
+            array( 'shellEnabled' => $this->is_shell_enabled()),
+            array( 'membershipCurrent' => $this->is_membership_current()),
             $this->expiry(),
             array( 'payments' => $this->payments)
             );
@@ -976,7 +1096,7 @@ class Person {
         $search = $this->ldap->search($searchbase, $filter, $options);
         
         if (PEAR::isError($search)) {
-           die($search->getMessage() . "\n");
+           throw new Exception($search->getMessage() . "\n");
         }
         
         $payments = $search->sorted_as_struct(array('x-plug-paymentID'));
@@ -1035,7 +1155,7 @@ class Person {
             $cleanpayment['id'] = $payment['x-plug-paymentID'];
             $cleanpayment['type'] = $payment['x-plug-paymentType'];
             $cleanpayment['years'] = $payment['x-plug-paymentYears'];
-            $cleanpayment['dn'] = $payment['dn'];
+            $cleanpayment['dn'] = @$payment['dn'];
             $cleanpayment['description'] = $payment['x-plug-paymentDescription'];
             $cleanpayment['formatteddate'] = date('Y-m-d', strtotime($cleanpayment['date']));
             $cleanpayment['formattedamount'] = sprintf("$%.2f",$cleanpayment['amount']/100);
@@ -1051,12 +1171,12 @@ class Person {
         return $this->payments;
     }
     
-    function makePayment($type, $years, $date, $description, $ack)
+    function makePayment($type, $years, $date, $description, $ack, $id = false)
     {
         if($date == '') $date = date("YmdHis",time());
         
         $payment = new Payment($this->ldap); 
-        $payment->new_payment($this->dn, $type, $years, $date, $description);
+        $payment->new_payment($this->dn, $type, $years, $date, $description, $id);
         $paymentarray = $payment->paymentarray();
         $this->clean_payment($paymentarray);
         
@@ -1086,7 +1206,7 @@ class Person {
         }
             
         $this->messages[] = "Payment processed";
-        return $paymentarray['id'];
+        return $paymentarray['x-plug-paymentID'];
     }
         
     function sendPaymentReceipt($paymentid)
@@ -1165,6 +1285,48 @@ PLUG Membership Scripts";
             return TRUE;            
         return FALSE;
     }
+    
+    // Validation function available globally
+    function is_valid_password($password)
+    {
+        $error = array();
+        $newpassword = cleanpassword($password);
+        if($newpassword == '')
+            $error[] = _('Blank password not allowed');
+            
+        if($newpassword != $password)
+            $error[] = _('Invalid characters used in password');
+        
+        $error = array_merge($error, $this->check_password_strength($newpassword));
+        
+        if(sizeof($error) != 0)
+        {
+            $this->passworderrors = $error;
+            return false;
+        }
+        
+        return true;
+            
+    }
+    
+    function check_password_strength($password)
+    {
+        $error = array();
+        if(strlen($password) < 7)
+            $error[] = _("Password too short");
+            
+        if( !preg_match("#[0-9]+#", $password) )
+        	$error[] = _("Password must include at least one number");
+        if( !preg_match("#[a-zA-Z]+#", $password) )
+        	$error[] = _("Password must include at least one letter");    
+        
+        return $error;
+    }
+    
+    function get_password_errors()
+    {
+        return $this->passworderrors;
+    }
          
     
     
@@ -1182,7 +1344,7 @@ PLUG Membership Scripts";
         $search = $this->ldap->search($searchbase, $filter, $options);
 
         if (PEAR::isError($search)) {
-            die($search->getMessage() . "\n");
+            throw new Exception($search->getMessage() . "\n");
         }
         if($search->count() == 0) return TRUE;
         return FALSE;
@@ -1201,7 +1363,7 @@ PLUG Membership Scripts";
         $search = $this->ldap->search($searchbase, $filter, $options);
 
         if (PEAR::isError($search)) {
-            die($search->getMessage() . "\n");
+            throw new Exception($search->getMessage() . "\n");
         }
 
         return $search->count();
@@ -1236,7 +1398,7 @@ PLUG Membership Scripts";
 
 
 // md5scrypt function from http://www.php.net/manual/en/function.crypt.php#93171
-function md5crypt($password){
+/*function md5crypt($password){
     // create a salt that ensures crypt creates an md5 hash
     $base64_alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
                     .'abcdefghijklmnopqrstuvwxyz0123456789+/';
@@ -1246,6 +1408,37 @@ function md5crypt($password){
     }
     // return the crypt md5 password
     return crypt($password,$salt.'$');
-}
+}*/
+
+// http://blog.ricky-stevens.com/php-sha512-password-hashing/
+    function createPasswordHash($strPlainText) {
+
+      if (CRYPT_SHA512 != 1) {
+        throw new Exception('Hashing mechanism not supported.');
+      }
+      
+    // create a salt that ensures crypt creates an sha512 hash
+    $base64_alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+                    .'abcdefghijklmnopqrstuvwxyz0123456789+/';
+    $salt='$6$';
+    for($i=0; $i<16; $i++){
+        $salt.=$base64_alphabet[rand(0,63)];
+    }      
+     
+      return crypt($strPlainText, $salt.'$');
+     
+    }
+    
+    function validatePassword($strPlainText, $strHash) {
+     
+      if (CRYPT_SHA512 != 1) {
+        throw new Exception('Hashing mechanism not supported.');
+      }
+     
+      return (crypt($strPlainText, $strHash) == $strHash) ? true : false;
+     
+    }
+    
+
 
 ?>

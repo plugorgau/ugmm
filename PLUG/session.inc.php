@@ -84,7 +84,7 @@ if (!$Auth->checkAuth())
  // THIS CODE SHOULD NEVER RUN as we display the login form and exit if not authenticated
     echo "Should never get here";
     exit();
-}elseif(isset($_GET['logoff']))
+}elseif(isset($_GET['logout']))
 {
 //    AdminLog::getInstance()->log("Log out");
     $Auth->logout();
@@ -102,7 +102,7 @@ $_SESSION['loggedinusername'] = $Auth->getUsername();
 require_once('accesscheck.inc.php');
 
 
-// Nonce code based on Wordpress nonce code but adding storing in session
+// Nonce code based on Wordpress nonce code but added storing in session to make real nonce (instead of wordpress nonce which is valid for 6-12 hours (or even 24) and can be reused as many times in that time.
 
 function nonce_tick() {
 	$nonce_life = 86400 / 2;

@@ -72,14 +72,14 @@ function assign_vars()
 }
 
 $toplevelmenu['home'] = array('label' => "Home", 'link' => '/~tim/plugldap/memberself', 'level' => 'all');
-$toplevelmenu['admin'] = array('label' => "Admin", 'link' => '/~tim/plugldap/', 'level' => 'admin');
+//$toplevelmenu['admin'] = array('label' => "Admin", 'link' => '/~tim/plugldap/', 'level' => 'admin');
 $toplevelmenu['ctte'] = array('label' => "Committee", 'link' => '/~tim/plugldap/ctte-members', 'level' => 'committee');
 $toplevelmenu['logout'] = array('label' => "Logout", 'link' => '/~tim/plugldap/logout', 'level' => 'all');
 //$toplevelmenu['web'] = array('label' => "Webmasters", 'link' => '/~tim/plugldap/', 'level' => array('admin', 'committee', 'webmaster'));
 
 // Submenu's level is defined by parent level
 $submenu['ctte']['members'] = array('label' => "Membership List", 'link' => '/~tim/plugldap/ctte-members');
-$submenu['ctte']['expiredmembers'] = array('link' => '/~tim/plugldap/ctte-users.php?expiredmembers=1');
+$submenu['ctte']['expiredmembers'] = array('link' => $submenu['ctte']['members']['link']. '?expiredmembers=1');
 $submenu['ctte']['newmember'] = array('label' => "New Member", 'link' => '/~tim/plugldap/ctte-newmember');
 $submenu['ctte']['editmember'] = array('label' => '', 'link' => '/~tim/plugldap/ctte-editmember?id=');
 $submenu['ctte']['resendack'] = array('label' => '', 'link' => '/~tim/plugldap/resendack?member_id=');
@@ -90,6 +90,7 @@ $submenu['admin']['emailaliases'] = array('label' => "Manage Email Aliases", 'li
 $submenu['home']['editselfdetails'] = array('link' => 'member-editdetails');
 $submenu['home']['editselfforwarding'] = array('link' => 'member-editforwarding');
 $submenu['home']['editselfshell'] = array('link' => 'member-editshell');
+$submenu['home']['editselfpassword'] = array('link' => 'member-editpassword');
 
 
 function generate_menus($top = '')
@@ -99,6 +100,7 @@ function generate_menus($top = '')
     $top = $top ? $top : 'home';
     
     $smenu = array();
+    $topmenu = array();
     
     // Check if we are authenticated
     if (!isset($Auth) || !$Auth->checkAuth())

@@ -6,7 +6,7 @@ require_once('./PLUG/session.inc.php');
     $memberauthdata = $Auth->getAuthData();
     $memberself->load_ldap($memberauthdata['dn']);
     
-    print_r($memberself->userarray());
+    //print_r($memberself->userarray());
     $smarty->assign('memberself', $memberself->userarray());
     
     display_page('memberself.tpl');

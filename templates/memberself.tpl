@@ -1,13 +1,5 @@
 <h2>Welcome, {$memberself.displayName}</h2>
 
-<table style="margin-left: 0%;" width="100%" border="0"><tbody><tr>
-<td style="text-align: center; background: none repeat scroll 0% 0% rgb(17, 51, 68); color: white;" width="20%"><b>Home</b></td>
-<td style="text-align: center; background: none repeat scroll 0% 0% rgb(204, 204, 204); color: black;" width="20%"><a href="https://secure.plug.org.au/members/library-index">Library</a></td>
-<td style="text-align: center; background: none repeat scroll 0% 0% rgb(204, 204, 204); color: black;" width="20%"><a href="https://secure.plug.org.au/members/admin/">Admin</a></td>
-<td style="text-align: center; background: none repeat scroll 0% 0% rgb(204, 204, 204); color: black;" width="20%"><a href="https://secure.plug.org.au/members/committee/">Committee</a></td>
-<td style="text-align: center; background: none repeat scroll 0% 0% rgb(204, 204, 204); color: black;" width="20%"><a href="https://secure.plug.org.au/members/logout">Log out</a></td>
-</tr></tbody></table>
-
 <p>Here you may check and update your current details in the PLUG membership
 database, enable or disable your shell account, configure email forwarding, and more.</p>
 
@@ -17,10 +9,10 @@ Your membership will expire on {$memberself.formattedexpiry}.
 {foreach from=$memberself.groups item=group}
     <li><a href="grouplink">{$group}</a></li>
 {/foreach}
-<li>Administrators: <a href="admin/">Admin Area</a> [<a href="admin/aliases">Mail Aliases</a>] [<a href="admin/groups">Unix Groups</a>] 
+{*<li>Administrators: <a href="admin/">Admin Area</a> [<a href="admin/aliases">Mail Aliases</a>] [<a href="admin/groups">Unix Groups</a>] 
 
 <li>Committee: <a href="committee/">Committee Area</a> [<a href="committee/membership-list">View Members</a>] [<a href="committee/membership-edit">Add Member</a>]
-<li>Webmasters: <a href="webslave/">Webmasters Area</a>
+<li>Webmasters: <a href="webslave/">Webmasters Area</a>*}
 </ul>
 </p>
 <h3><a name="personal"></a>Personal Details</h3>
@@ -52,6 +44,13 @@ to edit them.
 <p>
 <ul><li><a href="{$submenuitems.home.editselfforwarding.link}">Change your e-mail forwarding</a></ul></p>
 <h3><a name="shell"></a>Shell Account Details</h3>
+{if $memberself.shellEnabled && $memberself.membershipCurrent}
+<p>Your shell account is enabled</p>
+{elseif $memberself.shellEnabled && ! $memberself.membershipCurrent}
+<p>Your shell account is enabled but your membership is not current. You will not be able to login to services until your membership is current</p>
+{else}
+<p>Your shell account is disabled. You will not be able to login to any services other than this members area.</p>
+{/if}
 
 <table border="0">
 <tr><th>Username</th><td>{$memberself.uid}</td></tr>
@@ -66,13 +65,13 @@ missing any emails.
 
 </p>
 <p>
-<ul><li><a href="member-shell">Change your shell account settings<a></ul></p>
+<ul><li><a href="{$submenuitems.home.editselfshell.link}">Change your shell account settings<a></ul></p>
 <h3><a name="password"></a>Your password</h3>
 Your PLUG password is used to access the members area of the website and login
 to PLUG machines. It is not associated with your PLUG mailing list
 subscriptions in any way.
 <p>
-<ul><li><a href="member-password">Change your PLUG password</a></ul></p>
+<ul><li><a href="{$submenuitems.home.editselfpassword.link}">Change your PLUG password</a></ul></p>
 </td>
 </tr>
 </table>

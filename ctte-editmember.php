@@ -92,6 +92,11 @@ require_once('./PLUG/session.inc.php');
         $memberdetails = $member->userarray();
     }
 
+// TODO:
+// Email forwarding
+// Shell access (lock unlock)
+// Password
+// Delete member
 
 // Finished processing all the forms
     if(!isset($memberdetails))
