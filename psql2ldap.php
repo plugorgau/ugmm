@@ -74,7 +74,10 @@ $PLUG = new PLUG($ldap);
         
         $payments = $plugpgsql->queryAll('SELECT * FROM payment WHERE member_id = '. $result['id']);
 
-        
+
+        $account['locked'] = TRUE;
+        if($account['enabled'] == "t")
+            $account['locked'] = FALSE;
         if($account['uid'] == '')
         {
             $account['uid'] = $nextuid;
@@ -86,6 +89,8 @@ $PLUG = new PLUG($ldap);
         {
             $account['username'] = ereg_replace(" ", "", $result['first_name']) . '.' . $result['last_name'];
         }
+        
+
         
         $alias = $plugpgsql->queryAll('SELECT destination FROM alias WHERE alias = \''.$account['username'].'\'');
         
@@ -148,6 +153,17 @@ $PLUG = new PLUG($ldap);
             die('Error in creation of person');
         }        
 
+        // Lock /unlock account
+        if($account['locked'])
+        {
+            eho(INFO, "Shell locked");
+            $person->disable_shell();
+
+        }else{
+            eho(INFO, "Unlocking shell");
+            $person->enable_shell();
+            
+        }
 
         foreach($payments as $payment)
         {

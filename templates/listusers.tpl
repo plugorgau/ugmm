@@ -35,6 +35,7 @@
  <th>Email</th>
  <th>System Groups</th>
  <th>Member Exp</th>
+ <th>Shell</th>
  <th></th>
 </tr>
 
@@ -48,6 +49,7 @@
         <td>{$user.mail}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>
+        <td>{if $user.shellEnabled}T{/if}</td>
         <td><a href="{$submenuitems.ctte.editmember.link}{$user.uidNumber}">Edit</a></td>                
 </tr>        
 {/foreach}

@@ -828,6 +828,7 @@ class Person {
             'committee' => 1006,
             'webslave' => 1003,
             'librarian' => 1007,
+            'shell' => 1009
         );
         
         if(isset($gids[$cn])){
