@@ -1,0 +1,41 @@
+#!/bin/sh -e
+
+action="$1"
+oldversion="$2"
+
+umask 022
+
+if [ "$action" != configure ]
+  then
+  exit 0
+fi
+
+fix_dir_perms(){
+	chgrp www-data -R /usr/share/plug-ugmm/www/ || true
+	mkdir /usr/share/plug-ugmm/www/templates_c || true
+	chmod ag+rw -R /usr/share/plug-ugmm/www/templates_c || true
+}
+
+clear_template_cache(){
+    rm -f /usr/share/plug-ugmm/www/templates_c/*
+}
+
+#DEBHELPER#
+
+fix_dir_perms
+
+clear_template_cache
+
+#a2enmod rewrite || true
+#a2enmod headers || true
+
+if which invoke-rc.d >/dev/null 2>&1; then
+       invoke-rc.d apache2 restart 3>&- || true
+else
+       /etc/init.d/apache2 restart 3>&- || true
+fi
+
+
+exit 0
+
+

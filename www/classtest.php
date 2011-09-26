@@ -27,9 +27,9 @@ require_once 'Net/LDAP2.php';
     
     //$testperson->load_ldap("uidNumber=10063,ou=Users,dc=plug,dc=org,dc=au");
     
-    $hash = createPasswordHash('password');
-    echo "$hash"; echo "</br>";
-    echo validate('password', $hash);
+    //$hash = createPasswordHash('password');
+    //echo "$hash"; echo "</br>";
+    //echo validate('password', $hash);
     
     /*
     $testperson->change_address("PO Box 470 Floreat WA 6014");

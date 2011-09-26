@@ -1,0 +1,13 @@
+Source: plug-ugmm
+Section: unknown
+Priority: extra
+Maintainer: Timothy White <tim@purewhite.id.au>
+Build-Depends: debhelper (>= 7.0.50~)
+Standards-Version: 3.9.1
+Homepage: http://www.plug.org.au/projects/ugmm/
+
+Package: plug-ugmm
+Architecture: all
+Depends: ${misc:Depends}, smarty, php5, php-auth
+Description: PLUG User Group Members Management 
+ PHP Frontend to LDAP backend for managing a user group of members

@@ -1,0 +1,5 @@
+www/* /usr/share/plug-ugmm/www/
+plug-ugmm.conf /etc/apache2/conf.d/
+
+extras/ /usr/share/doc/plug-ugmm/
+

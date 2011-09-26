@@ -4,17 +4,23 @@
 database, enable or disable your shell account, configure email forwarding, and more.</p>
 
 Your membership will expire on {$memberself.formattedexpiry}.
+{*
 <p>You are also a member of the following groups:
 <ul>
 {foreach from=$memberself.groups item=group}
-    <li><a href="grouplink">{$group}</a></li>
+    <li><a href="#grouplink">{$group}</a></li>
 {/foreach}
+
+*}
 {*<li>Administrators: <a href="admin/">Admin Area</a> [<a href="admin/aliases">Mail Aliases</a>] [<a href="admin/groups">Unix Groups</a>] 
 
 <li>Committee: <a href="committee/">Committee Area</a> [<a href="committee/membership-list">View Members</a>] [<a href="committee/membership-edit">Add Member</a>]
 <li>Webmasters: <a href="webslave/">Webmasters Area</a>*}
+{*
 </ul>
 </p>
+*}
+
 <h3><a name="personal"></a>Personal Details</h3>
 
 <p>If the details below are out of date or incorrect, please use the link below

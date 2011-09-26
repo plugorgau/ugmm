@@ -1,6 +1,6 @@
 <?php
 
-//TODO: Secure this somewhere? Bind as user?
+// Copy this to /etc/private/ldapconnection.inc.php and modify it to suit your ldap database
 
 require_once 'Net/LDAP2.php';
     // The configuration array:

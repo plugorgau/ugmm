@@ -177,27 +177,23 @@
   </form>
 
   <h3>Shell Access ({$member.uid})</h3>
-  
-{if $member.loginShell eq "/bin/false"}
-  This users shell account is currently locked.
-  
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
-    <input name="unlock_form" value="1" type="hidden"> <input name=
-    "id" value="{$member.uidNumber}" type="hidden"> <input name=
-    "go_go_button" value="Unlock Account" type="submit">
-  </form>
+    <input name="shell_form" value="1" type="hidden">
+    <input name="nonce" value="{'updateshelllock'|nonce}" type="hidden">        
+    <input name="id" value="{$member.uidNumber}" type="hidden">  
+    
+{if ! $member.shellEnabled}
+  This users shell account is currently disabled.
+  
+ <input name="unlock_button" value="Enable Shell Account" type="submit">
 {else}  
-  This member's account is not
-  locked. The member has enabled their account.
+  This member's shell account is enabled.
 
-  <form method="post" action="" enctype=
-  "application/x-www-form-urlencoded">
-    <input name="lock_form" value="1" type="hidden"> <input name=
-    "id" value="{$member.uidNumber}" type="hidden"> <input name=
-    "go_go_button" value="Lock Account" type="submit">
-  </form>
+ <input name="lock_button" value="Disable Shell Account" type="submit">
 {/if}
+
+  </form>
 
   <h3>Reset Password</h3>
 

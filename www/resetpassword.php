@@ -1,9 +1,9 @@
 <?php
 
-require_once('ldapconnection.inc.php');
-require_once('pagefunctions.inc.php');
+require_once('PLUG/ldapconnection.inc.php');
+require_once('PLUG/pagefunctions.inc.php');
 
-require_once 'PLUG.class.php';
+require_once 'PLUG/PLUG.class.php';
 
 $PLUG = new PLUG($ldap);
 
@@ -83,7 +83,7 @@ else if(isset($_GET['uid']) && isset($_GET['reset']))
             if(! $error && $member->is_valid_password($_POST['newpassword']))
             {
                 // Change password
-                $member->change_password(cleanpassword($_POST['newpassword']);
+                $member->change_password(cleanpassword($_POST['newpassword']));
                 if($member->is_error())
                 {
                     $error = "Error changing password";
@@ -92,6 +92,8 @@ else if(isset($_GET['uid']) && isset($_GET['reset']))
                     $success = array_merge($success, $member->get_messages());
                     $smarty->assign('resetform', FALSE);
                     $smarty->assign('successform', TRUE);
+                    
+                    $member->update_ldap();
                     
                 }
 

@@ -11,7 +11,15 @@ if(!isset($pagestarttime)) // For pages that don't need auth
     
 }
 
-include('smarty/Smarty.class.php');
+if(file_exists('/usr/share/php/smarty/libs/') && ! is_link('/usr/share/php/smarty/libs/'))
+{
+    // Debian bug http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=514305
+    // Remove this code once fixed?
+    require_once('smarty/libs/Smarty.class.php');
+}else
+{
+    require_once('smarty/Smarty.class.php');
+}
 
 // create object
 $smarty = new Smarty;
@@ -71,18 +79,18 @@ function assign_vars()
     $smarty->assign('FULL_AMOUNT', "$" . FULL_AMOUNT / 100 );
 }
 
-$toplevelmenu['home'] = array('label' => "Home", 'link' => '/~tim/plugldap/memberself', 'level' => 'all');
-//$toplevelmenu['admin'] = array('label' => "Admin", 'link' => '/~tim/plugldap/', 'level' => 'admin');
-$toplevelmenu['ctte'] = array('label' => "Committee", 'link' => '/~tim/plugldap/ctte-members', 'level' => 'committee');
-$toplevelmenu['logout'] = array('label' => "Logout", 'link' => '/~tim/plugldap/logout', 'level' => 'all');
-//$toplevelmenu['web'] = array('label' => "Webmasters", 'link' => '/~tim/plugldap/', 'level' => array('admin', 'committee', 'webmaster'));
+$toplevelmenu['home'] = array('label' => "Home", 'link' => 'memberself', 'level' => 'all');
+//$toplevelmenu['admin'] = array('label' => "Admin", 'link' => '', 'level' => 'admin');
+$toplevelmenu['ctte'] = array('label' => "Committee", 'link' => 'ctte-members', 'level' => 'committee');
+$toplevelmenu['logout'] = array('label' => "Logout", 'link' => 'logout', 'level' => 'all');
+//$toplevelmenu['web'] = array('label' => "Webmasters", 'link' => '', 'level' => array('admin', 'committee', 'webmaster'));
 
 // Submenu's level is defined by parent level
-$submenu['ctte']['members'] = array('label' => "Membership List", 'link' => '/~tim/plugldap/ctte-members');
+$submenu['ctte']['members'] = array('label' => "Membership List", 'link' => 'ctte-members');
 $submenu['ctte']['expiredmembers'] = array('link' => $submenu['ctte']['members']['link']. '?expiredmembers=1');
-$submenu['ctte']['newmember'] = array('label' => "New Member", 'link' => '/~tim/plugldap/ctte-newmember');
-$submenu['ctte']['editmember'] = array('label' => '', 'link' => '/~tim/plugldap/ctte-editmember?id=');
-$submenu['ctte']['resendack'] = array('label' => '', 'link' => '/~tim/plugldap/resendack?member_id=');
+$submenu['ctte']['newmember'] = array('label' => "New Member", 'link' => 'ctte-newmember');
+$submenu['ctte']['editmember'] = array('label' => '', 'link' => 'ctte-editmember?id=');
+$submenu['ctte']['resendack'] = array('label' => '', 'link' => 'resendack?member_id=');
 
 $submenu['admin']['usergroups'] = array('label' => "Manage User Groups", 'link' => '/~tim/plugldap/');
 $submenu['admin']['emailaliases'] = array('label' => "Manage Email Aliases", 'link' => '/~tim/plugldap/');

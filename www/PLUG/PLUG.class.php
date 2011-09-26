@@ -2,8 +2,8 @@
 
 require_once('ldapconnection.inc.php');
 
-define('CONCESSION_AMOUNT', 500);
-define('FULL_AMOUNT', 1000);
+define('CONCESSION_AMOUNT', 1000);
+define('FULL_AMOUNT', 2000);
 
 define('CONCESSION_TYPE', 2);
 define('FULL_TYPE', 1);
@@ -328,6 +328,8 @@ class Payment
     }*/
     function new_payment($parentdn, $type, $years, $date, $description, $id = false)
     {
+        global $payment_modifier_amount; //Hack for change in payment amounts
+        if(!isset($payment_modifier_amount)) $payment_modifier_amount = 1;
         if(! $id)
             $id = $this->next_paymentID();
             
@@ -340,11 +342,11 @@ class Payment
         if($type == CONCESSION_TYPE)
         {
             // Concession
-            $this->paymentarray['x-plug-paymentAmount'] = $years * CONCESSION_AMOUNT;
+            $this->paymentarray['x-plug-paymentAmount'] = $years * CONCESSION_AMOUNT * $payment_modifier_amount;
         }else
         {
             // Assume full
-            $this->paymentarray['x-plug-paymentAmount'] = $years * FULL_AMOUNT;        
+            $this->paymentarray['x-plug-paymentAmount'] = $years * FULL_AMOUNT * $payment_modifier_amount;        
         }
         
         $this->create_new_ldap_payment();
@@ -523,7 +525,7 @@ class Person {
         $this->change_shell("/bin/bash");
         $this->change_homedir("/home/$username");
         $this->change_email($email);
-        $this->change_forward($email);        
+        $this->change_forward($forward);        
         $this->change_password($password);
         $this->change_description($notes);
         if(! $this->is_error())
@@ -698,7 +700,7 @@ class Person {
                 $this->messages[] = "Email forwarding changed";
             }else
             {
-                $this->errors[] = "Invalid email address for forwarding '$email'";
+                $this->errors[] = "Invalid email address for forwarding '$forward'";
             }
         }
         
@@ -717,6 +719,9 @@ class Person {
             $this->userldaparray['userPassword'] = '{crypt}'.createPasswordHash($password);
         }
         $this->messages[] = "Password changed";
+        
+        // Just update ldap?
+        // $this->update_ldap();
     }
     
     function change_phone($home, $work, $mobile)
@@ -1268,7 +1273,7 @@ PLUG Membership Scripts";
     {
         // Derived from WP nonce code
         $tick =ceil(time() / 21600) - $tick; // To check we check current and previous tick
-        $hash = sha1(sha1($tick.$this->userldaparray['userPassword']));
+        $hash = sha1(sha1($tick . $this->userldaparray['userPassword']));
         
         $lasttickval = $tick - intval($tick/10)*10;
         for($i = 0; $i < $lasttickval ; $i++)

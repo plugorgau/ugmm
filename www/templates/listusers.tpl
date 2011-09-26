@@ -46,7 +46,7 @@
         <td>{$user.uid}</td>        
         <td>{$user.givenName}</td>                
         <td>{$user.sn}</td>
-        <td>{$user.mail}</td>
+        <td>{$user.mail}{if $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>
         <td>{if $user.shellEnabled}T{/if}</td>

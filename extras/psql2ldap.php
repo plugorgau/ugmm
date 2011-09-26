@@ -10,6 +10,9 @@ define('ERROR', 10);
 
 define('FORCE', true);
 
+define('CONCESSION_AMOUNT', 500);
+define('FULL_AMOUNT', 1000);
+
 /* Page load time */
    $mtime = microtime();
    $mtime = explode(" ",$mtime);
@@ -42,8 +45,9 @@ require_once "MDB2.php";
     }        
     $plugpgsql->setFetchMode(MDB2_FETCHMODE_ASSOC);
     
-require_once('./PLUG/PLUG.class.php');    
-require_once('./PLUG/ldapconnection.inc.php');
+//    require_once('/usr/share/plug-ugmm/www/PLUG/PLUG.class.php');
+require_once('../www/PLUG/PLUG.class.php');    
+require_once('/etc/private/ldapconnection.inc.php');
 
 $PLUG = new PLUG($ldap);
     
@@ -76,9 +80,9 @@ $PLUG = new PLUG($ldap);
 
 
         $account['locked'] = TRUE;
-        if($account['enabled'] == "t")
+        if(@$account['enabled'] == "t")
             $account['locked'] = FALSE;
-        if($account['uid'] == '')
+        if(@$account['uid'] == '')
         {
             $account['uid'] = $nextuid;
             $nextuid ++;
@@ -108,12 +112,14 @@ $PLUG = new PLUG($ldap);
         $user['loginShell'] = @$account['shell'] ? $account['shell'] : '/usr/bin/zsh';
         
         $user['mail'] = strtolower($result['email_address']);
-        $user['mailForward'] = array();
+        $user['mailForward'] = "";
         foreach($alias as $email)
         {
             // If statement was to filter out before mailForward. mailFoward can == mail
             //if(strtolower($email['destination']) != strtolower($result['email_address']))
-                $user['mailForward'][] = $email['destination'];
+            
+            // Only last alias is used, aliases should be stored as "one, two, three"
+                $user['mailForward'] = $email['destination'];
         }
         
         $user['givenName'] = $result['first_name'];
@@ -135,10 +141,6 @@ $PLUG = new PLUG($ldap);
         // Delete user before adding (to ensure sync for now)
         $PLUG->delete_member($dn);
         $PLUG->delete_member("gidNumber=${user['gidNumber']},ou=UPG, ou=Groups, dc=plug, dc=org, dc=au");
-        /*$ldapres = $ldap->delete($dn, TRUE);
-        if (PEAR::isError($ldapres)) {
-            eho(DEBUG, 'LDAP Error: '.$ldapres->getMessage());
-        }*/
 
         // Add the entry        
         $person = new Person($ldap);
@@ -171,13 +173,20 @@ $PLUG = new PLUG($ldap);
             if($payment['type_id'] == 2)
             {
                 eho(INFO, "Concession payment: ");
-                $payment['years'] = $payment['amount'] / 500;
+                $payment['years'] = $payment['amount'] / CONCESSION_AMOUNT;
             }else
             {
                 eho(INFO, "Normal payment: ");
-                $payment['years'] = $payment['amount'] / 1000;                
+                $payment['years'] = $payment['amount'] / FULL_AMOUNT;                
             }
+
+            $payment_modifier_amount = 1;
             
+            // Added to deal with price increase of members
+            if($payment['payment_date'] > "2011-07-01 00:00:00")
+                //$payment['years'] = $payment['years']/2;
+                $payment_modifier_amount = 2;
+                
             $person->makePayment($payment['type_id'], $payment['years'], $payment['payment_date'], $payment['receipt_number'], false, $payment['id']);
             
         
