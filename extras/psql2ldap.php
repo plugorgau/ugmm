@@ -73,7 +73,9 @@ $PLUG = new PLUG($ldap);
         die('error');
     }
         
-        
+    $nextuid = $results + 1;
+
+// Load all members            
     $results = $plugpgsql->queryAll('SELECT * FROM member');            
 
     if (PEAR::isError($results)) {
@@ -81,9 +83,7 @@ $PLUG = new PLUG($ldap);
         die('error');
     }
     
-    $nextuid = $results + 1;
-  
-    
+
     foreach($results as $result){
         $account = $plugpgsql->queryRow('SELECT * FROM account WHERE member_id = '. $result['id']);
         
