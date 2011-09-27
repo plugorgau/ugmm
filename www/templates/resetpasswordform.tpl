@@ -1,3 +1,4 @@
+<h1>Password Reset</h1>
 {if $successform}
 Please continue to login page to login with your new password
 {* TODO: link to login page *}

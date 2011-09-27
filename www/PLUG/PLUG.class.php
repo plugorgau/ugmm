@@ -532,9 +532,10 @@ class Person {
         {
             $this->create_new_ldap_person();
             $this->create_new_ldap_group();
-            $this->set_status_group();
             // Extra call, but allows us to continue working with a new object.
             $this->load_ldap($this->dn);
+
+            $this->set_status_group();
 
         }
         
@@ -884,6 +885,8 @@ class Person {
             throw new Exception('LDAP Error: '.$result->getMessage());
         }          
 
+        // Extra call, but allows us to continue working with a new object.
+        $this->load_ldap($this->dn);
     }
     
     private function memberOf_filter()
@@ -937,6 +940,9 @@ class Person {
     
     function set_status_group()
     {
+        // Due to memberOf being out of sync, we need to sync the ldap object 
+        $this->update_ldap();
+        
         $groups = array('pendingmembers', 'expiredmembers', 'currentmembers');
         // Grace period of 5 days
         $today = ceil(time()/ 86400) - 5;

@@ -19,7 +19,8 @@ define('FULL_AMOUNT', 1000);
    $mtime = $mtime[1] + $mtime[0];
    $pagestarttime = $mtime; 
 
-$nextuid = 10325;
+// nextuid is now gotten from DB!
+//$nextuid = 10325;
 
 $value = 0;
 $expired = 0;
@@ -30,8 +31,9 @@ require_once "MDB2.php";
     $plugdsn = array(
         "phptype" => "pgsql",
         "username" => 'tim',
-        "password" => 'plug',
+        "password" => 'timplug',
         "hostspec" => 'localhost',
+        "port"     => '5434',
         "database" => 'plug',
         'portability' => MDB2_PORTABILITY_ALL ^ MDB2_PORTABILITY_FIX_CASE,
         "new_link" => true
@@ -45,8 +47,8 @@ require_once "MDB2.php";
     }        
     $plugpgsql->setFetchMode(MDB2_FETCHMODE_ASSOC);
     
-//    require_once('/usr/share/plug-ugmm/www/PLUG/PLUG.class.php');
-require_once('../www/PLUG/PLUG.class.php');    
+require_once('/usr/share/plug-ugmm/www/PLUG/PLUG.class.php');
+//require_once('../www/PLUG/PLUG.class.php');    
 require_once('/etc/private/ldapconnection.inc.php');
 
 $PLUG = new PLUG($ldap);
@@ -63,14 +65,23 @@ $PLUG = new PLUG($ldap);
             }
         }
         
+// Get next uid from db
 
+    $results = $plugpgsql->queryOne('select MAX(uid) from account');
+    if (PEAR::isError($results)) {
+        eho(ERROR, 'DB Error '.$results->getMessage());
+        die('error');
+    }
+        
         
     $results = $plugpgsql->queryAll('SELECT * FROM member');            
 
     if (PEAR::isError($results)) {
+        eho(ERROR, 'DB Error '.$results->getMessage());
         die('error');
     }
     
+    $nextuid = $results + 1;
   
     
     foreach($results as $result){
@@ -166,6 +177,12 @@ $PLUG = new PLUG($ldap);
             $person->enable_shell();
             
         }
+        
+        // Some members don't have payments but had active accounts, we don't want them in the pending payment stage
+        if(sizeof($payments) == 0 && $user['shadowExpire'] != 1)
+        {
+            $person->change_expiry($result['expiry']);
+        }
 
         foreach($payments as $payment)
         {
@@ -184,13 +201,21 @@ $PLUG = new PLUG($ldap);
             
             // Added to deal with price increase of members
             if($payment['payment_date'] > "2011-07-01 00:00:00")
-                //$payment['years'] = $payment['years']/2;
-                $payment_modifier_amount = 2;
+            {
+                if($payment['amount'] == 2000 && $payment['type_id'] == 1)
+                    $payment_modifier_amount = 2;
+                if($payment['amount'] == 1000 && $payment['type_id'] == 2)
+                    $payment_modifier_amount = 2;
+            }
                 
             $person->makePayment($payment['type_id'], $payment['years'], $payment['payment_date'], $payment['receipt_number'], false, $payment['id']);
             
         
         }
+        
+            $person->set_status_group();
+            $person->update_ldap();
+        
 
         // Get all the userid's to dn for adding to groups later
         $userids[$user['uid']] = $dn;

@@ -3,8 +3,7 @@
 <tbody><tr bgcolor="#8888aa">
  <th>ID</th>
  <th>Username</th>
- <th>First Name</th>
- <th>Last Name</th>
+ <th>Name</th>
 
  <th>Email</th>
  <th></th>
@@ -15,9 +14,8 @@
 <tr title="{$user.description}" bgcolor="#ddddff">
         <td>{$user.uidNumber}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}</td>
         <td>{$user.uid}</td>        
-        <td>{$user.givenName}</td>                
-        <td>{$user.sn}</td>
-        <td>{foreach from=$user.mail item=mail}{$mail}<br/>{/foreach}</td>
+        <td>{$user.displayName}</td>                
+        <td>{$user.mail}</td>
         <td><a href="{$submenuitems.ctte.editmember.link}{$user.uidNumber}">Edit</a></td>                
 </tr>        
 {/foreach}
@@ -30,8 +28,7 @@
 <tbody><tr bgcolor="#8888aa">
  <th>ID</th>
  <th>Username</th>
- <th>First Name</th>
- <th>Last Name</th>
+ <th>Name</th>
  <th>Email</th>
  <th>System Groups</th>
  <th>Member Exp</th>
@@ -44,8 +41,7 @@
 <tr title="{$user.description}" {if $user.groups}style="elevated_user" bgcolor="#ffdddd"{else}bgcolor="#ddddff"{/if}">
         <td>{$user.uidNumber}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}</td>
         <td>{$user.uid}</td>        
-        <td>{$user.givenName}</td>                
-        <td>{$user.sn}</td>
+        <td>{$user.displayName}</td>                
         <td>{$user.mail}{if $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>
@@ -62,8 +58,7 @@
 <tbody><tr bgcolor="#8888aa">
  <th>ID</th>
  <th>Username</th>
- <th>First Name</th>
- <th>Last Name</th>
+ <th>Name</th>
  <th>Email</th>
  <th>Type</th>
  <th>System Groups</th> 
@@ -76,9 +71,8 @@
 <tr title="{$user.description}" {if $user.groups}style="elevated_user" bgcolor="#ffdddd"{else}bgcolor="#ddddff"{/if}">
         <td>{$user.uidNumber}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}</td>
         <td>{$user.uid}</td>        
-        <td>{$user.givenName}</td>                
-        <td>{$user.sn}</td>
-        <td>{foreach from=$user.mail item=mail}{$mail}<br/>{/foreach}</td>
+        <td>{$user.displayName}</td>                
+        <td>{$user.mail}{if $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
         <td>{$user.type}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>

@@ -196,11 +196,17 @@
   </form>
 
   <h3>Reset Password</h3>
+  
+  <p>It is recommended that you force users to change their password using the password reset facility. You can direct the user to <a href="resetpassword">Password Reset</a> or can change the password to something random and force a reset email to be sent.</p>
+  
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="password_form" value="1" type="hidden">
     <input name="id" value="{$member.uidNumber}" type="hidden">
+    
+    
+    <input type="submit" name="force_pw_change" value="Disable password and force reset"/>
 
     <table>
       <tbody>
@@ -216,13 +222,6 @@
 
           <td><input name="verify_password" size="20" type=
           "password"></td>
-        </tr>
-
-        <tr>
-          <td></td>
-
-          <td><label><input name="force_pw_change" value="1" type=
-          "checkbox">Force change on next login</label></td>
         </tr>
 
         <tr>
