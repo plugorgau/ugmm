@@ -210,6 +210,8 @@ $PLUG = new PLUG($ldap);
                 
             $person->makePayment($payment['type_id'], $payment['years'], $payment['payment_date'], $payment['receipt_number'], false, $payment['id']);
             
+            if($payment['id'] >= $next_paymentID)
+                $next_paymentID = $payment['id'] + 1;
         
         }
         
@@ -222,6 +224,28 @@ $PLUG = new PLUG($ldap);
                    
         flush();
     }
+
+// TODO: create maxUid with maxUid and maxPaymentID values
+//
+$dn = 'cn=maxUid,ou=Users,dc=plug,dc=org,dc=au';
+$maxUidArray = array(
+    'objectClass' => array('namedObject', 'extensibleObject', 'top'),
+    'uidNumber' => $nextuid,
+    'cn' => 'maxUid',
+    'x-plug-paymentID' => $next_paymentID
+);
+// delete old maxUid object
+$ldapres = $ldap->delete($dn);
+if (PEAR::isError($ldapres)) {
+    eho(DEBUG, 'LDAP Error: '.$ldapres->getMessage() . "\n");
+}      
+
+$entry = Net_LDAP2_Entry::createFresh($, $maxUidArray);
+$ldapres = $this->ldap->add($entry);
+if (PEAR::isError($ldapres)) {
+    eho(DEBUG, 'LDAP Error: '.$ldapres->getMessage() . "\n");
+}
+eho(INFO, "Adding maxUid object with nextuid as $nextuid and next_paymentID as $next_paymentID");
 
 // System groups
 $groups = $plugpgsql->queryAll("SELECT * from public.group");

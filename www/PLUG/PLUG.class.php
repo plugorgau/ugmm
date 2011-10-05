@@ -1,6 +1,6 @@
 <?php
 
-require_once('ldapconnection.inc.php');
+require_once('/etc/private/ldapconnection.inc.php');
 
 define('CONCESSION_AMOUNT', 1000);
 define('FULL_AMOUNT', 2000);
@@ -63,7 +63,37 @@ class PLUG {
         
         
         return $memberdetails;
-    }   
+    } 
+    
+    function load_members_dn_from_filter($filter)
+    {
+        $filter = Net_LDAP2_Filter::parse($filter);
+        $searchbase = "ou=Users,dc=plug,dc=org,dc=au";
+        $options = array(
+            'scope' => 'sub',
+            'attributes' => array(
+                'dn')
+            );  
+            
+        $search = $this->ldap->search($searchbase, $filter, $options);                  
+        
+        if (PEAR::isError($search)) {
+            throw new Exception('LDAP Error: '.$search->getMessage());
+        }          
+        
+        $dns = array();
+
+        while($entry = $search->popEntry())
+        {
+            if($entry->dn() == DEFAULT_MEMBER) continue;
+            $dns[] = $entry->dn();
+
+        }       
+        
+        
+        return $dns;
+      
+    }      
     
     function load_current_members()
     {
@@ -415,7 +445,8 @@ class Payment
         
         return $paymentID - 1;        
 
-    }                
+    }
+    
 }
 
 class Person {
@@ -571,6 +602,7 @@ class Person {
     
     function increase_expiry($years)
     {
+        // TODO: Do we need to worry about leap years?
         /*// To allow for leap years, do this fancy instead of just $years * 365
         $date = date("YmdHis",$this->userldaparray['shadowExpire'] * 86400) . " + $years years";
         print_r(array($date));
@@ -1009,6 +1041,8 @@ class Person {
                    throw new Exception($res->getMessage() . "\n");
                 }
                 
+                // TODO: add to array so object is correct as well? Or reload from ldap
+                
             }
             
         }
@@ -1047,6 +1081,8 @@ class Person {
                 if (PEAR::isError($res)) {
                    throw new Exception($res->getMessage() . "\n");
                 }
+                
+                // TODO: remove from array so object is correct as well? Or reload from ldap
             }
             
         }
@@ -1208,7 +1244,7 @@ class Person {
         }
 
         $this->update_ldap();
-        // TODO: Forward date payments if some time remaingin on membership
+        // TODO: Forward date payments if some time remaingin on membership?
         $this->set_status_group();
         
 

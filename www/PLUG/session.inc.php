@@ -8,7 +8,7 @@
    $pagestarttime = $mtime; 
 
 /**/
-require_once('ldapconnection.inc.php');
+require_once('/etc/private/ldapconnection.inc.php');
 require_once('pagefunctions.inc.php');
 require_once('Auth.php');
 
