@@ -240,7 +240,7 @@ if (PEAR::isError($ldapres)) {
     eho(DEBUG, 'LDAP Error: '.$ldapres->getMessage() . "\n");
 }      
 
-$entry = Net_LDAP2_Entry::createFresh($, $maxUidArray);
+$entry = Net_LDAP2_Entry::createFresh($dn, $maxUidArray);
 $ldapres = $this->ldap->add($entry);
 if (PEAR::isError($ldapres)) {
     eho(DEBUG, 'LDAP Error: '.$ldapres->getMessage() . "\n");
