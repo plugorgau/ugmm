@@ -159,6 +159,66 @@ require_once('./PLUG/session.inc.php');
 // TODO:
 // TODO: Lock accounts so user can't unlock them?
 // Password
+    if(isset($_POST['passwordlock_form']) && !verify_nonce($_POST['nonce'],'lockpassword'))
+        $error[] = "Attempt to double submit form? No changes made.";    
+        
+    if(isset($_POST['passwordlock_form']) && isset($_POST['force_pw_change']) && ! $error)
+    {
+        // Force password change and disable shell?
+        
+        // Ignore GET value and use POST value from form
+        $memberid = intval($_POST['id']);
+
+        $member = $PLUG->get_member_object($memberid);        
+        
+        $member->disable_shell();
+        $member->change_password('{crypt}accountlocked'.time());
+        if($member->is_error())
+        {
+                $error = array_merge($error, $member->get_errors());
+                $error = array_merge($error, $member->get_password_errors());                
+        }else
+        {
+            $success[] = "User account is now locked. Please direct user to <a href='resetpassword'>Password Reset</a> to renable access.";
+            $member->update_ldap();
+        }
+        // Send reset email?
+    }
+    
+    if(isset($_POST['password_form']) && !verify_nonce($_POST['nonce'],'updatepassword'))
+        $error[] = "Attempt to double submit form? No changes made.";      
+    
+    if(isset($_POST['password_form']) && isset($_POST['go_go_button']) && ! $error)
+    {
+        
+        // Ignore GET value and use POST value from form
+        $memberid = intval($_POST['id']);
+
+        $member = $PLUG->get_member_object($memberid);
+        
+        if($_POST['new_password'] != $_POST['verify_password'])
+            $error[] = _("Passwords don't match");
+            
+        if(! $error && $member->is_valid_password($_POST['new_password']))        
+        {
+            $member->change_password(cleanpassword($_POST['new_password']));
+            
+            if($member->is_error())
+            {
+                $error = array_merge($error, $member->get_errors());
+            }else{
+                $member->update_ldap();
+                $success = array_merge($success, $member->get_messages());
+
+            }
+        }else
+        {
+            $error = array_merge($error, $member->get_password_errors());
+        
+        }
+        
+        // Send reset email?
+    }    
 // Delete member
 
 // Finished processing all the forms

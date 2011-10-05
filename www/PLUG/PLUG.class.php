@@ -943,7 +943,6 @@ class Person {
                 $allgroups[] = $cn[1];
             }
         }
-        
         // Don't store this is userldaparray as it's not a valid attribute
         return array($validgroups, $allgroups);
     }

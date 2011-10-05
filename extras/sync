@@ -1,0 +1,2 @@
+sh wipeldap.sh
+php psql2ldap.php

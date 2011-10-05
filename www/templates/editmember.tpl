@@ -197,16 +197,25 @@
 
   <h3>Reset Password</h3>
   
-  <p>It is recommended that you force users to change their password using the password reset facility. You can direct the user to <a href="resetpassword">Password Reset</a> or can change the password to something random and force a reset email to be sent.</p>
+  <p>It is recommended that you force users to change their password using the password reset facility. You can direct the user to <a href="resetpassword">Password Reset</a> or can change the password to something random and force a reset via email.</p>
+  <p>If locking an account due to abuse, disable the shell account as well</p>
   
+  <form method="post" action="" enctype=
+  "application/x-www-form-urlencoded">
+    <input name="passwordlock_form" value="1" type="hidden">
+    <input name="nonce" value="{'lockpassword'|nonce}" type="hidden">            
+    <input name="id" value="{$member.uidNumber}" type="hidden">
+
+    <input type="submit" name="force_pw_change" value="Disable password and force reset"/><p>This will disable the account by resetting the password to an invalid value and disable shell access. Please direct the user to <a href="resetpassword">Password Reset</a> to renable access.</p>
+</form>
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="password_form" value="1" type="hidden">
+    <input name="nonce" value="{'updatepassword'|nonce}" type="hidden">            
     <input name="id" value="{$member.uidNumber}" type="hidden">
     
     
-    <input type="submit" name="force_pw_change" value="Disable password and force reset"/>
 
     <table>
       <tbody>
@@ -233,12 +242,10 @@
       </tbody>
     </table>
 
-    <div>
-      <input name=".cgifields" value="force_pw_change" type=
-      "hidden">
-    </div>
   </form>
-
+  
+  <em>Delete User Not Implemented at this time</em>
+{*
   <h3>Delete Member</h3>
 
   <form method="post" action="" enctype=
@@ -254,4 +261,4 @@
     <input name="go_go_button" value="Delete Member" type=
     "submit"><br>
   </form>
-
+*}
