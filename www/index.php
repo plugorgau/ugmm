@@ -1,4 +1,4 @@
 <?php
 header("Location: /ugmm/memberself");
-exit 0;
+exit(0);
 ?> 
