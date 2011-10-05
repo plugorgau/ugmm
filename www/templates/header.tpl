@@ -9,10 +9,12 @@
 <link rel="stylesheet" type="text/css" href="style.css" id="plug_css" />
 <link rel="shortcut icon" href="http://www.plug.org.au/sites/default/files/favicon.ico" type="image/x-icon" />
 
-<link type="text/css" href="/grase/css/cupertino/jquery-ui-1.8.11.custom.css" rel="stylesheet" />
+<link type="text/css" href="/javascript/jquery-ui/css/smoothness/jquery-ui.css" rel="stylesheet" />
 
-<script type="text/javascript" src="/grase/js/jquery/jquery-1.5.2.min.js"></script>
-<script type="text/javascript" src="/grase/js/jquery/jquery-ui-1.8.11.custom.min.js"></script>
+<script language="javascript" type="text/javascript" src="/javascript/jquery/jquery.js"></script>
+
+<script language="javascript" type="text/javascript" src="/javascript/jquery-ui/jquery-ui.js"></script>
+
 
 <body>
 <div id="page" class="content">

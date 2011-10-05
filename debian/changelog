@@ -2,8 +2,9 @@ plug-ugmm (0.2) unstable; urgency=low
 
   * Fixes for import not creating maxUid object
   * Other small fixes
+  * Remove code that prevents non-admin logging in as we now have checks for groups regarding access
 
- -- Tim White <tim@hotspot.purewhite.id.au>  Wed, 05 Oct 2011 12:21:18 +1000
+ -- Tim White <tim@hotspot.purewhite.id.au>  Wed, 05 Oct 2011 13:04:18 +1000
 
 plug-ugmm (0.1) unstable; urgency=low
 

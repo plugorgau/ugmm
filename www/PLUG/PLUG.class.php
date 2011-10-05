@@ -928,6 +928,7 @@ class Person {
         $groups = $this->userldaparray['memberOf'];
         if(!is_array($groups)) $groups = array($groups);
         $validgroups = array();
+        $allgroups = array();
         foreach($groups as $group)
         {
             if(strpos($group, 'cn=') !== FALSE)

@@ -52,7 +52,7 @@ require_once('./PLUG/session.inc.php');
     }
     
     
-    $smarty->assign('member', $memberdetails);
+    $smarty->assign('member', @$memberdetails);
     //print_r($memberdetails);
     //print_r($error);
     //print_r($success);

@@ -54,7 +54,7 @@ $options = array(
     'groupfilter' => '(objectClass=groupOfNames)',
     'memberattr' => 'member',
     'version' => 3,
-    'group' => 'admin'
+    //'group' => 'admin'
     );
 
 
