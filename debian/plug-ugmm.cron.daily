@@ -1,0 +1,3 @@
+#!/bin/sh
+
+php /usr/share/plug-ugmm/www/expiredmembers.php

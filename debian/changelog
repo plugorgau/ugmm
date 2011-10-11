@@ -1,3 +1,9 @@
+plug-ugmm (0.3) unstable; urgency=low
+
+  * Expired/Expiring user mailout script & cronjob
+
+ -- Tim White <tim@hotspot.purewhite.id.au>  Tue, 11 Oct 2011 10:44:37 +1000
+
 plug-ugmm (0.2) unstable; urgency=low
 
   * Fixes for import not creating maxUid object

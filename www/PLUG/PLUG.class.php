@@ -10,14 +10,30 @@ define('FULL_TYPE', 1);
 
 define('COMMITTEE_EMAIL', "committee@plug.org.au");
 define('CONTACT_EMAIL', "committee@plug.org.au");
-//define('ADMIN_EMAIL', "admin@plug.org.au");
+define('ADMIN_EMAIL', "admin@plug.org.au");
 define('SCRIPTS_FROM_EMAIL', "PLUG Membership Scripts <admin@plug.org.au>");
 define('SCRIPTS_REPLYTO_EMAIL', "PLUG Committee <committee@plug.org.au>");
 
 define('DEFAULT_MEMBER', 'cn=admin,dc=plug,dc=org,dc=au');
 
 // For debugging, remove later TODO:
-define('ADMIN_EMAIL', "linuxalien@plug.org.au");
+// define('ADMIN_EMAIL', "linuxalien@plug.org.au");
+
+define('PAYMENT_OPTIONS', 
+" (a) Head down to the next PLUG workshop or seminar to pay your dues to
+     a committee member (e-mail ".COMMITTEE_EMAIL." beforehand to make
+     sure there will be somebody there to renew your membership).
+
+ (b) Direct deposit your dues into PLUG's bank account (see
+     http://www.plug.org.au/membership for details), and email
+     ".COMMITTEE_EMAIL." to let them know you have deposited it.
+     Credit card facilities are available if no other method is
+     available to you, just contact the committee to organise.
+
+ (c) Send a money-order (not cash) to PLUG's snail-mail address,
+     available at http://www.plug.org.au/contact and email
+     ".COMMITTEE_EMAIL." to let them know you have sent it.");
+
 
 if(!defined('FORCE'))
     define('FORCE', false);
@@ -1125,6 +1141,24 @@ class Person {
             );
     }
     
+    public function send_user_email($body, $subject)
+    {
+        $headers .= "Reply-To: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
+        $headers .= "Return-Path: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
+        $headers .= "From: ".SCRIPTS_FROM_EMAIL."\r\n";                
+        $headers .= "Bcc: ".ADMIN_EMAIL."\r\n";
+        $headers .= "Content-type: text/plain; charset=iso-8859-1\r\n";
+        
+        if(mail($this->userldaparray['mail'], $subject, $body, $headers))
+        {
+            $this->messages[] = "Email sent ($subject)";
+            return TRUE;
+        }
+
+        $this->errors[] = "Error sending email ($subject)";
+        return FALSE;    
+    }
+    
     function load_payments()
     {
         $filter = Net_LDAP2_Filter::create('objectClass', 'equals',  'x-plug-payment');
@@ -1289,7 +1323,8 @@ PLUG Membership Scripts";
             $this->payments[$paymentid]['formatteddate'],
             $expiry['formattedexpiry'],
             COMMITTEE_EMAIL);
-            
+        
+        // TODO: call send_user_email instead of doing it here    
         $headers .= "Reply-To: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
         $headers .= "Return-Path: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
         $headers .= "From: ".SCRIPTS_FROM_EMAIL."\r\n";                
