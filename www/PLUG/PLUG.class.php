@@ -256,9 +256,24 @@ class PLUG {
     function next_freeuidNumber($uidNumber)
     {
         // Loop checking that it's actually available
+        /* This code should work but dnExists is broken
         while($this->ldap->dnExists("uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au"))
             $uidNumber++;
+        */
+        while($this->our_dnExists("uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au"))
+            $uidNumber++;
         return $uidNumber;
+    }
+    
+    function our_dnExists($dn)
+    {
+        $entry = $this->ldap->getEntry($dn, array('dn'));
+        if (PEAR::isError($entry))
+        {
+            // Can't get correct error (just returns 1000 in code) so assume any error is dn doesn't exist;
+            return false;
+        }
+        return true;
     }
     
     /*function next_paymentID()
@@ -1372,7 +1387,8 @@ PLUG Membership Scripts";
     // Validation function available globally
     function is_valid_password($password)
     {
-        $error = array();
+        list($valid, $error) = PLUGFunction::is_valid_password($password);
+/*        $error = array();
         $newpassword = cleanpassword($password);
         if($newpassword == '')
             $error[] = _('Blank password not allowed');
@@ -1388,11 +1404,13 @@ PLUG Membership Scripts";
             return false;
         }
         
-        return true;
+        return true;*/
+        $this->passworderrors = $error;
+        return $valid;
             
     }
     
-    function check_password_strength($password)
+    /*function check_password_strength($password)
     {
         $error = array();
         if(strlen($password) < 7)
@@ -1404,7 +1422,7 @@ PLUG Membership Scripts";
         	$error[] = _("Password must include at least one letter");    
         
         return $error;
-    }
+    }*/
     
     function get_password_errors()
     {
@@ -1477,6 +1495,46 @@ PLUG Membership Scripts";
     private $mobileTelephoneNumber;
     private $pagerTelephoneNumber;
     private $description;*/
+}
+
+class PLUGFunction
+{
+    // Validation function available globally
+    function is_valid_password($password)
+    {
+        $error = array();
+        $newpassword = cleanpassword($password);
+        if($newpassword == '')
+            $error[] = _('Blank password not allowed');
+            
+        if($newpassword != $password)
+            $error[] = _('Invalid characters used in password');
+        
+        $error = array_merge($error, PLUGFunction::check_password_strength($newpassword));
+        
+        if(sizeof($error) != 0)
+        {
+            return array(false, $error);
+        }
+        
+        return array(true, $error);
+            
+    }
+    
+    function check_password_strength($password)
+    {
+        $error = array();
+        if(strlen($password) < 7)
+            $error[] = _("Password too short");
+            
+        if( !preg_match("#[0-9]+#", $password) )
+        	$error[] = _("Password must include at least one number");
+        if( !preg_match("#[a-zA-Z]+#", $password) )
+        	$error[] = _("Password must include at least one letter");    
+        
+        return $error;
+    }
+
 }
 
 
