@@ -1,3 +1,9 @@
+plug-ugmm (0.4) unstable; urgency=low
+
+  * Signup page (with ajax for checking things)
+
+ -- Tim White <tim@hotspot.purewhite.id.au>  Thu, 13 Oct 2011 21:49:23 +1000
+
 plug-ugmm (0.3) unstable; urgency=low
 
   * Expired/Expiring user mailout script & cronjob

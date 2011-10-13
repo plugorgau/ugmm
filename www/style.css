@@ -56,3 +56,137 @@ h3 { font-size: 1.2em; }
 #secondlevelmenu ul {
     clear: left;
 }   
+
+
+/* Signup form, new css */
+
+form#membersignup, fieldset, legend, ol, li {
+    margin: 0;
+    padding: 0;
+}
+
+
+
+form#membersignup {
+    background: #006699;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    counter-reset: fieldsets;
+    padding: 20px;
+    width: 400px;
+    /*color: #111111;*/
+}
+
+form#membersignup fieldset {
+    border: none;
+    margin-bottom: 10px;
+}
+form#membersignup fieldset:last-of-type {
+    margin-bottom: 0;
+}
+
+form#membersignup legend {
+    color: #cccccc;
+    font-size: 16px;
+    font-weight: bold;
+    padding-bottom: 10px;
+    text-shadow: 0 1px 1px black;
+}
+
+form#membersignup > fieldset > legend:before {
+    content: "Step " counter(fieldsets) ": ";
+    counter-increment: fieldsets;
+}
+form#membersignup ol li {
+    background: #4D94B8;
+    background: rgba(255,255,255,.3);
+    border-color: #B8D4E3;
+    border-color: rgba(255,255,255,.6);
+    border-style: solid;
+    border-width: 2px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border-radius: 5px;
+    line-height: 30px;
+    list-style: none;
+    padding: 5px 10px;
+    margin-bottom: 2px;
+}
+
+form#membersignup ol li p {
+    line-height: 20px;
+}
+
+form#membersignup ol ol li {
+    background: none;
+    border: none;
+    float: left;
+}
+
+form#membersignup label {
+    float: left;
+    font-size: 13px;
+    width: 110px;
+}
+
+
+
+form#membersignup input:not([type=radio]),
+form#membersignup textarea {
+    background: #ffffff;
+    border: none;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -khtml-border-radius: 3px;
+    border-radius: 3px;
+    font: italic 13px Georgia, "Times New Roman", Times, serif;
+    outline: none;
+    padding: 5px;
+    width: 200px;
+}
+form#membersignup input:not([type=submit]):focus,
+form#membersignup textarea:focus {
+    background: #eaeaea;    
+}
+
+form#membersignup button {
+    -moz-border-radius: 20px;
+    -webkit-border-radius: 20px;
+    -khtml-border-radius: 20px;
+    border-radius: 20px;
+    color: #ffffff;
+    display: block;
+    font: 18px Georgia, "Times New Roman", Times, serif;
+    letter-spacing: 1px;
+    margin: auto;
+    padding: 7px 25px;
+    text-shadow: 0 1px 1px #000000;
+    text-transform: uppercase;
+    
+    background: #4D94B8;
+    background: rgba(255,255,255,.3);
+    border-color: #B8D4E3;
+    border-color: rgba(255,255,255,.6);
+    border-style: solid;
+    border-width: 2px;
+
+}
+form#membersignup button:hover {
+    background: #294e61;
+    cursor: pointer;
+}
+
+#uidcheckLoading {
+    background: url('ajax-loader.gif');
+    margin-top: 5px;
+    width: 16px;
+    height: 11px;
+    float: right;
+    display: none;
+}
+
+#uidcheck {
+    display: none;
+}
+
