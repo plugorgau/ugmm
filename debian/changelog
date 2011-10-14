@@ -1,8 +1,9 @@
 plug-ugmm (0.4) unstable; urgency=low
 
   * Signup page (with ajax for checking things)
+  * Major bug fix, ldap->dnExists is buggy so wrote our own
 
- -- Tim White <tim@hotspot.purewhite.id.au>  Thu, 13 Oct 2011 21:49:23 +1000
+ -- Tim White <tim@hotspot.purewhite.id.au>  Fri, 14 Oct 2011 09:51:18 +1000
 
 plug-ugmm (0.3) unstable; urgency=low
 

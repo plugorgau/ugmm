@@ -77,6 +77,12 @@ function assign_vars()
     // Membership amount
     $smarty->assign('CONCESSION_AMOUNT', "$" . CONCESSION_AMOUNT / 100);
     $smarty->assign('FULL_AMOUNT', "$" . FULL_AMOUNT / 100 );
+    
+    // Email addresses
+    $emails['webmasters'] = WEBMASTERS_EMAIL;
+    $emails['committee'] = COMMITTEE_EMAIL;
+    $emails['admin'] = ADMIN_EMAIL;
+    $smarty->assign('emails', $emails);
 }
 
 $toplevelmenu['home'] = array('label' => "Home", 'link' => 'memberself', 'level' => 'all');

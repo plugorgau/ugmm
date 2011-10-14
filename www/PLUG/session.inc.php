@@ -31,7 +31,7 @@ function loginForm($username = null, $status = null, &$auth = null)
             //AdminLog::getInstance()->log("Expired Session");
             break; 
         case -3:
-            $error = "Incorrect Login.<br/><a href='resetpassword'>Forgotten your password?</a>";
+            $error = "Incorrect Login.";
             //AdminLog::getInstance()->log("Invalid Login");
             break;
         case -5:

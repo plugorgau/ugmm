@@ -16,7 +16,7 @@ require_once('./PLUG/session.inc.php');
     if(isset($_POST['newmember_form']) && $_POST['password'] != $_POST['verifypassword'])
         $error[] = "Passwords don't match";
         
-    // TODO Password strength check? Assign random password if null?
+    // TODO Password strength check? lock password if null?
     
     // TODO check for email address already used
         

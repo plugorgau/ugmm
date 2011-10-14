@@ -1,7 +1,7 @@
 
 
 
-body { background: #f0f0f0; font-family: helvetica, arial; font-size: 12px }
+body { background: #f0f0f0; font-family: helvetica, arial; /*font-size: 12px*/ }
 #page { background: #ffffff; width: 960px; margin: 0px auto; padding: 1em; 
 	border-left: 1px solid #e0e0e0; border-right: 1px solid #e0e0e0 }
 #footer { border-top: 1px dashed #e0e0e0; margin-top: 1em }
@@ -60,7 +60,7 @@ h3 { font-size: 1.2em; }
 
 /* Signup form, new css */
 
-form#membersignup, fieldset, legend, ol, li {
+form#membersignup, form#membersignup ol {
     margin: 0;
     padding: 0;
 }

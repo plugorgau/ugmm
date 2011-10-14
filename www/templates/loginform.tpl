@@ -21,11 +21,14 @@ are not yet a financial member, you may be interested in
 </tr>
 <tr>
  <td colspan="2" align="right">
+
   <input name="submit" value="Log In" type="submit">
+ <br/><a style="font-size: 80%" href='resetpassword'>Forgotten your password?</a>  
  </td>
 
 </tr>
 </tbody></table>
+
 </form>
 
 <p><b>Note:</b> You will need to enable cookies in your browser to log in.

@@ -69,7 +69,7 @@ require_once('./PLUG/session.inc.php');
         $payment_comment = trim($_POST['receipt_number']);
         $payment_ack = trim($_POST['payment_ack']);
         
-        // Allow future dating here?
+        // Allow future dating here? TODO: Prevent future dating
         // Class will ensure date is "now" if empty, we need to ensure it's valid
         if($payment_date != '' && !strtotime($payment_date))
             $error[] = "Invalid payment date";

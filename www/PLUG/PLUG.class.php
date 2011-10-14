@@ -10,6 +10,7 @@ define('FULL_TYPE', 1);
 
 define('COMMITTEE_EMAIL', "committee@plug.org.au");
 define('CONTACT_EMAIL', "committee@plug.org.au");
+define('WEBMASTERS_EMAIL', "webmasters@plug.org.au");
 define('ADMIN_EMAIL', "admin@plug.org.au");
 define('SCRIPTS_FROM_EMAIL', "PLUG Membership Scripts <admin@plug.org.au>");
 define('SCRIPTS_REPLYTO_EMAIL', "PLUG Committee <committee@plug.org.au>");

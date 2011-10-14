@@ -4,7 +4,7 @@
 <title>PLUG - Members Area{$pagetitle}</title>
 
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-<meta name="generator" content="UGMM" />
+<meta name="generator" content="UGMM V0.4" />
 <!-- CSS Stylesheet -->
 <link rel="stylesheet" type="text/css" href="style.css" id="plug_css" />
 <link rel="shortcut icon" href="http://www.plug.org.au/sites/default/files/favicon.ico" type="image/x-icon" />
