@@ -7,6 +7,9 @@ You may choose not to pay membership, in which case your PLUG membership and
 shell account will not be actived. However, the mailing list is still freely
 accessible to non-members.
 </p>
+<p>
+Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for students / concession.
+<p>
 
 <p>
 There are a number of ways to pay.

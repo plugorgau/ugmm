@@ -2,7 +2,7 @@
 
 <p>This area contains resources available to PLUG financial members.  If you
 are not yet a financial member, you may be interested in
-<a href="http://plug.org.au/membership">joining PLUG</a>.
+<a href="http://plug.org.au/membership">joining PLUG</a>. (<a href="signup">Signup Form</a>)
 
 	
 </p><h3>Log in</h3>

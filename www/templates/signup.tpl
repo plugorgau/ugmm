@@ -23,6 +23,9 @@ $(document).ready(function () {
 <p>
 If you would like to become a financial PLUG member, please fill in the following details. Becoming a member gives you the benefits listed at <a href="http://plug.org.au/membership">http://plug.org.au/membership</a>. You <strong>DO NOT</strong> need to be a member to access our <a href="http://www.plug.org.au/resources/mailing-list">mailing list</a> or to attend our normal <a href="http://www.plug.org.au/events">events</a>.
 </p>
+<p>
+Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for students / concession.
+<p>
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded" id="membersignup">
