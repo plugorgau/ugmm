@@ -110,7 +110,6 @@ PLUG Membership Scripts";
 
     $body = sprintf($body,
         $details['displayName'],
-        $details['formattedexpiry'],
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );
