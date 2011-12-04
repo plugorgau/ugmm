@@ -1,5 +1,5 @@
 Source: plug-ugmm
-Section: unknown
+Section: web
 Priority: extra
 Maintainer: Timothy White <tim@purewhite.id.au>
 Build-Depends: debhelper (>= 7.0.50~)

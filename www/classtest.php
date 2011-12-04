@@ -6,6 +6,9 @@ require_once 'PLUG/PLUG.class.php';
     $plug = new PLUG($ldap);
     
     echo  $plug->next_freeuidNumber(10383);
+
+    var_dump($ldap->dnExists("uidNumber=10390,ou=Users,dc=plug,dc=org,dc=au"));
+    echo $ldap->getEntry("uidNumber=10390,ou=Users,dc=plug,dc=org,dc=au")->getMessage();
     
     //$testperson = new Person($ldap);
     

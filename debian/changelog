@@ -1,3 +1,9 @@
+plug-ugmm (0.5.1) unstable; urgency=low
+
+  * Debian packaging fixes
+
+ -- Tim White <tim@hotspot.purewhite.id.au>  Sun, 04 Dec 2011 10:43:36 +1000
+
 plug-ugmm (0.5) unstable; urgency=low
 
   * Fix bug in new member email
