@@ -13,11 +13,11 @@ are not yet a financial member, you may be interested in
 <tbody><tr>
  <td>PLUG Username</td>
 
- <td><input size="15" maxlength="15" name="username" type="text"></td>
+ <td><input size="15" name="username" type="text"></td>
 </tr>
 <tr>
  <td>Password</td>
- <td><input size="15" maxlength="15" name="password" type="password"></td>
+ <td><input size="15" name="password" type="password"></td>
 </tr>
 <tr>
  <td colspan="2" align="right">
@@ -34,4 +34,3 @@ are not yet a financial member, you may be interested in
 <p><b>Note:</b> You will need to enable cookies in your browser to log in.
 <br>
 If you are having problems, please contact <a href="mailto:admin@plug.org.au">admin@plug.org.au</a>.</p>
-
