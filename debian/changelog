@@ -9,26 +9,26 @@ plug-ugmm (0.5.1) unstable; urgency=low
 
   * Debian packaging fixes
 
- -- Tim White <tim@hotspot.purewhite.id.au>  Sun, 04 Dec 2011 10:43:36 +1000
+ -- Tim White <tim@whiteitsolutions.com.au>  Sun, 04 Dec 2011 10:43:36 +1000
 
 plug-ugmm (0.5) unstable; urgency=low
 
   * Fix bug in new member email
 
- -- Tim White <tim@hotspot.purewhite.id.au>  Wed, 19 Oct 2011 07:14:17 +1000
+ -- Tim White <tim@whiteitsolutions.com.au>  Wed, 19 Oct 2011 07:14:17 +1000
 
 plug-ugmm (0.4) unstable; urgency=low
 
   * Signup page (with ajax for checking things)
   * Major bug fix, ldap->dnExists is buggy so wrote our own
 
- -- Tim White <tim@hotspot.purewhite.id.au>  Fri, 14 Oct 2011 09:51:18 +1000
+ -- Tim White <tim@whiteitsolutions.com.au>  Fri, 14 Oct 2011 09:51:18 +1000
 
 plug-ugmm (0.3) unstable; urgency=low
 
   * Expired/Expiring user mailout script & cronjob
 
- -- Tim White <tim@hotspot.purewhite.id.au>  Tue, 11 Oct 2011 10:44:37 +1000
+ -- Tim White <tim@whiteitsolutions.com.au>  Tue, 11 Oct 2011 10:44:37 +1000
 
 plug-ugmm (0.2) unstable; urgency=low
 
@@ -36,10 +36,10 @@ plug-ugmm (0.2) unstable; urgency=low
   * Other small fixes
   * Remove code that prevents non-admin logging in as we now have checks for groups regarding access
 
- -- Tim White <tim@hotspot.purewhite.id.au>  Wed, 05 Oct 2011 13:04:18 +1000
+ -- Tim White <tim@whiteitsolutions.com.au>  Wed, 05 Oct 2011 13:04:18 +1000
 
 plug-ugmm (0.1) unstable; urgency=low
 
   * Initial Release.
 
- -- Tim <tim@hotspot.purewhite.id.au>  Mon, 26 Sep 2011 14:13:17 +1000
+ -- Tim <tim@whiteitsolutions.com.au>  Mon, 26 Sep 2011 14:13:17 +1000
