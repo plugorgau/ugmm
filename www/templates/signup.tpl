@@ -19,9 +19,9 @@ $(document).ready(function () {
 
 <h1>Membership Signup</h1>
 
-<a href="/ugmm/">Back to Members Area Login</a> | <a href="http://plug.org.au">Back to main PLUG website</a>
+<a href="/ugmm/">Back to Members Area Login</a> | <a href="/">Back to main PLUG website</a>
 <p>
-If you would like to become a financial PLUG member, please fill in the following details. Becoming a member gives you the benefits listed at <a href="http://plug.org.au/membership">http://plug.org.au/membership</a>. You <strong>DO NOT</strong> need to be a member to access our <a href="http://www.plug.org.au/resources/mailing-list">mailing list</a> or to attend our normal <a href="http://www.plug.org.au/events">events</a>.
+If you would like to become a financial PLUG member, please fill in the following details. Becoming a member gives you the benefits listed at <a href="/membership">https://plug.org.au/membership</a>. You <strong>DO NOT</strong> need to be a member to access our <a href="/resources/mailing-list">mailing list</a> or to attend our normal <a href="/events">events</a>.
 </p>
 <p>
 Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for students / concession.

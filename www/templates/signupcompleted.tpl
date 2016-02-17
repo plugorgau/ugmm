@@ -19,13 +19,13 @@ There are a number of ways to pay.
      sure there will be somebody there to renew your membership).</li>
 
     <li>Direct deposit your dues into PLUG's bank account (see
-     <a href="http://www.plug.org.au/membership">http://www.plug.org.au/membership</a> for details), and email
+     <a href="/membership">https://www.plug.org.au/membership</a> for details), and email
      {mailto address=$emails.committee encode="javascript_charcode"} to let them know you have deposited it.
      Credit card facilities are available if no other method is
      available to you, just contact the committee to organise.</li>
 
     <li>Send a money-order (not cash) to PLUG's snail-mail address,
-     available at <a href="http://www.plug.org.au/contact">http://www.plug.org.au/contact</a> and email
+     available at <a href="/contact">https://www.plug.org.au/contact</a> and email
      {mailto address=$emails.committee encode="javascript_charcode"} to let them know you have sent it.
      </li>
 </ul>
