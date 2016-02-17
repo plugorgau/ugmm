@@ -3,7 +3,7 @@ plug-ugmm (0.5.2) UNRELEASED; urgency=low
   * Dependency Issues
   * Mod_rewrite fixes
 
- -- Tim White <tim@grasehotspot.org>  Mon, 14 Jan 2013 23:52:29 +1000
+ -- Tim White <tim@whiteitsolutions.com.au>  Mon, 14 Jan 2013 23:52:29 +1000
 
 plug-ugmm (0.5.1) unstable; urgency=low
 

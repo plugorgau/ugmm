@@ -3,10 +3,6 @@ Upstream-Name: plug-ugmm
 Source: https://github.com/plugorgau/ugmm
 
 Files: *
-Copyright: 2011 Tim <tim@hotspot.purewhite.id.au>
-License: GPL-3.0+
-
-Files: debian/*
 Copyright: 2011 Tim <tim@whiteitsolutions.com.au>
 License: GPL-3.0+
 
