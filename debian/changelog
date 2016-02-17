@@ -1,9 +1,12 @@
-plug-ugmm (0.5.2) UNRELEASED; urgency=low
+plug-ugmm (0.5.2) unstable; urgency=low
 
   * Dependency Issues
   * Mod_rewrite fixes
+  * Fixed HTTPS mixed mode content warnings
+  * Packaging fixes
+  * Removed 15 character login limit
 
- -- Tim White <tim@whiteitsolutions.com.au>  Mon, 14 Jan 2013 23:52:29 +1000
+ -- Tim White <tim@whiteitsolutions.com.au>  Wed, 17 Feb 2016 22:33:29 +1000
 
 plug-ugmm (0.5.1) unstable; urgency=low
 
