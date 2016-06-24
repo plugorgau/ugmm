@@ -17,7 +17,4 @@ require_once 'Net/LDAP2.php';
     // Testing for connection error
     if (PEAR::isError($ldap)) {
         die('Could not connect to LDAP-server: '.$ldap->getMessage());
-    } 
-
-
-?>
+    }

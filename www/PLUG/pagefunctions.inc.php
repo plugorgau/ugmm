@@ -181,5 +181,3 @@ function clean_int($number)
     //return intval(clean_number($number));
     //ereg_replace("[^0-9]", "", clean_text($number));
 }
-
-

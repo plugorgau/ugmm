@@ -145,7 +145,3 @@ function create_nonce($action = -1, $tick = 0, $randnum = 0) {
 }
 
 $smarty->register_modifier('nonce', 'create_nonce');
-
-
-?>
-

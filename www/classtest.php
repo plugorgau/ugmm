@@ -23,5 +23,3 @@ require_once 'PLUG/Members.class.php';
     $testperson->update_ldap();*/
 /*    $testperson->create_person('11111', 'blinkybill', 'blinky', 'bill', '', 'blinky@gmail.com', 'blah');*/
     //$testperson->print_ldif();
-    
-?>

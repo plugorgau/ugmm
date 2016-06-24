@@ -4,7 +4,7 @@
 function check_level($ACCESS_LEVEL)
 {
     global $Auth;
-    // Require admin level unless defined. This prevents us from accidently forgetting to set an access level and users getting access to things they aren't allowed
+    // Require admin level unless defined. This prevents us from accidentally forgetting to set an access level and users getting access to things they aren't allowed
     $ACCESS_LEVEL = isset($ACCESS_LEVEL) ? $ACCESS_LEVEL : 'admin';
     // Check if level of access required is in the memberOf array
 
@@ -34,5 +34,3 @@ if(! check_level($ACCESS_LEVEL))
     display_page('accessdenied.tpl');
     exit;
 }
-
-?>

@@ -16,4 +16,3 @@ header('Location: '. $toplevelmenu['home']['link']);
 Redirecting to login page
 <?
 exit();
-?>

@@ -118,8 +118,4 @@ else if(isset($_GET['uid']) && isset($_GET['reset']))
     }
 
 }
-
-    /*$smarty->assign('errors', $error);
-    $smarty->assign('success', $success);*/
-    //print_r($memberdetails);
     display_page('resetpasswordform.tpl');

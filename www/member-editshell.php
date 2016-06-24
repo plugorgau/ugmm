@@ -83,9 +83,4 @@ require_once('./PLUG/session.inc.php');
 
     $smarty->assign('shells', $shells);
     $smarty->assign('member', $memberdetails);
-    //print_r($memberdetails);
-    //print_r($error);
-    //print_r($success);
-    display_page('editselfshell.tpl')
-    
-?>
+    display_page('editselfshell.tpl');
