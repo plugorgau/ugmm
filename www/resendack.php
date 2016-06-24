@@ -2,7 +2,7 @@
 
 require_once('./PLUG/session.inc.php');
     
-    $PLUG = new PLUG($ldap);
+    $OrgMembers = new Members($ldap);
     
     
     if(intval($_GET['member_id']) < 10000)
@@ -11,7 +11,7 @@ require_once('./PLUG/session.inc.php');
     }
     
     $memberid = intval($_GET['member_id']);
-    $member = $PLUG->get_member_object($memberid);        
+    $member = $OrgMembers->get_member_object($memberid);
     $memberdetails = $member->userarray(); 
     $memberpayments = $member->paymentsarray();       
     
@@ -64,5 +64,3 @@ require_once('./PLUG/session.inc.php');
 
     
     display_page('resend-ack.tpl');
-        
-?>

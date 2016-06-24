@@ -7,7 +7,7 @@ $TITLE = 'Add New Member';
 
 require_once('./PLUG/session.inc.php');
 
-    $PLUG = new PLUG($ldap);
+    $OrgMembers = new Members($ldap);
 
      if(isset($_POST['newmember_form']) && !verify_nonce($_POST['nonce'],'newmember'))
         $error[] = "Attempt to double submit form? No changes made.";
@@ -23,7 +23,7 @@ require_once('./PLUG/session.inc.php');
     if(isset($_POST['newmember_form']) && ! $error)
     {
 
-        $member = $PLUG->new_member(
+        $member = $OrgMembers->new_member(
             trim($_POST['uid']),
             trim($_POST['first_name']),
             trim($_POST['last_name']),

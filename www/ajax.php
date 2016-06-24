@@ -2,9 +2,9 @@
 
 require_once('PLUG/pagefunctions.inc.php');
 
-require_once 'PLUG/PLUG.class.php';
+require_once 'PLUG/Members.class.php';
 
-$PLUG = new PLUG($ldap);
+$OrgMembers = new Members($ldap);
 
 switch($_POST['ajax'])
 {
@@ -16,7 +16,7 @@ switch($_POST['ajax'])
                 echo "<span style='color:#f00'>Username too short</span>";
                 break;
             }
-            if(! $PLUG->check_username_available($username))
+            if(! $OrgMembers->check_username_available($username))
             {
                 echo "<span style='color:#0c0'>Username $username is available</span>";
             }else{
@@ -25,5 +25,3 @@ switch($_POST['ajax'])
         }
         break;
 }
-
-?>

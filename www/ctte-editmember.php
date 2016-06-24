@@ -7,7 +7,7 @@ $TITLE = 'Edit Member';
 
 require_once('./PLUG/session.inc.php');
 
-    $PLUG = new PLUG($ldap);
+    $OrgMembers = new Members($ldap);
     
     if(intval($_GET['id']) < 10000)
     {
@@ -24,7 +24,7 @@ require_once('./PLUG/session.inc.php');
         $memberid = intval($_POST['id']);
         
 
-        $member = $PLUG->get_member_object($memberid);        
+        $member = $OrgMembers->get_member_object($memberid);
         // Validate each item and update memberdetails object
         
 
@@ -61,7 +61,7 @@ require_once('./PLUG/session.inc.php');
         // Ignore GET value and use POST value from form
         $memberid = intval($_POST['id']);
 
-        $member = $PLUG->get_member_object($memberid);        
+        $member = $OrgMembers->get_member_object($memberid);
         // Validate each item and update memberdetails object
         $payment_type = trim($_POST['membership_type']);
         $payment_years = trim($_POST['years']);
@@ -103,7 +103,7 @@ require_once('./PLUG/session.inc.php');
         // Ignore GET value and use POST value from form
         $memberid = intval($_POST['id']);
 
-        $member = $PLUG->get_member_object($memberid);       
+        $member = $OrgMembers->get_member_object($memberid);
 
         // TODO: Class validates objects and maintains errors/successs messages
         $member->change_forward($_POST['email_forward']);
@@ -130,7 +130,7 @@ require_once('./PLUG/session.inc.php');
         // Ignore GET value and use POST value from form
         $memberid = intval($_POST['id']);
 
-        $member = $PLUG->get_member_object($memberid);        
+        $member = $OrgMembers->get_member_object($memberid);
         if($member->disable_shell())
         {
             $success[] = "Shell disabled";
@@ -146,7 +146,7 @@ require_once('./PLUG/session.inc.php');
         // Ignore GET value and use POST value from form
         $memberid = intval($_POST['id']);
 
-        $member = $PLUG->get_member_object($memberid);        
+        $member = $OrgMembers->get_member_object($memberid);
         if($member->enable_shell())
         {
             $success[] = "Shell enabled";
@@ -169,7 +169,7 @@ require_once('./PLUG/session.inc.php');
         // Ignore GET value and use POST value from form
         $memberid = intval($_POST['id']);
 
-        $member = $PLUG->get_member_object($memberid);        
+        $member = $OrgMembers->get_member_object($memberid);
         
         $member->disable_shell();
         $member->change_password('{crypt}accountlocked'.time());
@@ -194,7 +194,7 @@ require_once('./PLUG/session.inc.php');
         // Ignore GET value and use POST value from form
         $memberid = intval($_POST['id']);
 
-        $member = $PLUG->get_member_object($memberid);
+        $member = $OrgMembers->get_member_object($memberid);
         
         if($_POST['new_password'] != $_POST['verify_password'])
             $error[] = _("Passwords don't match");
@@ -226,7 +226,7 @@ require_once('./PLUG/session.inc.php');
     {
         // Validate $_GET better? intval should clean it to just a number
         $memberid = intval($_GET['id']);
-        $member = $PLUG->get_member_object($memberid);        
+        $member = $OrgMembers->get_member_object($memberid);
         $memberdetails = $member->userarray();        
     }
 
@@ -235,6 +235,4 @@ require_once('./PLUG/session.inc.php');
     //print_r($memberdetails);
     //print_r($error);
     //print_r($success);
-    display_page('editmember.tpl')
-
-?>
+    display_page('editmember.tpl');

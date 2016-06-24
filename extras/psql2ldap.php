@@ -47,11 +47,10 @@ require_once "MDB2.php";
     }        
     $plugpgsql->setFetchMode(MDB2_FETCHMODE_ASSOC);
     
-require_once('/usr/share/plug-ugmm/www/PLUG/PLUG.class.php');
-//require_once('../www/PLUG/PLUG.class.php');    
+require_once('/usr/share/plug-ugmm/www/PLUG/Members.class.php');
 require_once('/etc/private/ldapconnection.inc.php');
 
-$PLUG = new PLUG($ldap);
+$OrgMembers = new Members($ldap);
     
 /* Delete a few groups first */
 
@@ -150,8 +149,8 @@ $PLUG = new PLUG($ldap);
         
         eho(INFO, "<p><h3>$dn</h3>");
         // Delete user before adding (to ensure sync for now)
-        $PLUG->delete_member($dn);
-        $PLUG->delete_member("gidNumber=${user['gidNumber']},ou=UPG, ou=Groups, dc=plug, dc=org, dc=au");
+        $OrgMembers->delete_member($dn);
+        $OrgMembers->delete_member("gidNumber=${user['gidNumber']},ou=UPG, ou=Groups, dc=plug, dc=org, dc=au");
 
         // Add the entry        
         $person = new Person($ldap);
@@ -454,6 +453,3 @@ function eho ($debug, $text = 'x')
         }
     }
 }
-   
-?>
-

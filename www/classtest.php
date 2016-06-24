@@ -1,11 +1,11 @@
 <?php
 
-require_once 'PLUG/PLUG.class.php';
+require_once 'PLUG/Members.class.php';
 
     
-    $plug = new PLUG($ldap);
+    $OrgMembers = new Members($ldap);
     
-    echo  $plug->next_freeuidNumber(10383);
+    echo  $OrgMembers->next_freeuidNumber(10383);
 
     var_dump($ldap->dnExists("uidNumber=10390,ou=Users,dc=plug,dc=org,dc=au"));
     echo $ldap->getEntry("uidNumber=10390,ou=Users,dc=plug,dc=org,dc=au")->getMessage();

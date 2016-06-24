@@ -3,14 +3,14 @@
 // Start of code for sorting all members into groups
 
 require_once('/etc/private/ldapconnection.inc.php');
-require_once '/usr/share/plug-ugmm/www/PLUG/PLUG.class.php';
+require_once '/usr/share/plug-ugmm/www/PLUG/Members.class.php';
 
-$PLUG = new PLUG($ldap);
+$OrgMembers = new Members($ldap);
 
 // Select all accounts
 $filter = "(shadowExpire=*)";
 
-$members = $PLUG->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_dn_from_filter($filter);
 
 foreach($members as $dn)
 {
@@ -24,6 +24,3 @@ foreach($members as $dn)
     $member->set_status_group();
 
 }
-
-
-?>

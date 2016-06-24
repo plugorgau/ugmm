@@ -13,7 +13,7 @@ require_once('pagefunctions.inc.php');
 require_once('config.inc.php');
 require_once('Auth.php');
 
-require_once 'PLUG.class.php';
+require_once 'Members.class.php';
 
 function loginForm($username = null, $status = null, &$auth = null)
 {

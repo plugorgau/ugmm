@@ -2,9 +2,9 @@
 
 require_once('PLUG/pagefunctions.inc.php');
 
-require_once 'PLUG/PLUG.class.php';
+require_once 'PLUG/Members.class.php';
 
-$PLUG = new PLUG($ldap);
+$OrgMembers = new Members($ldap);
 
 if(isset($_POST['resetpassword_form']))
 {
@@ -15,7 +15,7 @@ if(isset($_POST['resetpassword_form']))
     
     // if member by email then get object
    
-    $member = $PLUG->get_member_by_email($memberemail);
+    $member = $OrgMembers->get_member_by_email($memberemail);
     
     if($member)    
     {
@@ -61,7 +61,7 @@ The PLUG Password Reset facility";
 }
 else if(isset($_GET['uid']) && isset($_GET['reset']))
 {
-    $member = $PLUG->get_member_object(intval($_GET['uid']));
+    $member = $OrgMembers->get_member_object(intval($_GET['uid']));
     
     if(PEAR::isError($member))
     {
@@ -123,6 +123,3 @@ else if(isset($_GET['uid']) && isset($_GET['reset']))
     $smarty->assign('success', $success);*/
     //print_r($memberdetails);
     display_page('resetpasswordform.tpl');
-
-
-?>

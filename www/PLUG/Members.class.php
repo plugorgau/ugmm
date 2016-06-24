@@ -6,7 +6,7 @@ require_once('config.inc.php');
 if(!defined('FORCE'))
     define('FORCE', false);
 
-class PLUG {
+class Members {
 
     // Class for plug, contains members of type Member/Person
    
@@ -1546,7 +1546,3 @@ class PLUGFunction
       return (crypt($strPlainText, $strHash) == $strHash) ? true : false;
      
     }
-    
-
-
-?>

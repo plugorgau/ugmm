@@ -4,9 +4,9 @@
 
 require_once('/etc/private/ldapconnection.inc.php');
 require_once('/usr/share/plug-ugmm/www/PLUG/config.inc.php');
-require_once('/usr/share/plug-ugmm/www/PLUG/PLUG.class.php');
+require_once('/usr/share/plug-ugmm/www/PLUG/Members.class.php');
 
-$PLUG = new PLUG($ldap);
+$OrgMembers = new Members($ldap);
 
 // ********* Expired members 
 
@@ -16,7 +16,7 @@ $today = ceil(time()/ 86400) - 5;
 // Select all accounts not already in group expired
 $filter = "(&(shadowExpire<=$today)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
-$members = $PLUG->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_dn_from_filter($filter);
 
 foreach($members as $dn)
 {
@@ -41,7 +41,7 @@ $future = ceil(time()/ 86400) + 30;
 // Select all accounts not already in group expired
 $filter = "(&(shadowExpire=$future)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
-$members = $PLUG->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_dn_from_filter($filter);
 
 foreach($members as $dn)
 {
@@ -180,5 +180,3 @@ PLUG Membership Scripts";
         foreach($member->get_errors() as $message) echo "$message\n";    
     }
 }
-
-?>

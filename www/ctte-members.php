@@ -7,14 +7,12 @@ $TITLE = 'Membership List';
 
 require_once('./PLUG/session.inc.php');
     
-    $PLUG = new PLUG($ldap);
+    $OrgMembers = new Members($ldap);
     
-    $smarty->assign('currentusers', $PLUG->get_current_members());
-    $smarty->assign('pendingusers', $PLUG->get_pending_members());
+    $smarty->assign('currentusers', $OrgMembers->get_current_members());
+    $smarty->assign('pendingusers', $OrgMembers->get_pending_members());
     if($_GET['expiredmembers'])
     {
-        $smarty->assign('expiredusers', $PLUG->get_expired_members());        
+        $smarty->assign('expiredusers', $OrgMembers->get_expired_members());
     }
     display_page('listusers.tpl');
-
-?>

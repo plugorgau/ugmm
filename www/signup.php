@@ -4,9 +4,9 @@ session_start();
 
 require_once('PLUG/pagefunctions.inc.php');
 
-require_once 'PLUG/PLUG.class.php';
+require_once 'PLUG/Members.class.php';
 
-$PLUG = new PLUG($ldap);
+$OrgMembers = new Members($ldap);
 
 if(isset($_POST['membersignup_form'])) {
     // Check password matches
@@ -37,7 +37,7 @@ if(isset($_POST['membersignup_form'])) {
         if(strlen(trim($_POST['notes'])) > 0)
             $notes = "Signup Notes\n".trim($_POST['notes']);
             
-        $member = $PLUG->new_member(
+        $member = $OrgMembers->new_member(
             trim($_POST['uid']),
             trim($_POST['givenName']),
             trim($_POST['sn']),
@@ -118,5 +118,3 @@ PLUG Membership Scripts";
     
     $member->send_user_email($body, $subject);
 }
-
-?>
