@@ -16,7 +16,7 @@ function check_level($ACCESS_LEVEL)
     
     foreach($ACCESS_LEVEL as $level)
     {
-        $groupname = "cn=$level,ou=Groups,dc=plug,dc=org,dc=au";
+        $groupname = "cn=$level,ou=Groups,".LDAP_BASE;
         
         if(in_array($groupname, $user_details['memberOf']))
         {

@@ -10,6 +10,7 @@
 /**/
 require_once('/etc/private/ldapconnection.inc.php');
 require_once('pagefunctions.inc.php');
+require_once('config.inc.php');
 require_once('Auth.php');
 
 require_once 'PLUG.class.php';

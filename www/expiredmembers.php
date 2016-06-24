@@ -3,7 +3,8 @@
 // Start of code for emailing expired members and moving them into the expired group
 
 require_once('/etc/private/ldapconnection.inc.php');
-require_once '/usr/share/plug-ugmm/www/PLUG/PLUG.class.php';
+require_once('/usr/share/plug-ugmm/www/PLUG/config.inc.php');
+require_once('/usr/share/plug-ugmm/www/PLUG/PLUG.class.php');
 
 $PLUG = new PLUG($ldap);
 
@@ -13,7 +14,7 @@ $PLUG = new PLUG($ldap);
 $today = ceil(time()/ 86400) - 5;
 
 // Select all accounts not already in group expired
-$filter = "(&(shadowExpire<=$today)(memberOf=cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au))";
+$filter = "(&(shadowExpire<=$today)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
 $members = $PLUG->load_members_dn_from_filter($filter);
 
@@ -38,7 +39,7 @@ foreach($members as $dn)
 $future = ceil(time()/ 86400) + 30;
 
 // Select all accounts not already in group expired
-$filter = "(&(shadowExpire=$future)(memberOf=cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au))";
+$filter = "(&(shadowExpire=$future)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
 $members = $PLUG->load_members_dn_from_filter($filter);
 

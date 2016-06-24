@@ -1,40 +1,7 @@
 <?php
 
 require_once('/etc/private/ldapconnection.inc.php');
-
-define('CONCESSION_AMOUNT', 1000);
-define('FULL_AMOUNT', 2000);
-
-define('CONCESSION_TYPE', 2);
-define('FULL_TYPE', 1);
-
-define('COMMITTEE_EMAIL', "committee@plug.org.au");
-define('CONTACT_EMAIL', "committee@plug.org.au");
-define('WEBMASTERS_EMAIL', "webmasters@plug.org.au");
-define('ADMIN_EMAIL', "admin@plug.org.au");
-define('SCRIPTS_FROM_EMAIL', "PLUG Membership Scripts <admin@plug.org.au>");
-define('SCRIPTS_REPLYTO_EMAIL', "PLUG Committee <committee@plug.org.au>");
-
-define('DEFAULT_MEMBER', 'cn=admin,dc=plug,dc=org,dc=au');
-
-// For debugging, remove later TODO:
-// define('ADMIN_EMAIL', "linuxalien@plug.org.au");
-
-define('PAYMENT_OPTIONS', 
-" (a) Head down to the next PLUG workshop or seminar to pay your dues to
-     a committee member (e-mail ".COMMITTEE_EMAIL." beforehand to make
-     sure there will be somebody there to renew your membership).
-
- (b) Direct deposit your dues into PLUG's bank account (see
-     http://www.plug.org.au/membership for details), and email
-     ".COMMITTEE_EMAIL." to let them know you have deposited it.
-     Credit card facilities are available if no other method is
-     available to you, just contact the committee to organise.
-
- (c) Send a money-order (not cash) to PLUG's snail-mail address,
-     available at http://www.plug.org.au/contact and email
-     ".COMMITTEE_EMAIL." to let them know you have sent it.");
-
+require_once('config.inc.php');
 
 if(!defined('FORCE'))
     define('FORCE', false);
@@ -57,7 +24,7 @@ class PLUG {
     private function load_ldapmembers_from_group($group)
     {
         // Fetch entry for group and all member attributes
-        $dn = "cn=$group,ou=Groups,dc=plug,dc=org,dc=au";
+        $dn = "cn=$group,ou=Groups,".LDAP_BASE;
         $entry = $this->ldap->getEntry($dn, array('member'));
         
         if (PEAR::isError($entry)) {
@@ -85,7 +52,7 @@ class PLUG {
     function load_members_dn_from_filter($filter)
     {
         $filter = Net_LDAP2_Filter::parse($filter);
-        $searchbase = "ou=Users,dc=plug,dc=org,dc=au";
+        $searchbase = "ou=Users,".LDAP_BASE;
         $options = array(
             'scope' => 'sub',
             'attributes' => array(
@@ -150,7 +117,7 @@ class PLUG {
     function get_member_object($uidNumber)
     {
         $uidNumber = intval($uidNumber); // Sanitise 
-        $dn = "uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au";    
+        $dn = "uidNumber=$uidNumber,ou=Users,".LDAP_BASE;
         if($this->ldap->dnExists($dn))
         {
             $thismember = new Person($this->ldap);
@@ -167,7 +134,7 @@ class PLUG {
     function get_member_by_email($email)
     {
         $filter = Net_LDAP2_Filter::create('mail', 'equals',  $email);
-        $searchbase = "ou=Users,dc=plug,dc=org,dc=au";
+        $searchbase = "ou=Users,".LDAP_BASE;
         $options = array(
             'scope' => 'one',
             'attributes' => array(
@@ -208,7 +175,7 @@ class PLUG {
     function check_username_available($username)
     {
         $filter = Net_LDAP2_Filter::create('uid', 'equals',  $username);
-        $searchbase = 'ou=Users,dc=plug,dc=org,dc=au';
+        $searchbase = 'ou=Users,'.LDAP_BASE;
         $options = array(
             'scope' => 'one',
             'attributes' => array('dn'),
@@ -226,7 +193,7 @@ class PLUG {
     
     function next_uidNumber()
     {
-        $dn = "cn=maxUid,ou=Users,dc=plug,dc=org,dc=au";
+        $dn = "cn=maxUid,ou=Users,".LDAP_BASE;
         // Get next uidNumber from maxUid
         
         $entry = $this->ldap->getEntry($dn, array('uidNumber'));
@@ -261,7 +228,7 @@ class PLUG {
         while($this->ldap->dnExists("uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au"))
             $uidNumber++;
         */
-        while($this->our_dnExists("uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au"))
+        while($this->our_dnExists("uidNumber=$uidNumber,ou=Users,".LDAP_BASE))
             $uidNumber++;
         return $uidNumber;
     }
@@ -431,7 +398,7 @@ class Payment
     
     private function next_paymentID()
     {
-        $dn = "cn=maxUid,ou=Users,dc=plug,dc=org,dc=au";
+        $dn = "cn=maxUid,ou=Users,".LDAP_BASE;
         // Get next paymentID from maxUid
         
         $entry = $this->ldap->getEntry($dn, array('x-plug-paymentID'));
@@ -447,7 +414,7 @@ class Payment
         do{
             $filter1 = Net_LDAP2_Filter::create('x-plug-paymentID', 'equals',  $paymentID);
             $filter = Net_LDAP2_Filter::combine('and', array($filter1, $filter2));
-            $searchbase = "ou=Users,dc=plug,dc=org,dc=au";
+            $searchbase = "ou=Users,".LDAP_BASE;
             $options = array(
                 'scope' => 'sub',
                 'attributes' => array(
@@ -579,7 +546,7 @@ class Person {
     
     function create_person($uid, $username, $firstname, $lastname, $address, $home, $work, $mobile, $email, $forward, $password, $notes)
     {
-        $this->dn = "uidNumber=$uid,ou=Users,dc=plug,dc=org,dc=au";
+        $this->dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
         $this->change_uid($uid, $uid);
         $this->change_username($username);
         $this->change_name($firstname, $lastname);
@@ -878,7 +845,7 @@ class Person {
             'member' => $this->dn,
             'objectClass' => array('groupOfNames', 'posixGroup')
         );
-        $dn = "gidNumber=$gid,ou=UPG,ou=Groups,dc=plug,dc=org,dc=au";
+        $dn = "gidNumber=$gid,ou=UPG,ou=Groups,".LDAP_BASE;
         
         $entry = Net_LDAP2_Entry::createFresh($dn, $group);
         
@@ -1039,7 +1006,7 @@ class Person {
     
     function add_to_group($group)
     {
-        $groupdn = "cn=$group,ou=Groups,dc=plug,dc=org,dc=au";
+        $groupdn = "cn=$group,ou=Groups,".LDAP_BASE;
         $groups = is_array(@$this->userldaparray['memberOf']) ? @$this->userldaparray['memberOf'] : array(@$this->userldaparray['memberOf']);
         if(!in_array($groupdn, $groups))
         {
@@ -1084,7 +1051,7 @@ class Person {
     
     function remove_from_group($group)
     {
-        $groupdn = "cn=$group,ou=Groups,dc=plug,dc=org,dc=au";    
+        $groupdn = "cn=$group,ou=Groups,".LDAP_BASE;
         $groups = is_array(@$this->userldaparray['memberOf']) ? @$this->userldaparray['memberOf'] : array(@$this->userldaparray['memberOf']);
         
         if(in_array($groupdn, $groups))
@@ -1435,7 +1402,7 @@ PLUG Membership Scripts";
     private function check_username_available($username)
     {
         $filter = Net_LDAP2_Filter::create('uid', 'equals',  $username);
-        $searchbase = 'ou=Users,dc=plug,dc=org,dc=au';
+        $searchbase = 'ou=Users,'.LDAP_BASE;
         $options = array(
             'scope' => 'one',
             'attributes' => array('dn'),
@@ -1454,7 +1421,7 @@ PLUG Membership Scripts";
     private function check_email_available($email)
     {
         $filter = Net_LDAP2_Filter::create('mail', 'equals',  $email);
-        $searchbase = 'ou=Users,dc=plug,dc=org,dc=au';
+        $searchbase = 'ou=Users,'.LDAP_BASE;
         $options = array(
             'scope' => 'one',
             'attributes' => array('dn'),
