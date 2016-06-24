@@ -1278,15 +1278,14 @@ class Person {
         $paymentarray = $payment->paymentarray();
         $this->clean_payment($paymentarray);
         
-        /* | Account Expired | Back Dated | New Expiry
-           | Y               | N          | now + x years
-           | Y               | Y          | backdate + x years as long as we don't decrease
-           | N               | N          | expiry + x years
-           | N               | Y          | if backdate is 3 years ago? just append? expiry + x years */
-        if($this->userldaparray['shadowExpire'] > abs(floor(time()/ 86400)))
+        /*
+        If the payment date is before the expiry date, increase the expiry date.
+        If the payment date is after the expiry date, set the expiry date to the payment date + x years.
+        */
+        if($this->userldaparray['shadowExpire'] > abs(floor(strtotime($date)/ 86400)))
         {
             // Account has not yet expired, increase expiry
-            $this->increase_expiry($years);            
+            $this->increase_expiry($years);
         }else
         {
             // Account has expired, change expiry from payment date/now
