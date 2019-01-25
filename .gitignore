@@ -1,0 +1,5 @@
+debian/debhelper-build-stamp
+debian/files
+debian/plug-ugmm.debhelper.log
+debian/plug-ugmm.substvars
+debian/plug-ugmm/
