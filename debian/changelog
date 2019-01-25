@@ -1,3 +1,10 @@
+plug-ugmm (0.6.0) unstable; urgency=low
+  * Move to php7
+  * Remove php-auth dep
+  * Move conf.d to sites-available
+
+ -- Nick Bannon and Benjamin Arntzen <admin@plug.org.au>  Fri, 25 Jan 2019 15:50:26 +0800
+
 plug-ugmm (0.5.2) unstable; urgency=low
 
   * Dependency Issues

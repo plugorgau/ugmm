@@ -11,15 +11,7 @@ if(!isset($pagestarttime)) // For pages that don't need auth
     
 }
 
-if(file_exists('/usr/share/php/smarty/libs/') && ! is_link('/usr/share/php/smarty/libs/'))
-{
-    // Debian bug http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=514305
-    // Remove this code once fixed?
-    require_once('smarty/libs/Smarty.class.php');
-}else
-{
-    require_once('smarty/Smarty.class.php');
-}
+require_once('smarty3/Smarty.class.php');
 
 // create object
 $smarty = new Smarty;

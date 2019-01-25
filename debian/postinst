@@ -26,8 +26,9 @@ fix_dir_perms
 
 clear_template_cache
 
-#a2enmod rewrite || true
+a2enmod rewrite || true
 #a2enmod headers || true
+a2ensite plug-ugmm || true
 
 if which invoke-rc.d >/dev/null 2>&1; then
        invoke-rc.d apache2 restart 3>&- || true
