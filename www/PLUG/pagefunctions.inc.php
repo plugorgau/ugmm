@@ -11,10 +11,10 @@ if(!isset($pagestarttime)) // For pages that don't need auth
     
 }
 
-require_once('smarty3/Smarty.class.php');
+require_once('smarty3/SmartyBC.class.php');
 
 // create object
-$smarty = new Smarty;
+$smarty = new SmartyBC;
 $smarty->compile_check = true;
 
 
