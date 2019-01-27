@@ -18,8 +18,8 @@ require_once 'Members.class.php';
 function loginForm($username = null, $status = null, &$auth = null)
 {
     global $smarty;
-    $smarty->clear_assign('MenuItems');
-    $smarty->clear_assign("LoggedInUsername");
+    $smarty->clearAssign('MenuItems');
+    $smarty->clearAssign("LoggedInUsername");
     $smarty->assign('username', $username);
     
     switch($status)
