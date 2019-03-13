@@ -1,3 +1,13 @@
+plug-ugmm (0.6.1) unstable; urgency=medium
+
+  * Integrates pear/auth (installed to /usr/share/plug-ugmm/lib/pear) rather
+    than installing the (now defunct) php-auth package
+  * Fixes to remove PHP warnings
+  * LDAP tweaks (for when "dc=plug,dc=org,dc=au" is not the default DIT)
+  * Minor UI improvements: error highlighting on login page, fixed menu labels
+
+ -- Alastair Irvine <alastair@plug.org.au>  Wed, 13 Mar 2019 22:47:36 +0800
+
 plug-ugmm (0.6.0) unstable; urgency=low
   * Move to php7
   * Remove php-auth dep
