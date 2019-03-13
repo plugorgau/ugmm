@@ -544,7 +544,7 @@ class Auth_Container_LDAP extends Auth_Container
      * @param  string Password
      * @return boolean
      */
-    function fetchData($username, $password)
+    function fetchData($username, $password, $isChallengeResponse=false)
     {
         $this->log('Auth_Container_LDAP::fetchData() called.', AUTH_LOG_DEBUG);
         $err = $this->_prepare();
