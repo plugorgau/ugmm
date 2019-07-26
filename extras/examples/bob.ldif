@@ -21,3 +21,4 @@ street: 42 Test Bvd, Nowheresville 6969
 mobile: 0469 000000
 description: A test user created by Alastair
 shadowExpire: -1
+memberOf: cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au
