@@ -7,6 +7,8 @@ services:
       - openldap
     volumes:
       - ./docker/ldapconnection.inc.php:/etc/private/ldapconnection.inc.php
+      # The below line allows you to do development if you get the permissions right
+      #- ./www/:/usr/share/plug-ugmm/www/
 
   openldap:
     image: osixia/openldap:1.3.0

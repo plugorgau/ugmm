@@ -51,6 +51,9 @@ function loginForm($username = null, $status = null, &$auth = null)
 
 $options = array(
     'host' => $config['host'],
+    'binddn' => $config['binddn'],
+    'basedn' => $config['basedn'],
+    'bindpw' => $config['bindpw'],
     'attributes' => array('dn', 'uid', 'memberOf'),
     'groupfilter' => '(objectClass=groupOfNames)',
     'memberattr' => 'member',
