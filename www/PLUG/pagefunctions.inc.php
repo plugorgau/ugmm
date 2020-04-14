@@ -105,13 +105,13 @@ function generate_menus($top = '')
     
     $top = $top ? $top : 'home';
     
-    $smenu = array();
-    $topmenu = array();
+    $smenu = [];
+    $topmenu = [];
     
     // Check if we are authenticated
     if (!isset($Auth) || !$Auth->checkAuth())
     {
-        return array();
+        return [null, null];
     }
     foreach($toplevelmenu as $key => $menu)
     {
@@ -122,7 +122,7 @@ function generate_menus($top = '')
                 $smenu = $submenu[$key];
         }
     }
-    return array($topmenu, $smenu);
+    return [$topmenu, $smenu];
 }
 
 function redirect_with_messages($url)

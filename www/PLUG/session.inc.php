@@ -50,7 +50,7 @@ function loginForm($username = null, $status = null, &$auth = null)
 }
 
 $options = array(
-    'host' => 'localhost',
+    'host' => $config['host'],
     'attributes' => array('dn', 'uid', 'memberOf'),
     'groupfilter' => '(objectClass=groupOfNames)',
     'memberattr' => 'member',
