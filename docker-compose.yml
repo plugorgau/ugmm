@@ -1,0 +1,32 @@
+version: '3.5'
+
+services:
+  ugmm:
+    build: .
+    links:
+      - openldap
+    volumes:
+      - ./docker/ldapconnection.inc.php:/etc/private/ldapconnection.inc.php
+
+  openldap:
+    image: osixia/openldap:1.3.0
+    expose:
+      - 389
+      - 636
+    environment:
+      LDAP_LOG_LEVEL: "256"
+      LDAP_ORGANISATION: "Example Inc."
+      LDAP_DOMAIN: "plug.org.au"
+      LDAP_BASE_DN: ""
+      LDAP_ADMIN_PASSWORD: "plug"
+      LDAP_CONFIG_PASSWORD: "config"
+      LDAP_READONLY_USER: "false"
+      #LDAP_READONLY_USER_USERNAME: "readonly"
+      #LDAP_READONLY_USER_PASSWORD: "readonly"
+      LDAP_RFC2307BIS_SCHEMA: "false"
+      LDAP_BACKEND: "mdb"
+      LDAP_TLS: "false"
+      LDAP_REPLICATION: "false"
+      KEEP_EXISTING_CONFIG: "false"
+      LDAP_REMOVE_CONFIG_AFTER_SETUP: "true"
+      LDAP_SSL_HELPER_PREFIX: "ldap"

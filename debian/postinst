@@ -26,15 +26,13 @@ fix_dir_perms
 
 clear_template_cache
 
-#a2enmod rewrite || true
+a2enmod rewrite || true
 #a2enmod headers || true
 
-if which invoke-rc.d >/dev/null 2>&1; then
-       invoke-rc.d apache2 restart 3>&- || true
-else
-       /etc/init.d/apache2 restart 3>&- || true
+if [ -e /usr/share/apache2/apache2-maintscript-helper ] ; then
+    . /usr/share/apache2/apache2-maintscript-helper
+    apache2_invoke enconf plug-ugmm.conf || exit $?
 fi
-
 
 exit 0
 
