@@ -5,15 +5,4 @@ debian/files
 debian/plug-ugmm.debhelper.log
 debian/plug-ugmm.substvars
 debian/plug-ugmm/
-
-# file types
-*.pyc
-\#*\#
-.*.sw?
-.swp
-## *.desktop
-*.old
-*.bak
-.~lock.*#
-# dirs
-.virtualenv
+debian/.debhelper/
