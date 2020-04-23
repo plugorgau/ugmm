@@ -1,0 +1,14 @@
+#!/bin/sh -e
+
+action="$1"
+oldversion="$2"
+
+umask 022
+
+
+#DEBHELPER#
+
+rm -rf /usr/share/plug-ugmm/www/templates_c/
+
+
+exit 0

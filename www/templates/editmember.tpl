@@ -169,7 +169,7 @@
     <input name="email_form" value="1" type="hidden">
     <input name="nonce" value="{'updateemailforwarding'|nonce}" type="hidden">        
     <input name="id" value="{$member.uidNumber}" type="hidden">
-    E-mail forwarded to <input name="email_forward" value="{$member.mailForward}" size="30" type="text">
+    E-mail forwarded to <input name="email_forward" value="{if isset($member.mailForward) and $member.mailForward}{$member.mailForward}{/if}" size="30" type="text">
     <input name="go_go_button" value="Update Forwarding" type="submit"><br>
     A blank address means that email is delivered to their PLUG
     home directory. (Currently a blank email will deliver email to

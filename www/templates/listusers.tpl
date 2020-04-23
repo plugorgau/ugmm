@@ -42,7 +42,7 @@
         <td>{$user.uidNumber}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}</td>
         <td>{$user.uid}</td>        
         <td>{$user.displayName}</td>                
-        <td>{$user.mail}{if $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
+        <td>{$user.mail}{if isset($user.mailForward) and $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>
         <td>{if $user.shellEnabled}T{/if}</td>
@@ -72,7 +72,7 @@
         <td>{$user.uidNumber}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}</td>
         <td>{$user.uid}</td>        
         <td>{$user.displayName}</td>                
-        <td>{$user.mail}{if $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
+        <td>{$user.mail}{if isset($user.mailForward) and $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
         <td>{$user.type}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>

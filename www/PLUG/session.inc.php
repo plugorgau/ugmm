@@ -41,7 +41,7 @@ function loginForm($username = null, $status = null, &$auth = null)
             //AdminLog::getInstance()->log("Invalid Login");
             break;
         case -5:
-            $errro = "Security Issue. Please login again";
+            $error = "Security Issue. Please login again";
             //AdminLog::getInstance()->log("Security Issue With Login");
             break;
         default:

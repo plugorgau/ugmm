@@ -1,6 +1,5 @@
 www/* /usr/share/plug-ugmm/www/
-plug-ugmm.conf /etc/apache2/sites-available/
 
-extras/ /usr/share/doc/plug-ugmm/
+extras/* /usr/share/doc/plug-ugmm/
 
 lib/ /usr/share/plug-ugmm/

@@ -10,7 +10,7 @@
         <th>Redirect email to</th>
 
         <td><input type="text" name="email_forward" value=
-        "{$member.mailForward}" size="30"></td>
+        "{if isset($member.mailForward) and $member.mailForward}{$member.mailForward}{/if}" size="30"></td>
       </tr>
     </table>If you would not like your PLUG email to be redirected,
     the above field should be blank.<br>

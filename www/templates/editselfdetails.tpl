@@ -38,7 +38,7 @@
         <th>Work Phone</th>
 
         <td><input type="text" name="work_phone" value=
-        "{$member.pager}" size="20"></td>
+        "{if isset($member.pager) and $member.pager}{$member.pager}{/if}" size="20"></td>
       </tr>
 
       <tr>
