@@ -1,3 +1,10 @@
+plug-ugmm (0.6.4) UNRELEASED; urgency=low
+
+  * Extra fixes to errors causing warnings in logs
+  * Fixes for HTML headers for some pages
+
+ -- Alastair Irvine <alastair@plug.org.au>  Thu, 25 Jun 2020 16:27:02 +0800
+
 plug-ugmm (0.6.3) UNRELEASED; urgency=low
 
   * extras/examples installed to correct location

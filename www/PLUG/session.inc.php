@@ -22,7 +22,7 @@ require_once 'Members.class.php';
 
 function loginForm($username = null, $status = null, &$auth = null)
 {
-    global $smarty;
+    global $smarty, $TITLE;
     $smarty->clearAssign('MenuItems');
     $smarty->clearAssign("LoggedInUsername");
     $smarty->assign('username', $username);
@@ -50,7 +50,8 @@ function loginForm($username = null, $status = null, &$auth = null)
     }
 
     if (isset($error)) $smarty->assign("error", $error);
-    display_page('loginform.tpl');
+    $TITLE = "";  // Turn off h2 element, messages.tpl, etc.
+    display_page('loginform.tpl', " - Login");
     exit();
 }
 

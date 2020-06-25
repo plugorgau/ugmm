@@ -27,12 +27,17 @@ $smarty->compile_check = true;
 $error=array();
 $success = array();
 
+define('USE_HEADER', true);
+define('NO_HEADER', false);
+define('USE_FOOTER', true);
+define('NO_FOOTER', false);
 
 function display_page($template, $pagetitle = '', $header = true, $footer = true)
 {
         global $smarty, $error, $success, $TOPLEVEL, $PAGETITLE, $TITLE;
         assign_vars(); // Make assign_vars function if you need to assign vars after processing
 
+        //-- Needed by header.tpl --
         try
         {
             list($topmenu, $menu) = generate_menus($TOPLEVEL);
@@ -45,7 +50,9 @@ function display_page($template, $pagetitle = '', $header = true, $footer = true
             $smarty->assign('topmenu', array());
             $smarty->assign('submenu', array());
         }
+        //--------------------------
 
+        //-- Needed by messages.tpl --
         // Bring in messages from session
         if (isset($_SESSION['errormessages']) || isset($_SESSION['successmessages']))
         {
@@ -57,11 +64,15 @@ function display_page($template, $pagetitle = '', $header = true, $footer = true
 
         $smarty->assign('errors', $error);
         $smarty->assign('success', $success);
+        //---------------------------
 
-        $pagetitle = $pagetitle ? $pagetitle : $PAGETITLE;
+        //-- Needed by header.tpl --
+        $pagetitle = $pagetitle ? $pagetitle : @$PAGETITLE;
 
-        if ($pagetitle) $smarty->assign("pagetitle", $pagetitle);
-        $smarty->assign('title', $TITLE);
+        if ($pagetitle) $smarty->assign("pagetitle", $pagetitle); // Appended to contents of title element
+        if (isset($TITLE) )
+            $smarty->assign('title', $TITLE);  // Displayed in a h2 element
+        //--------------------------
 
         if ($header) $smarty->display('header.tpl');
         if (!$footer) return $smarty->display($template);
@@ -98,7 +109,7 @@ $toplevelmenu['logout'] = array('label' => "Logout", 'link' => 'logout', 'level'
 
 // Submenu's level is defined by parent level
 $submenu['ctte']['members'] = array('label' => "Membership List", 'link' => 'ctte-members');
-$submenu['ctte']['expiredmembers'] = array('link' => $submenu['ctte']['members']['link']. '?expiredmembers=1');
+$submenu['ctte']['expiredmembers'] = array('label' => "Expired Members", 'link' => $submenu['ctte']['members']['link']. '?expiredmembers=1');
 $submenu['ctte']['newmember'] = array('label' => "New Member", 'link' => 'ctte-newmember');
 $submenu['ctte']['editmember'] = array('label' => '', 'link' => 'ctte-editmember?id=');
 $submenu['ctte']['resendack'] = array('label' => '', 'link' => 'resendack?member_id=');

@@ -1,4 +1,6 @@
 <h1>Password Reset</h1>
+{include file="messages.tpl"}
+
 {if $successform}
 Please continue to <a href="/ugmm">login page to login</a> with your new password
 {* TODO: link to login page *}
