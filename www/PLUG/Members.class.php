@@ -724,7 +724,11 @@ class Person {
     
     function change_forward($forward)
     {
-        if($forward != $this->userldaparray['mailForward'])
+        if(isset($this->userldaparray['mailForward']))
+            $existing_mailForward = $this->userldaparray['mailForward'];
+        else
+            $existing_mailForward = "";
+        if($forward != $existing_mailForward)
         {
             if($forward == "" || filter_var($forward, FILTER_VALIDATE_EMAIL))
             {
@@ -898,14 +902,16 @@ class Person {
     public function update_ldap()
     {
         //$this->create_user_ldap_array();
-        /*print_r(array_diff_assoc(
+        /*print_r(@array_diff_assoc(
                 $this->userldaparray,
                 $this->userorigldaparray
             ));*/
 
-
+        // Nested arrays aren't supported by array_diff_assoc(), so ignore
+        // warnings that arise from array members such as 'objectClass', 'memberOf', etc.
+        //# $userldap = prune_array($this->userldaparray);
         $this->ldapentry->replace(
-            array_diff_assoc(
+            @array_diff_assoc(
                 $this->userldaparray,
                 $this->userorigldaparray
             )
@@ -1384,9 +1390,9 @@ PLUG Membership Scripts";
             $error[] = _("Password too short");
             
         if( !preg_match("#[0-9]+#", $password) )
-        	$error[] = _("Password must include at least one number");
+            $error[] = _("Password must include at least one number");
         if( !preg_match("#[a-zA-Z]+#", $password) )
-        	$error[] = _("Password must include at least one letter");    
+            $error[] = _("Password must include at least one letter");    
         
         return $error;
     }*/
@@ -1495,9 +1501,9 @@ class PLUGFunction
             $error[] = _("Password too short");
             
         if( !preg_match("#[0-9]+#", $password) )
-        	$error[] = _("Password must include at least one number");
+            $error[] = _("Password must include at least one number");
         if( !preg_match("#[a-zA-Z]+#", $password) )
-        	$error[] = _("Password must include at least one letter");    
+            $error[] = _("Password must include at least one letter");    
         
         return $error;
     }
@@ -1546,3 +1552,9 @@ class PLUGFunction
       return (crypt($strPlainText, $strHash) == $strHash) ? true : false;
      
     }
+
+
+# vim: set tabstop=4 shiftwidth=4 :
+# Local Variables:
+# tab-width: 4
+# end:

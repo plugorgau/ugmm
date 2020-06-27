@@ -8,7 +8,14 @@ are not yet a financial member, you may be interested in
 </p><h3>Log in</h3>
 <form action="" method="POST">
 <input name="plug_members_auth" value="1" type="hidden">
-{$error}
+{if isset($error)}
+<div class="ui-widget messagewidget" id="errormessages">
+        <div class="ui-state-error ui-corner-all"  style="margin-top: 20px; padding: 0pt 0.7em;" > 
+                <p><span class="ui-icon ui-icon-alert" style="float: left; margin-right: 0.3em;"></span></p>
+                <p><strong>{$error}</strong></p>
+        </div>
+</div>
+{/if}
 <table border="0">
 <tbody><tr>
  <td>PLUG Username</td>

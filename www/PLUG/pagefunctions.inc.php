@@ -1,14 +1,19 @@
 <?php
 
-if(!isset($pagestarttime)) // For pages that don't need auth
+class UnauthorisedException extends RuntimeException
+{
+}
+
+
+if (!isset($pagestarttime)) // For pages that don't need auth
 {
     /* Page load time */
        $mtime = microtime();
        $mtime = explode(" ",$mtime);
        $mtime = $mtime[1] + $mtime[0];
-       $pagestarttime = $mtime; 
+       $pagestarttime = $mtime;
     /**/
-    
+
 }
 
 require_once('smarty3/SmartyBC.class.php');
@@ -22,36 +27,55 @@ $smarty->compile_check = true;
 $error=array();
 $success = array();
 
+define('USE_HEADER', true);
+define('NO_HEADER', false);
+define('USE_FOOTER', true);
+define('NO_FOOTER', false);
 
 function display_page($template, $pagetitle = '', $header = true, $footer = true)
 {
         global $smarty, $error, $success, $TOPLEVEL, $PAGETITLE, $TITLE;
         assign_vars(); // Make assign_vars function if you need to assign vars after processing
-        
-        list($topmenu, $menu) = generate_menus($TOPLEVEL);
-        
-        $smarty->assign('topmenu', $topmenu);
-        $smarty->assign('submenu', $menu);
-        
+
+        //-- Needed by header.tpl --
+        try
+        {
+            list($topmenu, $menu) = generate_menus($TOPLEVEL);
+
+            $smarty->assign('topmenu', $topmenu);
+            $smarty->assign('submenu', $menu);
+        }
+        catch (UnauthorisedException $e)
+        {
+            $smarty->assign('topmenu', array());
+            $smarty->assign('submenu', array());
+        }
+        //--------------------------
+
+        //-- Needed by messages.tpl --
         // Bring in messages from session
-        if(isset($_SESSION['errormessages']) || isset($_SESSION['successmessages']))
+        if (isset($_SESSION['errormessages']) || isset($_SESSION['successmessages']))
         {
             $error = array_merge($error, $_SESSION['errormessages']);
             $success = array_merge($success, $_SESSION['successmessages']);
             unset($_SESSION['errormessages']);
             unset($_SESSION['successmessages']);
-        }        
-        
+        }
+
         $smarty->assign('errors', $error);
         $smarty->assign('success', $success);
-        
-        $pagetitle = $pagetitle ? $pagetitle : $PAGETITLE;
-        
-        if($pagetitle) $smarty->assign("pagetitle", $pagetitle);
-        $smarty->assign('title', $TITLE);
-        
-        if($header) $smarty->display('header.tpl');
-        if(!$footer) return $smarty->display($template);
+        //---------------------------
+
+        //-- Needed by header.tpl --
+        $pagetitle = $pagetitle ? $pagetitle : @$PAGETITLE;
+
+        if ($pagetitle) $smarty->assign("pagetitle", $pagetitle); // Appended to contents of title element
+        if (isset($TITLE) )
+            $smarty->assign('title', $TITLE);  // Displayed in a h2 element
+        //--------------------------
+
+        if ($header) $smarty->display('header.tpl');
+        if (!$footer) return $smarty->display($template);
         $smarty->display($template);
         return $smarty->display('footer.tpl');
 }
@@ -60,16 +84,16 @@ function display_page($template, $pagetitle = '', $header = true, $footer = true
 function assign_vars()
 {
     global $smarty;
-    
+
     // Assign menu arrays so we can softcode links in templates
     global $toplevelmenu, $submenu;
     $smarty->assign('topmenuitems', $toplevelmenu);
     $smarty->assign('submenuitems', $submenu);
-    
+
     // Membership amount
     $smarty->assign('CONCESSION_AMOUNT', "$" . CONCESSION_AMOUNT / 100);
     $smarty->assign('FULL_AMOUNT', "$" . FULL_AMOUNT / 100 );
-    
+
     // Email addresses
     $emails['webmasters'] = WEBMASTERS_EMAIL;
     $emails['committee'] = COMMITTEE_EMAIL;
@@ -85,7 +109,7 @@ $toplevelmenu['logout'] = array('label' => "Logout", 'link' => 'logout', 'level'
 
 // Submenu's level is defined by parent level
 $submenu['ctte']['members'] = array('label' => "Membership List", 'link' => 'ctte-members');
-$submenu['ctte']['expiredmembers'] = array('link' => $submenu['ctte']['members']['link']. '?expiredmembers=1');
+$submenu['ctte']['expiredmembers'] = array('label' => "Expired Members", 'link' => $submenu['ctte']['members']['link']. '?expiredmembers=1');
 $submenu['ctte']['newmember'] = array('label' => "New Member", 'link' => 'ctte-newmember');
 $submenu['ctte']['editmember'] = array('label' => '', 'link' => 'ctte-editmember?id=');
 $submenu['ctte']['resendack'] = array('label' => '', 'link' => 'resendack?member_id=');
@@ -93,32 +117,33 @@ $submenu['ctte']['resendack'] = array('label' => '', 'link' => 'resendack?member
 $submenu['admin']['usergroups'] = array('label' => "Manage User Groups", 'link' => '/~tim/plugldap/');
 $submenu['admin']['emailaliases'] = array('label' => "Manage Email Aliases", 'link' => '/~tim/plugldap/');
 
-$submenu['home']['editselfdetails'] = array('link' => 'member-editdetails');
-$submenu['home']['editselfforwarding'] = array('link' => 'member-editforwarding');
-$submenu['home']['editselfshell'] = array('link' => 'member-editshell');
-$submenu['home']['editselfpassword'] = array('link' => 'member-editpassword');
+$submenu['home']['editselfdetails'] = array('label' => "Change details", 'link' => 'member-editdetails');
+$submenu['home']['editselfforwarding'] = array('label' => "Change forwarding", 'link' => 'member-editforwarding');
+$submenu['home']['editselfshell'] = array('label' => "Change shell", 'link' => 'member-editshell');
+$submenu['home']['editselfpassword'] = array('label' => "Change password", 'link' => 'member-editpassword');
 
 
 function generate_menus($top = '')
 {
     global $Auth, $toplevelmenu, $submenu;
-    
+
     $top = $top ? $top : 'home';
-    
+
     $smenu = array();
     $topmenu = array();
-    
+
     // Check if we are authenticated
     if (!isset($Auth) || !$Auth->checkAuth())
     {
-        return array();
+        throw new UnauthorisedException();
     }
-    foreach($toplevelmenu as $key => $menu)
+
+    foreach ($toplevelmenu as $key => $menu)
     {
-        if(check_level($menu['level']))
+        if (check_level($menu['level']))
         {
             $topmenu[$key]  = $menu;
-            if($key == $top)
+            if ($key == $top)
                 $smenu = $submenu[$key];
         }
     }
@@ -173,3 +198,9 @@ function clean_int($number)
     //return intval(clean_number($number));
     //ereg_replace("[^0-9]", "", clean_text($number));
 }
+
+
+# vim: set tabstop=4 shiftwidth=4 :
+# Local Variables:
+# tab-width: 4
+# end:

@@ -25,6 +25,8 @@
   <span style='font-weight: bold; font-size: 2.5em'>&nbsp; Perth Linux Users Group</span>
 </div>
 <div id='content'>
+{if $title|default}
 <h2>{$title}</h2>
 {include file="menu.tpl"}
 {include file="messages.tpl"}
+{/if}

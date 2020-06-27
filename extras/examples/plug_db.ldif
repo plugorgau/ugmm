@@ -1,0 +1,20 @@
+dn: olcDatabase=mdb,cn=config
+objectClass: olcMdbConfig
+olcDatabase: mdb
+olcDbDirectory: /var/lib/ldap_plug
+olcSuffix: dc=plug,dc=org,dc=au
+olcAccess: to dn.subtree="dc=plug,dc=org,dc=au"
+             by dn.exact="gidNumber=0+uidNumber=0,cn=peercred,cn=external,cn=auth" manage
+             by dn="cn=admin,dc=plug,dc=org,dc=au" manage
+             by * break
+olcAccess: to attrs=userPassword
+             by self write
+             by anonymous auth
+             by * none
+olcAccess: to attrs=shadowLastChange
+             by self write
+             by * read
+olcAccess: to dn.subtree="dc=plug,dc=org,dc=au" attrs=entry
+             by * read
+olcAccess: to dn.subtree="ou=Users,dc=plug,dc=org,dc=au" attrs=uid,objectClass
+             by anonymous read

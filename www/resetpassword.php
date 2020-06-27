@@ -1,10 +1,15 @@
 <?php
 
+$ACCESS_LEVEL = 'all';
+
 require_once('PLUG/pagefunctions.inc.php');
 
 require_once 'PLUG/Members.class.php';
 
 $OrgMembers = new Members($ldap);
+
+$smarty->assign('resetform', FALSE);
+$smarty->assign('successform', FALSE);
 
 if(isset($_POST['resetpassword_form']))
 {
@@ -96,7 +101,8 @@ else if(isset($_GET['uid']) && isset($_GET['reset']))
                     
                 }
 
-            }else
+            }
+            else
             {
                 $error = array_merge($error, $member->get_password_errors());
             
@@ -118,4 +124,10 @@ else if(isset($_GET['uid']) && isset($_GET['reset']))
     }
 
 }
-    display_page('resetpasswordform.tpl');
+    display_page('resetpasswordform.tpl', " - Reset Password");
+
+
+# vim: set noexpandtab tabstop=4 shiftwidth=4 :
+# Local Variables:
+# tab-width: 4
+# end:

@@ -11,7 +11,7 @@ require_once('./PLUG/session.inc.php');
     
     $smarty->assign('currentusers', $OrgMembers->get_current_members());
     $smarty->assign('pendingusers', $OrgMembers->get_pending_members());
-    if($_GET['expiredmembers'])
+    if(@$_GET['expiredmembers'])
     {
         $smarty->assign('expiredusers', $OrgMembers->get_expired_members());
     }
