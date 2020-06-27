@@ -73,7 +73,7 @@
         <td>{$user.uid}</td>        
         <td>{$user.displayName}</td>                
         <td>{$user.mail}{if isset($user.mailForward) and $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
-        {if isset($user.type)}<td>{$user.type}{/if}</td>
+        <td>{if isset($user.type)}{$user.type}{/if}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>
         <td><a href="{$submenuitems.ctte.editmember.link}{$user.uidNumber}">Edit</a></td>                
