@@ -88,7 +88,7 @@
 
           <td>
           <textarea name="notes" rows="3" cols="40">
-{$member.description}
+{if isset($member.description)}{$member.description}{/if}
 </textarea></td>
         </tr>
       </tbody>
