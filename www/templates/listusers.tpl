@@ -12,7 +12,7 @@
 
 {foreach from=$pendingusers item=user}
 <tr title="{if isset($user.description)}{$user.description}{/if}" bgcolor="#ddddff">
-        <td>{$user.uidNumber}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}</td>
+        <td>{$user.uidNumber}{if isset($user.description)}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}{/if}</td>
         <td>{$user.uid}</td>        
         <td>{$user.displayName}</td>                
         <td>{$user.mail}</td>
@@ -39,7 +39,7 @@
 
 {foreach from=$currentusers item=user}
 <tr title="{if isset($user.description)}{$user.description}{/if}" {if $user.groups}style="elevated_user" bgcolor="#ffdddd"{else}bgcolor="#ddddff"{/if}">
-        <td>{$user.uidNumber}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}</td>
+        <td>{$user.uidNumber}{if isset($user.description)}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}{/if}</td>
         <td>{$user.uid}</td>        
         <td>{$user.displayName}</td>                
         <td>{$user.mail}{if isset($user.mailForward) and $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
@@ -69,11 +69,11 @@
 
 {foreach from=$expiredusers item=user}
 <tr title="{if isset($user.description)}{$user.description}{/if}" {if $user.groups}style="elevated_user" bgcolor="#ffdddd"{else}bgcolor="#ddddff"{/if}">
-        <td>{$user.uidNumber}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}</td>
+        <td>{$user.uidNumber}{if isset($user.description)}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}{/if}</td>
         <td>{$user.uid}</td>        
         <td>{$user.displayName}</td>                
         <td>{$user.mail}{if isset($user.mailForward) and $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
-        {if isset($user.type)}<td>{$user.type}{/if}</td>
+        <td>{if isset($user.type)}{$user.type}{/if}</td>
         <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
         <td>{$user.expiry}</td>
         <td><a href="{$submenuitems.ctte.editmember.link}{$user.uidNumber}">Edit</a></td>                

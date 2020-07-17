@@ -20,7 +20,7 @@
 <div id="page" class="content">
 
 <div id="header">
-  <a href="/"><img src="/images/logo.png" alt="[logo]" class="logo" style='vertical-align: middle'></a>
+  <a href="/"><img src="/logo.png" alt="[logo]" class="logo" style='vertical-align: middle'></a>
 
   <span style='font-weight: bold; font-size: 2.5em'>&nbsp; Perth Linux Users Group</span>
 </div>
