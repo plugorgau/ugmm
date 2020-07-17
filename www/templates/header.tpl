@@ -7,7 +7,7 @@
 <meta name="generator" content="UGMM V0.4" />
 <!-- CSS Stylesheet -->
 <link rel="stylesheet" type="text/css" href="style.css" id="plug_css" />
-<link rel="shortcut icon" href="/sites/default/files/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 
 <link type="text/css" href="/javascript/jquery-ui/css/smoothness/jquery-ui.css" rel="stylesheet" />
 
@@ -20,11 +20,13 @@
 <div id="page" class="content">
 
 <div id="header">
-  <a href="/"><img src="/sites/default/files/logo.png" alt="[logo]" class="logo" style='vertical-align: middle'></a>
+  <a href="/"><img src="/logo.png" alt="[logo]" class="logo" style='vertical-align: middle'></a>
 
   <span style='font-weight: bold; font-size: 2.5em'>&nbsp; Perth Linux Users Group</span>
 </div>
 <div id='content'>
+{if $title|default}
 <h2>{$title}</h2>
 {include file="menu.tpl"}
 {include file="messages.tpl"}
+{/if}

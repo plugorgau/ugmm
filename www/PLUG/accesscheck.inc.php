@@ -10,15 +10,24 @@ function check_level($ACCESS_LEVEL)
 
     $user_details = $Auth->getAuthData();
     
-    if($ACCESS_LEVEL == "all") return TRUE;
+    if ($ACCESS_LEVEL == "all") return TRUE;
 
-    if(!is_array($ACCESS_LEVEL)) $ACCESS_LEVEL = array($ACCESS_LEVEL);
+    if (!is_array($ACCESS_LEVEL)) $ACCESS_LEVEL = array($ACCESS_LEVEL);
     
     foreach($ACCESS_LEVEL as $level)
     {
         $groupname = "cn=$level,ou=Groups,".LDAP_BASE;
         
-        if(in_array($groupname, $user_details['memberOf']))
+        if (is_array($user_details['memberOf']))
+        {
+            $groups = $user_details['memberOf'];
+        }
+        else
+        {
+            $groups = array($user_details['memberOf']);
+        }
+
+        if (in_array($groupname, $groups))
         {
             // User is in correct group!
             return TRUE;
@@ -28,9 +37,15 @@ function check_level($ACCESS_LEVEL)
     return FALSE;
 }
 
-if(! check_level($ACCESS_LEVEL))
+if (! check_level($ACCESS_LEVEL))
 {
 
     display_page('accessdenied.tpl');
     exit;
 }
+
+
+# vim: set tabstop=4 shiftwidth=4 :
+# Local Variables:
+# tab-width: 4
+# end:

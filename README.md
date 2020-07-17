@@ -20,5 +20,10 @@ This will give you a file like plug-ugmm_0.5.2_all.deb which you can then instal
 sudo gdebi plug-ugmm_0.5.2_all.deb
 ```
 
+## Usage documentation
+
+See the documentation that will be installed along with the package:
+[extras/README.md](extras/README.md).
+
 After installing, copy `/usr/share/plug-ugmm/www/PLUG/ldapconnection.inc.php.example`
-to `/etc/private/ldapconnection.inc.php` and modify with your LDAP connection details
+to `/etc/private/ldapconnection.inc.php` and modify with your LDAP connection details.

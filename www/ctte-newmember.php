@@ -9,7 +9,9 @@ require_once('./PLUG/session.inc.php');
 
     $OrgMembers = new Members($ldap);
 
-     if(isset($_POST['newmember_form']) && !verify_nonce($_POST['nonce'],'newmember'))
+    $smarty->assign("usercreated", FALSE);
+
+    if(isset($_POST['newmember_form']) && !verify_nonce($_POST['nonce'],'newmember'))
         $error[] = "Attempt to double submit form? No changes made.";
 
         // Check password matches
@@ -42,7 +44,8 @@ require_once('./PLUG/session.inc.php');
             
             // Member details so can edit and correct
             $memberdetails = $member->userarray();            
-        }else
+        }
+        else
         {
             $success = array_merge($success, $member->get_messages());
             $smarty->assign("usercreated", TRUE);

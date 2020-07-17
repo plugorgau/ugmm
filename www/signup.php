@@ -1,5 +1,7 @@
 <?php
 
+$ACCESS_LEVEL = 'all';
+
 session_start();
 
 require_once('PLUG/pagefunctions.inc.php');
@@ -80,7 +82,7 @@ if(isset($_POST['membersignup_form'])) {
     }
 }
 
-display_page('signup.tpl');
+display_page('signup.tpl', " - Signup");
 
 
 function send_waitingpayment_email($member, $details)

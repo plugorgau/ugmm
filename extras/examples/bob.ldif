@@ -1,0 +1,24 @@
+dn: uidNumber=6969,ou=Users,dc=plug,dc=org,dc=au
+objectClass: top
+objectClass: person
+objectClass: posixAccount
+objectClass: inetOrgPerson
+objectClass: shadowAccount
+objectClass: mailForwardingAccount
+uid: bobtest
+displayName: Bob Test 
+uidNumber: 6969
+gidNumber: 6969
+homeDirectory: /home/bobtest
+userPassword: test432bob
+loginShell: /bin/sh
+mail: bob@plug.org.au
+mailForward: bob@example.com
+givenName: Bob
+sn: Test
+cn: bobtest
+street: 42 Test Bvd, Nowheresville 6969
+mobile: 0469 000000
+description: A test user created by Alastair
+shadowExpire: -1
+memberOf: cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au

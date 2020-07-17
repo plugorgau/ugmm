@@ -1,0 +1,5 @@
+dn: uidNumber=6969,ou=Users,dc=plug,dc=org,dc=au
+changetype: modify
+add: memberOf
+memberOf: cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au
+
