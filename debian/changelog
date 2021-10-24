@@ -1,3 +1,8 @@
+plug-ugmm (0.6.6) unstable; urgency=low
+  * Identify members who are overdue but retain their privileges.
+
+ -- Nutmeg <nutmeg@plug.org.au>  Fri, 22 Oct 2021 12:31:00 +0800
+
 plug-ugmm (0.6.5) unstable; urgency=low
 
   * ctte-members: user.description in listusers.tpl can now be safely absent
