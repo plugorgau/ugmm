@@ -1,4 +1,5 @@
 <?php
+// This file is in the www subdirectory - however it is actually called by a cron script
 
 // Start of code for emailing expired members and moving them into the expired group
 
@@ -8,13 +9,37 @@ require_once('/usr/share/plug-ugmm/www/PLUG/Members.class.php');
 
 $OrgMembers = new Members($ldap);
 
-// ********* Expired members 
 
 // Create days after epoch for now and find all accounts < this (grace period of 5 days?)
-$today = ceil(time()/ 86400) - 5;
+$overdue = ceil(date("U", strtotime("-5 days"))/ 86400);
+$expired = ceil(date("U", strtotime("-3 months"))/ 86400);
 
-// Select all accounts not already in group expired
-$filter = "(&(shadowExpire<=$today)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
+// ********* Overdue members 
+// Select all accounts where membership is set as current, but renewal is now overdue
+$filter = "(&(shadowExpire<=$overdue)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
+
+$members = $OrgMembers->load_members_dn_from_filter($filter);
+
+foreach($members as $dn)
+{
+    $member = new Person($ldap);
+    $member->load_ldap($dn);
+
+    $details = $member->userarray();
+    
+    echo "User ".$details['displayName']. " has expired\n";
+    // Email that their payment is overdue?    
+    send_overdue_email($member, $details);
+    // Remove from group current. Add to group overdue    
+    $member->set_status_group();
+
+}
+
+// ********* Expired members 
+
+// Select all accounts where membership is set as overdue, but have now passed
+// the 3 months allowed by the constitution
+$filter = "(&(shadowExpire<=$expired)(memberOf=cn=overduemembers,ou=Groups,".LDAP_BASE."))";
 
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
@@ -28,7 +53,7 @@ foreach($members as $dn)
     echo "User ".$details['displayName']. " has expired\n";
     // Email that their account has expired?    
     send_expired_email($member, $details);
-    // Remove from group current. Add to group expired    
+    // Remove from group overdue. Add to group expired
     $member->set_status_group();
 
 }
@@ -38,7 +63,7 @@ foreach($members as $dn)
 // Create days after epoch for now + 30 days and find all accounts = this
 $future = ceil(time()/ 86400) + 30;
 
-// Select all accounts not already in group expired
+// Select all accounts which are set as current
 $filter = "(&(shadowExpire=$future)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
 $members = $OrgMembers->load_members_dn_from_filter($filter);
@@ -98,6 +123,46 @@ PLUG Membership Scripts";
         foreach($member->get_errors() as $message) echo "$message\n";    
     }
 }
+function send_overdue_email($member, $details)
+{
+    $body = "Dear %s,
+    
+Your PLUG membership renewal was due on %s.
+
+If you wish to renew your PLUG membership, you have several options:
+
+".PAYMENT_OPTIONS."
+     
+Membership fees are \$%s per year, or \$%s per year for holders of a
+current student or concession card.
+
+You may choose not to renew your membership, in which case your PLUG
+shell account will expire 3 months after your membership lapsed. However,
+the mailing list is still freely accessible to non-members.
+
+If you have any queries, please do not hesitate to contact the PLUG
+committee via email at ".COMMITTEE_EMAIL.".
+
+Regards,
+
+PLUG Membership Scripts";
+
+    $body = sprintf($body,
+        $details['displayName'],
+        $details['formattedexpiry'],
+        FULL_AMOUNT / 100,
+        CONCESSION_AMOUNT / 100
+    );
+        
+    $subject = "Your PLUG Membership Renewal is Overdue";
+    
+    if($member->send_user_email($body, $subject))
+    {
+        foreach($member->get_messages() as $message) echo "$message\n";
+    }else{
+        foreach($member->get_errors() as $message) echo "$message\n";    
+    }
+}
 
 function send_expiring_email($member, $details)
 {
@@ -113,7 +178,7 @@ Membership fees are \$%s per year, or \$%s per year for holders of a
 current student or concession card.
 
 You may choose not to renew your membership, in which case your PLUG
-shell account will expire 5 days after your membership lapsed. However,
+shell account will expire 3 months after your membership lapsed. However,
 the mailing list is still freely accessible to non-members.
 
 If you have any queries, please do not hesitate to contact the PLUG
