@@ -1164,7 +1164,7 @@ class Person {
 
     public function send_user_email($body, $subject)
     {
-        $headers .= "Reply-To: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
+        $headers = "Reply-To: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
         $headers .= "Return-Path: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
         $headers .= "From: ".SCRIPTS_FROM_EMAIL."\r\n";
         $headers .= "Bcc: ".ADMIN_EMAIL."\r\n";
