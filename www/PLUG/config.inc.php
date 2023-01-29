@@ -26,11 +26,8 @@ define('PAYMENT_OPTIONS',
      http://www.plug.org.au/membership for details), and email
      ".COMMITTEE_EMAIL." to let them know you have deposited it.
      Credit card facilities are available if no other method is
-     available to you, just contact the committee to organise.
-
- (c) Send a money-order (not cash) to PLUG's snail-mail address,
-     available at http://www.plug.org.au/contact and email
-     ".COMMITTEE_EMAIL." to let them know you have sent it.");
+     available to you, just contact the committee to organise."
+);
 
 define('LDAP_BASE', 'dc=plug,dc=org,dc=au');
 define('DEFAULT_MEMBER', 'cn=admin,dc=plug,dc=org,dc=au');
