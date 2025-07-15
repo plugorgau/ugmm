@@ -547,8 +547,7 @@ class Person {
             'shadowExpire',
             'memberOf',
             'createTimestamp',
-            'modifyTimestamp' ));
-
+            'modifyTimestamp'
         ));
         if (PEAR::isError($this->ldapentry)) {
             throw new Exception('LDAP Error: load_ldap: '.$this->ldapentry->getMessage());
