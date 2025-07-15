@@ -2,4 +2,5 @@ www/* /usr/share/plug-ugmm/www/
 
 extras/* /usr/share/doc/plug-ugmm/
 
-lib/ /usr/share/plug-ugmm/
+lib/pear-Auth/Auth.php /usr/share/plug-ugmm/lib/pear-Auth/
+lib/pear-Auth/Auth/*   /usr/share/plug-ugmm/lib/pear-Auth/Auth/
