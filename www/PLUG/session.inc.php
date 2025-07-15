@@ -29,18 +29,19 @@ function loginForm($username = null, $status = null, &$auth = null)
 
     switch ($status)
     {
+        case '':
         case 0:
             break;
-        case -1:
-        case -2:
+        case AUTH_IDLED:
+        case AUTH_EXPIRED:
             $error = "Your session has expired. Please login again";
             //AdminLog::getInstance()->log("Expired Session");
             break;
-        case -3:
+        case AUTH_WRONG_LOGIN:
             $error = "Incorrect Login.";
             //AdminLog::getInstance()->log("Invalid Login");
             break;
-        case -5:
+        case AUTH_SECURITY_BREACH:
             $error = "Security Issue. Please login again";
             //AdminLog::getInstance()->log("Security Issue With Login");
             break;
