@@ -1,0 +1,25 @@
+name: test
+
+on:
+  pull_request:
+  push:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install build-deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes devscripts
+          sudo apt-get build-dep --yes .
+      - name: Build plug-ugmm package
+        run: debuild -us -uc -b
+      - name: List package content
+        run: debc
+      - name: Install package
+        run: sudo apt-get install ../plug-ugmm_*.deb
