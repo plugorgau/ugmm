@@ -33,9 +33,10 @@ class Members {
         }
 
         // Load all members
-        $members = $entry->getValue('member');
+        $members = $entry->getValue('member', 'all');
         asort($members);
 
+        $memberdetails = array();
         foreach($members as $member)
         {
             if($member == DEFAULT_MEMBER) continue;
