@@ -37,3 +37,4 @@ jobs:
       - name: Load the front page
         run: |
           curl -L -D- http://localhost:8000/
+          curl -L -D- -d 'plug_members_auth=1&username=bobtest&password=test432bob' http://localhost:8000/memberself
