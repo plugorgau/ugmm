@@ -45,4 +45,4 @@ jobs:
               php-symfony-mime
 
       - name: Run tests
-        run: phpunit tests
+        run: phpunit --testdox tests
