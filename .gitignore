@@ -6,3 +6,5 @@ debian/plug-ugmm.debhelper.log
 debian/plug-ugmm.substvars
 debian/plug-ugmm/
 debian/.debhelper/
+
+*~

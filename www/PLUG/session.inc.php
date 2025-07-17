@@ -9,8 +9,8 @@
 
 /**/
 // It is safe to assume that lib/ is present next to www/ during dev and after install
-define('AUTH_DIR', dirname(dirname(dirname(__FILE__))) . "/lib/pear");
-//# define('AUTH_DIR', "/usr/share/plug-ugmm/lib/pear");
+define('AUTH_DIR', dirname(dirname(dirname(__FILE__))) . "/lib/pear-Auth");
+//# define('AUTH_DIR', "/usr/share/plug-ugmm/lib/pear-Auth");
 set_include_path(get_include_path() . PATH_SEPARATOR . AUTH_DIR);
 
 require_once('/etc/private/ldapconnection.inc.php');
@@ -29,18 +29,19 @@ function loginForm($username = null, $status = null, &$auth = null)
 
     switch ($status)
     {
+        case '':
         case 0:
             break;
-        case -1:
-        case -2:
+        case AUTH_IDLED:
+        case AUTH_EXPIRED:
             $error = "Your session has expired. Please login again";
             //AdminLog::getInstance()->log("Expired Session");
             break;
-        case -3:
+        case AUTH_WRONG_LOGIN:
             $error = "Incorrect Login.";
             //AdminLog::getInstance()->log("Invalid Login");
             break;
-        case -5:
+        case AUTH_SECURITY_BREACH:
             $error = "Security Issue. Please login again";
             //AdminLog::getInstance()->log("Security Issue With Login");
             break;

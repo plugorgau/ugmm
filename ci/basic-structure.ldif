@@ -1,0 +1,33 @@
+dn: cn=admin,dc=plug,dc=org,dc=au
+objectClass: simpleSecurityObject
+objectClass: organizationalRole
+cn: admin
+description: PLUG administrator
+userPassword: plug
+
+# Users, plug.org.au
+dn: ou=Users,dc=plug,dc=org,dc=au
+ou: Users
+objectClass: organizationalUnit
+objectClass: top
+
+# Groups, plug.org.au
+dn: ou=Groups,dc=plug,dc=org,dc=au
+ou: Groups
+objectClass: organizationalUnit
+objectClass: top
+
+# maxUid, Users, plug.org.au
+dn: cn=maxUid,ou=Users,dc=plug,dc=org,dc=au
+objectClass: namedObject
+objectClass: extensibleObject
+objectClass: top
+uidNumber: 10000
+cn: maxUid
+x-plug-paymentID: 1
+
+# Users Private Groups
+dn: ou=UPG,ou=Groups,dc=plug,dc=org,dc=au
+ou: UPG
+objectClass: organizationalUnit
+objectClass: top

@@ -1,0 +1,40 @@
+dn: uidNumber=6000,ou=Users,dc=plug,dc=org,dc=au
+objectClass: top
+objectClass: person
+objectClass: posixAccount
+objectClass: inetOrgPerson
+objectClass: shadowAccount
+objectClass: mailForwardingAccount
+uid: chair
+displayName: PLUG Chair
+uidNumber: 6000
+gidNumber: 6000
+homeDirectory: /home/chair
+userPassword: chairpass
+loginShell: /bin/sh
+mail: chair@plug.org.au
+mailForward: chair@example.com
+givenName: PLUG
+sn: Chair
+cn: chair
+street: 42 Test Bvd, Nowheresville 6969
+mobile: 0469 000000
+shadowExpire: -1
+
+dn: gidNumber=6000,ou=UPG,ou=Groups,dc=plug,dc=org,dc=au
+gidNumber: 6000
+member: uidNumber=6000,ou=Users,dc=plug,dc=org,dc=au
+objectClass: groupOfNames
+objectClass: posixGroup
+cn: chair
+
+dn: cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au
+changetype: modify
+add: member
+member: uidNumber=6000,ou=Users,dc=plug,dc=org,dc=au
+
+
+dn: cn=committee,ou=Groups,dc=plug,dc=org,dc=au
+changetype: modify
+add: member
+member: uidNumber=6000,ou=Users,dc=plug,dc=org,dc=au

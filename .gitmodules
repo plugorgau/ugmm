@@ -1,0 +1,4 @@
+[submodule "lib/pear-Auth"]
+	path = lib/pear-Auth
+	url = https://github.com/plugorgau/pear-Auth.git
+	branch = trunk

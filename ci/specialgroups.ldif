@@ -1,0 +1,55 @@
+dn: cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au
+cn: currentmembers
+objectClass: groupOfNames
+member: cn=admin,dc=plug,dc=org,dc=au
+
+dn: cn=pendingmembers,ou=Groups,dc=plug,dc=org,dc=au
+cn: pendingmembers
+objectClass: groupOfNames
+member: cn=admin,dc=plug,dc=org,dc=au
+
+dn: cn=overduemembers,ou=Groups,dc=plug,dc=org,dc=au
+cn: overduemembers
+objectClass: groupOfNames
+member: cn=admin,dc=plug,dc=org,dc=au
+
+dn: cn=expiredmembers,ou=Groups,dc=plug,dc=org,dc=au
+cn: expiredmembers
+objectClass: groupOfNames
+member: cn=admin,dc=plug,dc=org,dc=au
+
+dn: cn=admin,ou=Groups,dc=plug,dc=org,dc=au
+cn: admin
+gidNumber: 1001
+objectClass: groupOfNames
+objectClass: posixGroup
+member: cn=admin,dc=plug,dc=org,dc=au
+
+dn: cn=webslave,ou=Groups,dc=plug,dc=org,dc=au
+cn: webslave
+gidNumber: 1003
+objectClass: groupOfNames
+objectClass: posixGroup
+member: cn=admin,dc=plug,dc=org,dc=au
+
+dn: cn=committee,ou=Groups,dc=plug,dc=org,dc=au
+cn: committee
+gidNumber: 1006
+objectClass: groupOfNames
+objectClass: posixGroup
+member: cn=admin,dc=plug,dc=org,dc=au
+
+dn: cn=librarian,ou=Groups,dc=plug,dc=org,dc=au
+cn: librarian
+gidNumber: 1007
+objectClass: groupOfNames
+objectClass: posixGroup
+member: cn=admin,dc=plug,dc=org,dc=au
+
+dn: cn=shell,ou=Groups,dc=plug,dc=org,dc=au
+cn: shell
+gidNumber: 1009
+objectClass: groupOfNames
+objectClass: posixGroup
+member: cn=admin,dc=plug,dc=org,dc=au
+
