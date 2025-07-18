@@ -42,6 +42,14 @@ final class UGMMTest extends TestCase {
         $this->assertText($page, '#errormessages strong', 'Incorrect Login.');
     }
 
+    public function testLogout() {
+        $client = new HttpBrowser();
+        $page = $this->login($client, 'bobtest', 'test432bob');
+        $this->assertText($page, 'title', 'PLUG - Members Area - Member Details');
+        $page = $client->clickLink('Logout');
+        $this->assertText($page, 'title', 'PLUG - Members Area - Login');
+    }
+
     public function testMemberselfInfo() {
         $client = new HttpBrowser();
         $page = $this->login($client, 'bobtest', 'test432bob');
@@ -190,5 +198,12 @@ final class UGMMTest extends TestCase {
 
         // Verify that we can log in as the new user
         $this->login($client, $uid, 'pass1234');
+    }
+
+    public function testCommitteeMembers() {
+        $client = new HttpBrowser();
+        $this->login($client, 'chair', 'chairpass');
+        $page = $client->clickLink('Committee');
+        $this->assertText($page, 'title', 'PLUG - Members Area - Membership List');
     }
 }
