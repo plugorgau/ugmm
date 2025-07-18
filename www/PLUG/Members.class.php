@@ -1510,7 +1510,7 @@ PLUG Membership Scripts";
 class PLUGFunction
 {
     // Validation function available globally
-    function is_valid_password($password)
+    static function is_valid_password($password)
     {
         $error = array();
         $newpassword = cleanpassword($password);
@@ -1531,7 +1531,7 @@ class PLUGFunction
 
     }
 
-    function check_password_strength($password)
+    static function check_password_strength($password)
     {
         $error = array();
         if(strlen($password) < 7)
@@ -1585,9 +1585,12 @@ function validatePassword($strPlainText, $strHash) {
     if (CRYPT_SHA512 != 1) {
         throw new Exception('Hashing mechanism not supported.');
     }
-
-    return (crypt($strPlainText, $strHash) == $strHash) ? true : false;
-
+    if (strtolower(substr($strHash, 0, 7)) == '{crypt}') {
+        $strHash = substr($strHash, 7);
+        return crypt($strPlainText, $strHash) == $strHash;
+    } else {
+        return $strPlainText == $strHash;
+    }
 }
 
 

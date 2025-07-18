@@ -132,4 +132,30 @@ final class UGMMTest extends TestCase {
 
         // TODO: test posting the form
     }
+
+    public function testMemberEditPassword() {
+        $client = new HttpBrowser();
+        $this->login($client, 'bobtest', 'test432bob');
+        $page = $client->clickLink('Change your PLUG password');
+        $this->assertText($page, 'title', 'PLUG - Members Area - Editing Member Password');
+
+        $page = $client->submitForm('Change Password', [
+            'current_password' => 'test432bob',
+            'newpassword' => 'newpassword123',
+            'newpasswordconfirm' => 'newpassword123',
+        ]);
+        $this->assertText($page, 'title', 'PLUG - Members Area - Member Details');
+        $this->assertText($page, '#successmessages li', 'Password changed');
+
+        // Try logging in with the new password, and change back
+        $client->getCookieJar()->clear();
+        $this->login($client, 'bobtest', 'newpassword123');
+        $this->assertText($page, 'title', 'PLUG - Members Area - Member Details');
+        $page = $client->clickLink('Change your PLUG password');
+        $page = $client->submitForm('Change Password', [
+            'current_password' => 'newpassword123',
+            'newpassword' => 'test432bob',
+            'newpasswordconfirm' => 'test432bob',
+        ]);
+    }
 }
