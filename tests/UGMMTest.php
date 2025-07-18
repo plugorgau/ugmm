@@ -9,6 +9,7 @@ require_once '/usr/share/php/Symfony/Component/BrowserKit/autoload.php';
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\BrowserKit\HttpBrowser;
 
+$base_url = 'http://localhost:8000';
 
 final class UGMMTest extends TestCase {
 
@@ -18,7 +19,9 @@ final class UGMMTest extends TestCase {
     }
 
     public function login(HttpBrowser $client, string $username, string $password): Crawler {
-        $page = $client->request('GET', 'http://localhost:8000');
+        global $base_url;
+
+        $page = $client->request('GET', $base_url);
         $this->assertText($page, 'title', 'PLUG - Members Area - Login');
         return $client->submitForm('Log In', [
             'username' => $username,
@@ -157,5 +160,35 @@ final class UGMMTest extends TestCase {
             'newpassword' => 'test432bob',
             'newpasswordconfirm' => 'test432bob',
         ]);
+    }
+
+    public function testSignup() {
+        global $base_url;
+
+        $client = new HttpBrowser();
+        $page = $client->request('GET', $base_url);
+        $this->assertText($page, 'title', 'PLUG - Members Area - Login');
+        $page = $client->clickLink('Signup Form');
+        $this->assertText($page, 'title', 'PLUG - Members Area - Signup');
+
+        // TODO: make sure we have a unique user ID
+        $uid = sprintf('test%05d', rand(0, 99999));
+        $page = $client->submitForm('Signup', [
+            'givenName' => 'Test',
+            'sn' => 'Last-name',
+            'mail' => $uid . '@example.com',
+            'street' => '123 Fake St',
+            'homePhone' => '08 5550 1111',
+            'pager' => '08 5550 2222',
+            'mobile' => '08 5550 3333',
+            'uid' => $uid,
+            'password' => 'pass1234',
+            'vpassword' => 'pass1234',
+            'notes' => 'Sign up for testing',
+        ]);
+        $this->assertText($page, 'title', 'PLUG - Members Area - Signup complete');
+
+        // Verify that we can log in as the new user
+        $this->login($client, $uid, 'pass1234');
     }
 }
