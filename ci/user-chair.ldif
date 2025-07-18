@@ -11,7 +11,7 @@ uidNumber: 6000
 gidNumber: 6000
 homeDirectory: /home/chair
 userPassword: chairpass
-loginShell: /bin/sh
+loginShell: /bin/bash
 mail: chair@plug.org.au
 mailForward: chair@example.com
 givenName: PLUG

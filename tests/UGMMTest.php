@@ -61,7 +61,7 @@ final class UGMMTest extends TestCase {
         $this->assertText($rows->eq(1), 'th', 'Unix User ID');
         $this->assertText($rows->eq(1), 'td', '6969');
         $this->assertText($rows->eq(2), 'th', 'Shell');
-        $this->assertText($rows->eq(2), 'td', '/bin/sh');
+        $this->assertText($rows->eq(2), 'td', '/bin/bash');
         $this->assertText($rows->eq(3), 'th', 'Account expires');
         $this->assertText($rows->eq(3), 'td', 'Wednesday, 31 December 1969');
     }
@@ -107,5 +107,29 @@ final class UGMMTest extends TestCase {
         $rows = $page->filter('table')->eq(0)->children();
         $this->assertText($rows->eq(2), 'th', 'Home Phone');
         $this->assertText($rows->eq(2), 'td', 'N/A');
+    }
+
+    public function testMemberEditForwarding() {
+        $client = new HttpBrowser();
+        $this->login($client, 'bobtest', 'test432bob');
+        $page = $client->clickLink('Change your e-mail forwarding');
+        $this->assertText($page, 'title', 'PLUG - Members Area - Editing Member Email Forwarding');
+
+        $data = $page->selectButton('Change')->form()->getValues();
+        $this->assertSame($data['email_forward'], 'bob@example.com');
+
+        // TODO: test posting the form
+    }
+
+    public function testMemberEditShell() {
+        $client = new HttpBrowser();
+        $this->login($client, 'bobtest', 'test432bob');
+        $page = $client->clickLink('Change your shell account settings');
+        $this->assertText($page, 'title', 'PLUG - Members Area - Editing Member Shell');
+
+        $data = $page->selectButton('Change Shell')->form()->getValues();
+        $this->assertSame($data['account_shell'], 'bash');
+
+        // TODO: test posting the form
     }
 }
