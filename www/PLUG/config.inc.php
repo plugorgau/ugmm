@@ -4,8 +4,8 @@
  * Define all things here that are Organisation specific
  */
 
-define('CONCESSION_AMOUNT', 1000);
-define('FULL_AMOUNT', 2000);
+define('CONCESSION_AMOUNT', 2000);
+define('FULL_AMOUNT', 5000);
 
 define('CONCESSION_TYPE', 2);
 define('FULL_TYPE', 1);
