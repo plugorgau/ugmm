@@ -163,7 +163,7 @@ final class UGMMTest extends TestCase {
 
         // Try logging in with the new password, and change back
         $client->getCookieJar()->clear();
-        $this->login($client, 'bobtest', 'newpassword123');
+        $page = $this->login($client, 'bobtest', 'newpassword123');
         $this->assertText($page, 'title', ' - Member Details');
         $page = $client->clickLink('Change your PLUG password');
         $page = $client->submitForm('Change Password', [
@@ -261,5 +261,54 @@ final class UGMMTest extends TestCase {
         ]);
         $this->assertText($page, 'title', ' - Edit Member');
         $this->assertText($page, '#successmessages li', 'Payment processed');
+    }
+
+    public function testResetPassword() {
+        global $base_url;
+
+        $client = new HttpBrowser();
+        $page = $client->request('GET', $base_url);
+        $this->assertText($page, 'title', ' - Login');
+        $page = $client->clickLink('Forgotten your password?');
+        $this->assertText($page, 'title', ' - Reset Password');
+
+        $page = $client->submitForm('Send Reset Email', [
+            'email' => 'bob@plug.org.au',
+        ]);
+        $this->assertText($page, 'title', ' - Reset Password');
+        $this->assertText($page, '#successmessages li', 'An email has been sent');
+
+        // Get password reset URL from email
+        $fp = fopen('/tmp/ugmm-mbox', 'r');
+        $reset_url = '';
+        while (!feof($fp)) {
+            $line = fgets($fp);
+            if ($line !== false && str_contains($line, '/resetpassword?')) {
+                $reset_url = trim($line);
+            }
+        }
+        fclose($fp);
+        $this->assertNotSame($reset_url, '');
+
+        // Change the password
+        $page = $client->request('GET', $reset_url);
+        $this->assertText($page, 'title', ' - Reset Password');
+        $page = $client->submitForm('Change Password', [
+            'newpassword' => 'newpass123',
+            'newpasswordconfirm' => 'newpass123',
+        ]);
+        $this->assertText($page, 'title', ' - Reset Password');
+        $this->assertText($page, '#successmessages li', 'Password changed');
+
+        // Try logging in with the new password, and change back
+        $client->getCookieJar()->clear();
+        $page = $this->login($client, 'bobtest', 'newpass123');
+        $this->assertText($page, 'title', ' - Member Details');
+        $page = $client->clickLink('Change your PLUG password');
+        $page = $client->submitForm('Change Password', [
+            'current_password' => 'newpass123',
+            'newpassword' => 'test432bob',
+            'newpasswordconfirm' => 'test432bob',
+        ]);
     }
 }
