@@ -154,7 +154,7 @@ function create_nonce($action = -1, $tick = 0, $randnum = 0) {
     return $nonce;
 }
 
-$smarty->register_modifier('nonce', 'create_nonce');
+$smarty->registerPlugin('modifier', 'nonce', 'create_nonce');
 
 
 # vim: set tabstop=4 shiftwidth=4 :
