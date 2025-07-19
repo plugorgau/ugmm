@@ -57,7 +57,7 @@ function loginForm($username = null, $status = null, &$auth = null)
 }
 
 $options = array(
-    'host' => 'localhost',
+    'host' => 'ldapi:///',
     'basedn' => "ou=Users,dc=plug,dc=org,dc=au",
     'attributes' => array('dn', 'uid', 'memberOf'),
     'groupfilter' => '(objectClass=groupOfNames)',
