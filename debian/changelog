@@ -1,3 +1,15 @@
+plug-ugmm (0.7.0) UNRELEASED; urgency=medium
+
+  [ James Henstridge ]
+  * Upgrade to work with PHP 8.x.
+  * Upgrade to the Smarty 4 templating system.
+
+  [ Margaret Wood ]
+  * Add support for classifying members as overdue as opposed to expired.
+  * Add scripts to report current and overdue members.
+
+ -- James Henstridge <james@jamesh.id.au>  Sat, 19 Jul 2025 21:23:16 +0800
+
 plug-ugmm (0.6.5) unstable; urgency=low
 
   * ctte-members: user.description in listusers.tpl can now be safely absent
