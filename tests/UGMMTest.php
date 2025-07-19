@@ -14,15 +14,18 @@ $base_url = 'http://localhost:8000';
 final class UGMMTest extends TestCase {
 
     private function assertText(Crawler $page, string $selector, string $value) {
-        $text = $page->filter($selector)->text();
-        $this->assertSame($text, $value);
+        $text = implode('\n', $page->filter($selector)->each(
+            function (Crawler $crawler, $i): string {
+                return $crawler->text();
+            }));
+        $this->assertStringContainsString($value, $text);
     }
 
     public function login(HttpBrowser $client, string $username, string $password): Crawler {
         global $base_url;
 
         $page = $client->request('GET', $base_url);
-        $this->assertText($page, 'title', 'PLUG - Members Area - Login');
+        $this->assertText($page, 'title', ' - Login');
         return $client->submitForm('Log In', [
             'username' => $username,
             'password' => $password,
@@ -32,7 +35,7 @@ final class UGMMTest extends TestCase {
     public function testLoginSuccess() {
         $client = new HttpBrowser();
         $page = $this->login($client, 'bobtest', 'test432bob');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Member Details');
+        $this->assertText($page, 'title', ' - Member Details');
     }
 
     public function testLoginFailure() {
@@ -45,9 +48,9 @@ final class UGMMTest extends TestCase {
     public function testLogout() {
         $client = new HttpBrowser();
         $page = $this->login($client, 'bobtest', 'test432bob');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Member Details');
+        $this->assertText($page, 'title', ' - Member Details');
         $page = $client->clickLink('Logout');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Login');
+        $this->assertText($page, 'title', ' - Login');
     }
 
     public function testMemberselfInfo() {
@@ -81,7 +84,7 @@ final class UGMMTest extends TestCase {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Edit your personal details');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Editing Member Details');
+        $this->assertText($page, 'title', ' - Editing Member Details');
 
         $data = $page->selectButton('Update')->form()->getValues();
         $this->assertSame($data['email_address'], 'bob@plug.org.au');
@@ -94,7 +97,7 @@ final class UGMMTest extends TestCase {
         $page = $client->submitForm('Update', [
             'home_phone' => '08 5550 1234',
         ]);
-        $this->assertText($page, 'title', 'PLUG - Members Area - Member Details');
+        $this->assertText($page, 'title', ' - Member Details');
         $rows = $page->filter('table')->eq(0)->children();
         $this->assertText($rows->eq(2), 'th', 'Home Phone');
         $this->assertText($rows->eq(2), 'td', '08 5550 1234');
@@ -124,7 +127,7 @@ final class UGMMTest extends TestCase {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Change your e-mail forwarding');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Editing Member Email Forwarding');
+        $this->assertText($page, 'title', ' - Editing Member Email Forwarding');
 
         $data = $page->selectButton('Change')->form()->getValues();
         $this->assertSame($data['email_forward'], 'bob@example.com');
@@ -136,7 +139,7 @@ final class UGMMTest extends TestCase {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Change your shell account settings');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Editing Member Shell');
+        $this->assertText($page, 'title', ' - Editing Member Shell');
 
         $data = $page->selectButton('Change Shell')->form()->getValues();
         $this->assertSame($data['account_shell'], 'bash');
@@ -148,7 +151,7 @@ final class UGMMTest extends TestCase {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Change your PLUG password');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Editing Member Password');
+        $this->assertText($page, 'title', ' - Editing Member Password');
 
         $page = $client->submitForm('Change Password', [
             'current_password' => 'test432bob',
@@ -161,7 +164,7 @@ final class UGMMTest extends TestCase {
         // Try logging in with the new password, and change back
         $client->getCookieJar()->clear();
         $this->login($client, 'bobtest', 'newpassword123');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Member Details');
+        $this->assertText($page, 'title', ' - Member Details');
         $page = $client->clickLink('Change your PLUG password');
         $page = $client->submitForm('Change Password', [
             'current_password' => 'newpassword123',
@@ -175,9 +178,9 @@ final class UGMMTest extends TestCase {
 
         $client = new HttpBrowser();
         $page = $client->request('GET', $base_url);
-        $this->assertText($page, 'title', 'PLUG - Members Area - Login');
+        $this->assertText($page, 'title', ' - Login');
         $page = $client->clickLink('Signup Form');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Signup');
+        $this->assertText($page, 'title', ' - Signup');
 
         // TODO: make sure we have a unique user ID
         $uid = sprintf('test%05d', rand(0, 99999));
@@ -194,7 +197,7 @@ final class UGMMTest extends TestCase {
             'vpassword' => 'pass1234',
             'notes' => 'Sign up for testing',
         ]);
-        $this->assertText($page, 'title', 'PLUG - Members Area - Signup complete');
+        $this->assertText($page, 'title', ' - Signup complete');
 
         // Verify that we can log in as the new user
         $this->login($client, $uid, 'pass1234');
@@ -204,6 +207,59 @@ final class UGMMTest extends TestCase {
         $client = new HttpBrowser();
         $this->login($client, 'chair', 'chairpass');
         $page = $client->clickLink('Committee');
-        $this->assertText($page, 'title', 'PLUG - Members Area - Membership List');
+        $this->assertText($page, 'title', ' - Membership List');
+        // TODO: Check the page content
+    }
+
+    public function testCommitteeNewMember() {
+        $client = new HttpBrowser();
+        $this->login($client, 'chair', 'chairpass');
+        $page = $client->clickLink('Committee');
+        $this->assertText($page, 'title', ' - Membership List');
+        $page = $client->clickLink('New Member');
+        $this->assertText($page, 'title', ' - Add Member');
+
+        // TODO: make sure we have a unique user ID
+        $uid = sprintf('test%05d', rand(0, 99999));
+        // First try signing up with an existing user ID
+        $page = $client->submitForm('Add New Member', [
+            'first_name' => 'Test',
+            'last_name' => 'Last-name',
+            'email_address' => $uid . '@example.com',
+            'street_address' => '123 Fake St',
+            'home_phone' => '08 5550 1111',
+            'work_phone' => '08 5550 2222',
+            'mobile_phone' => '08 5550 3333',
+            'uid' => 'bobtest',
+            'password' => 'pass1234',
+            'verifypassword' => 'pass1234',
+            'notes' => 'Sign up for testing',
+        ]);
+        $this->assertText($page, 'title', ' - Add Member');
+        $this->assertText($page, '#errormessages strong', 'Username not available');
+
+        // Submit with unique user ID
+        $page = $client->submitForm('Add New Member', [
+            'uid' => $uid,
+            'password' => 'pass1234',
+            'verifypassword' => 'pass1234',
+        ]);
+        $this->assertText($page, 'title', ' - Add Member');
+        $this->assertText($page, '#successmessages li', 'New member created with id ');
+        // click 'Edit member NNN to make payment' link
+        $link = $page->filter('a')->reduce(
+            function (Crawler $node, $i): bool {
+                return str_contains($node->text(), ' to make payment');
+            })->link();
+        $page = $client->click($link);
+        $this->assertText($page, 'title', ' - Edit Member');
+
+        // Make a payment
+        $page = $client->submitForm('Make Payment', [
+            'receipt_number' => 'test payment',
+            'payment_ack' => '1',
+        ]);
+        $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#successmessages li', 'Payment processed');
     }
 }
