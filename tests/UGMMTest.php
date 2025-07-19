@@ -260,6 +260,7 @@ final class UGMMTest extends TestCase {
             'payment_ack' => '1',
         ]);
         $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#successmessages li', 'Payment confirmation sent');
         $this->assertText($page, '#successmessages li', 'Payment processed');
     }
 
