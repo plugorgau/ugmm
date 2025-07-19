@@ -21,8 +21,7 @@ require_once('./PLUG/session.inc.php');
     }        
     
     $memberdetails = $memberself->userarray();
-    // Remove {crypt} from front of password
-    $oldpasswordhash = substr($memberdetails['userPassword'], 7);
+    $oldpasswordhash = $memberdetails['userPassword'];
     if(isset($_POST['edit_selfpassword']) && ! validatePassword($_POST['current_password'], $oldpasswordhash))
         $error[] = "Old password does not match";
 

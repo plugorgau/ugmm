@@ -83,13 +83,10 @@ missing any emails.
 
 </p>
 <p>
-<ul><li><a href="{$submenuitems.home.editselfshell.link}">Change your shell account settings<a></ul></p>
+<ul><li><a href="{$submenuitems.home.editselfshell.link}">Change your shell account settings</a></ul></p>
 <h3><a name="password"></a>Your password</h3>
 Your PLUG password is used to access the members area of the website and login
 to PLUG machines. It is not associated with your PLUG mailing list
 subscriptions in any way.
 <p>
 <ul><li><a href="{$submenuitems.home.editselfpassword.link}">Change your PLUG password</a></ul></p>
-</td>
-</tr>
-</table>

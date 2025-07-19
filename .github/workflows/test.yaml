@@ -34,7 +34,18 @@ jobs:
           sudo systemctl restart nginx.service
           sudo mkdir -p /etc/private
           sudo cp /usr/share/plug-ugmm/www/PLUG/ldapconnection.inc.php.example /etc/private/ldapconnection.inc.php
-      - name: Load the front page
+      - name: Set up fake sendmail
         run: |
-          curl --fail-with-body -L -D- http://localhost:8000/
-          curl --fail-with-body -L -D- -d 'plug_members_auth=1&username=bobtest&password=test432bob' http://localhost:8000/memberself
+          sudo cp ci/fake-sendmail.sh /usr/sbin/sendmail
+
+      - name: Install testing dependencies
+        run: |
+          sudo apt-get install -y \
+              phpunit \
+              php-symfony-browser-kit \
+              php-symfony-css-selector \
+              php-symfony-http-client \
+              php-symfony-mime
+
+      - name: Run tests
+        run: phpunit --testdox tests

@@ -1242,7 +1242,7 @@ class Person {
         $cleanpayment['type'] = $payment['x-plug-paymentType'][0];
         $cleanpayment['years'] = $payment['x-plug-paymentYears'][0];
         $cleanpayment['dn'] = $payment['dn'];
-        $cleanpayment['description'] = $payment['x-plug-paymentDescription'][0];
+        $cleanpayment['description'] = isset($payment['x-plug-paymentDescription']) ? $payment['x-plug-paymentDescription'][0] : '';
         $cleanpayment['formatteddate'] = date('Y-m-d', strtotime($cleanpayment['date']));
         $cleanpayment['formattedamount'] = sprintf("$%.2f",$cleanpayment['amount']/100);
         $cleanpayment['formattedtype'] = $cleanpayment['type'] == FULL_TYPE ? "Full" : "Concession";
@@ -1350,7 +1350,7 @@ PLUG Membership Scripts";
                         COMMITTEE_EMAIL);
 
         // TODO: call send_user_email instead of doing it here
-        $headers .= "Reply-To: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
+        $headers = "Reply-To: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
         $headers .= "Return-Path: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
         $headers .= "From: ".SCRIPTS_FROM_EMAIL."\r\n";
         $headers .= "Bcc: ".ADMIN_EMAIL."\r\n";
@@ -1510,7 +1510,7 @@ PLUG Membership Scripts";
 class PLUGFunction
 {
     // Validation function available globally
-    function is_valid_password($password)
+    static function is_valid_password($password)
     {
         $error = array();
         $newpassword = cleanpassword($password);
@@ -1531,7 +1531,7 @@ class PLUGFunction
 
     }
 
-    function check_password_strength($password)
+    static function check_password_strength($password)
     {
         $error = array();
         if(strlen($password) < 7)
@@ -1585,9 +1585,12 @@ function validatePassword($strPlainText, $strHash) {
     if (CRYPT_SHA512 != 1) {
         throw new Exception('Hashing mechanism not supported.');
     }
-
-    return (crypt($strPlainText, $strHash) == $strHash) ? true : false;
-
+    if (strtolower(substr($strHash, 0, 7)) == '{crypt}') {
+        $strHash = substr($strHash, 7);
+        return crypt($strPlainText, $strHash) == $strHash;
+    } else {
+        return $strPlainText == $strHash;
+    }
 }
 
 

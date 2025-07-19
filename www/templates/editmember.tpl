@@ -44,7 +44,7 @@
         <tr>
           <th>Postal Address</th>
 
-          <td><input name="street_address" value="{$member.street}"
+          <td><input name="street_address" value="{if isset($member.street)}{$member.street}{/if}"
           size="50" type="text"></td>
         </tr>
 
@@ -52,20 +52,20 @@
           <th>Home Phone</th>
 
           <td><input name="home_phone" size="20" type="text" value=
-          "{$member.homePhone}"></td>
+          "{if isset($member.homePhone)}{$member.homePhone}{/if}"></td>
         </tr>
 
         <tr>
           <th>Work Phone</th>
 
-          <td><input name="work_phone" value="{$member.pager}"
+          <td><input name="work_phone" value="{if isset($member.pager)}{$member.pager}{/if}"
           size="20" type="text"></td>
         </tr>
 
         <tr>
           <th>Mobile Phone</th>
 
-          <td><input name="mobile_phone" value="{$member.mobile}"
+          <td><input name="mobile_phone" value="{if isset($member.mobile)}{$member.mobile}{/if}"
           size="20" type="text"></td>
         </tr>
 

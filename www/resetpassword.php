@@ -28,8 +28,10 @@ if(isset($_POST['resetpassword_form']))
         if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") $reseturl .= "s";
         
         $reseturl .= "://";
-        $reseturl .= $_SERVER['HTTP_HOST']. $_SERVER['PHP_SELF']."?";
-        $reseturl .= "uid=".$member->uid();
+        $reseturl .= $_SERVER['HTTP_HOST'];
+        $parts = explode('?', $_SERVER['REQUEST_URI'], 2);
+        $reseturl .= $parts[0];
+        $reseturl .= "?uid=".$member->uid();
         $reseturl .= "&reset=".$member->create_hash();
         
         $name = $member->givenName();

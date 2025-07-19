@@ -31,7 +31,7 @@
       <tr>
         <th>Home Phone</th>
 
-        <td><input type="text" name="home_phone" size="20" value="{$member.homePhone}"></td>
+        <td><input type="text" name="home_phone" size="20" value="{if isset($member.homePhone)}{$member.homePhone}{/if}"></td>
       </tr>
 
       <tr>
@@ -45,7 +45,7 @@
         <th>Mobile Phone</th>
 
         <td><input type="text" name="mobile_phone" value=
-        "{$member.mobile}" size="20"></td>
+        "{if isset($member.mobile)}{$member.mobile}{/if}" size="20"></td>
       </tr>
     </table><input type="submit" name="go_go_button" value=
     "Update"> <input type="submit" name="oops_button" value=

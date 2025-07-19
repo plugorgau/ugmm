@@ -11,7 +11,7 @@ uidNumber: 6969
 gidNumber: 6969
 homeDirectory: /home/bobtest
 userPassword: test432bob
-loginShell: /bin/sh
+loginShell: /bin/bash
 mail: bob@plug.org.au
 mailForward: bob@example.com
 givenName: Bob
