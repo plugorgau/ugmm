@@ -1,14 +1,14 @@
 Source: plug-ugmm
 Section: web
-Priority: extra
+Priority: optional
 Maintainer: Timothy White <tim@purewhite.id.au>
-Build-Depends: debhelper (>= 7.0.50~)
-Standards-Version: 3.9.1
+Build-Depends: debhelper-compat (= 13)
+Standards-Version: 3.9.8
 Homepage: http://www.plug.org.au/projects/ugmm/
 
 Package: plug-ugmm
 Architecture: all
 Depends: ${misc:Depends}, smarty3, php, nginx | apache2-bin, libjs-jquery-ui, php-net-ldap2
 Recommends: php-fpm
-Description: PLUG User Group Members Management 
+Description: PLUG User Group Members Management
  PHP Frontend to LDAP backend for managing a user group of members
