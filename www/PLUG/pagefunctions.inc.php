@@ -16,11 +16,14 @@ if (!isset($pagestarttime)) // For pages that don't need auth
 
 }
 
-require_once('smarty3/Smarty.class.php');
+require_once('smarty4/Smarty.class.php');
 
 // create object
 $smarty = new Smarty;
 $smarty->compile_check = true;
+
+$smarty->registerPlugin('modifier', 'date', 'date');
+$smarty->registerPlugin('modifier', 'sizeof', 'sizeof');
 
 function page_gen_stats($params, $smarty) {
    global $pagestarttime;
