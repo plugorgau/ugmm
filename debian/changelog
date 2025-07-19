@@ -2,8 +2,10 @@ plug-ugmm (0.6.5) unstable; urgency=low
 
   * ctte-members: user.description in listusers.tpl can now be safely absent
   * ctte-members: specify default value for expiredusers
-  * ctte-members: unconditionally render the "user.type" td (blank or otherwise) in expired members list
-  * ctte-editmember: member.description in editmember.tpl can now be safely absent
+  * ctte-members: unconditionally render the "user.type" td (blank or
+    otherwise) in expired members list
+  * ctte-editmember: member.description in editmember.tpl can now be safely
+    absent
   * header: moved logo.png to root
 
  -- Benjamin Arntzen <zorlin@gmail.com>  Sat, 27 Jun 2020 17:07:29 +0800
