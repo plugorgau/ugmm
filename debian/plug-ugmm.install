@@ -1,6 +1,7 @@
 www/* /usr/share/plug-ugmm/www/
 
-extras/* /usr/share/doc/plug-ugmm/
-
 lib/pear-Auth/Auth.php /usr/share/plug-ugmm/lib/pear-Auth/
 lib/pear-Auth/Auth/*   /usr/share/plug-ugmm/lib/pear-Auth/Auth/
+
+plugpen.ldif /etc/ldap/schema/
+plugpen.schema /etc/ldap/schema/
