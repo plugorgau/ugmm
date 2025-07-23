@@ -8,7 +8,7 @@ Homepage: http://www.plug.org.au/projects/ugmm/
 
 Package: plug-ugmm
 Architecture: all
-Depends: ${misc:Depends}, smarty4, php, nginx | apache2-bin, libjs-jquery-ui, php-net-ldap2
+Depends: ${misc:Depends}, smarty4, php, nginx | apache2-bin, php-net-ldap2
 Recommends: php-fpm
 Description: PLUG User Group Members Management
  PHP Frontend to LDAP backend for managing a user group of members
