@@ -9,12 +9,6 @@
 <link rel="stylesheet" type="text/css" href="style.css" id="plug_css" />
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 
-<link type="text/css" href="/javascript/jquery-ui/css/smoothness/jquery-ui.css" rel="stylesheet" />
-
-<script language="javascript" type="text/javascript" src="/javascript/jquery/jquery.js"></script>
-
-<script language="javascript" type="text/javascript" src="/javascript/jquery-ui/jquery-ui.js"></script>
-
 
 <body>
 <div id="page" class="content">

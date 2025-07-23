@@ -1,17 +1,38 @@
 {literal}
 <script type="text/javascript">
-$(document).ready(function () {
-    $('#uid').blur(function(){
-        $("#uidcheckLoading").show();
-        $.post("ajax.php", {
-            uid: $('#uid').val(),
-            ajax: 'checkusername'},
-            function(response){
-                $('#uidcheckLoading').fadeOut();
-                $('#uidcheck').html(unescape(response)).show();
+document.addEventListener('DOMContentLoaded', () => {
+    let uid = document.getElementById('uid');
+    let check = document.getElementById('uidcheck');
+    let loading = document.getElementById('uidcheckLoading');
+    let controller;
+
+    uid.addEventListener('blur', () => {
+        loading.classList.add('fade-in');
+        if (controller)
+            controller.abort();
+        controller = new AbortController();
+        (async (signal) => {
+            try {
+                response = await fetch('ajax.php', {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        ajax: 'checkusername', uid: uid.value}),
+                    signal: signal,
+                });
+                if (response.ok) {
+                    check.classList.add('fade-in');
+                    check.innerHTML = await response.text();
+                }
+            } catch (err) {
+                console.log(err);
+            } finally {
+                loading.classList.remove('fade-in');
+                controller = null;
             }
-        );
-        return false;
+        })(controller.signal);
     });
 });
 </script>
