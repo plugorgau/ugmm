@@ -211,6 +211,17 @@ final class UGMMTest extends TestCase {
         // TODO: Check the page content
     }
 
+    public function testCommitteeMembersAccessDenied() {
+        global $base_url;
+
+        $client = new HttpBrowser();
+        $this->login($client, 'bobtest', 'test432bob');
+        $page = $client->request('GET', $base_url . '/ctte-members');
+        // Regular users cannot see pages requiring committee access
+        $this->assertText($page, 'h1', 'WARNING');
+        $this->assertSame($client->getResponse()->getStatusCode(), 403);
+    }
+
     public function testCommitteeNewMember() {
         $client = new HttpBrowser();
         $this->login($client, 'chair', 'chairpass');
