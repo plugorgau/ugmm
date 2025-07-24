@@ -16,6 +16,7 @@ set_include_path(get_include_path() . PATH_SEPARATOR . AUTH_DIR);
 require_once('/etc/private/ldapconnection.inc.php');
 require_once('pagefunctions.inc.php');
 require_once('config.inc.php');
+require_once('accesscheck.inc.php');
 require_once('Auth.php');
 
 require_once 'Members.class.php';
@@ -109,7 +110,12 @@ else
 
 $_SESSION['loggedinusername'] = $Auth->getUsername();
 
-require_once('accesscheck.inc.php');
+
+if (! check_level($ACCESS_LEVEL))
+{
+    display_page('accessdenied.tpl');
+    exit;
+}
 
 
 // Nonce code based on Wordpress nonce code but added storing in session to make real nonce (instead of wordpress nonce which is valid for 6-12 hours (or even 24) and can be reused as many times in that time.

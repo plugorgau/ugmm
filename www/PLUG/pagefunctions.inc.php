@@ -1,9 +1,6 @@
 <?php
 
-class UnauthorisedException extends RuntimeException
-{
-}
-
+require_once('accesscheck.inc.php');
 
 if (!isset($pagestarttime)) // For pages that don't need auth
 {
@@ -47,18 +44,10 @@ function display_page($template)
         assign_vars(); // Make assign_vars function if you need to assign vars after processing
 
         //-- Needed by menu.tpl --
-        try
-        {
-            list($topmenu, $menu) = generate_menus($TOPLEVEL);
+        list($topmenu, $menu) = generate_menus($TOPLEVEL);
 
-            $smarty->assign('topmenu', $topmenu);
-            $smarty->assign('submenu', $menu);
-        }
-        catch (UnauthorisedException $e)
-        {
-            $smarty->assign('topmenu', array());
-            $smarty->assign('submenu', array());
-        }
+        $smarty->assign('topmenu', $topmenu);
+        $smarty->assign('submenu', $menu);
         //--------------------------
 
         //-- Needed by messages.tpl --
@@ -131,11 +120,6 @@ function generate_menus($top = '')
     $topmenu = array();
 
     // Check if we are authenticated
-    if (!isset($Auth) || !$Auth->checkAuth())
-    {
-        throw new UnauthorisedException();
-    }
-
     foreach ($toplevelmenu as $key => $menu)
     {
         if (check_level($menu['level']))
