@@ -1,3 +1,5 @@
+{extends file="base.tpl"}
+{block name=body}
 
   <h2>Editing member details for {$member.displayName}</h2>
 
@@ -52,4 +54,4 @@
     "Cancel">
   </form>
 
- 
+{/block}

@@ -1,3 +1,6 @@
+{extends file="base.tpl"}
+{block name=body}
+
   <h2>Change e-mail forwarding for {$member.uid}@members.plug.org.au</h2>
 
   <form method="post" action="" enctype=
@@ -18,3 +21,4 @@
     <input type="submit" name="oops_button" value="Cancel">
   </form>
 
+{/block}

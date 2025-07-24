@@ -1,3 +1,6 @@
+{extends file="base.tpl"}
+{block name=body}
+
 {if $usercreated}
 
 <p>New member created. <a href="{$submenuitems.ctte.editmember.link}{$newmember.uidNumber}">Edit member {$newmember.uidNumber} to make payment</a>
@@ -95,3 +98,4 @@
     "reset_button" value="Cancel" type="reset">
   </form>
 
+{/block}

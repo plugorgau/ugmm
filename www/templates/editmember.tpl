@@ -1,3 +1,6 @@
+{extends file="base.tpl"}
+{block name=body}
+
   <h3>Personal Details</h3>
 
   <form method="post" action="" enctype=
@@ -262,3 +265,5 @@
     "submit"><br>
   </form>
 *}
+
+{/block}

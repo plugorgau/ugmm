@@ -1,3 +1,6 @@
+{extends file="base.tpl"}
+{block name=body}
+
 {function member_table}
 <table class="membertable">
   <thead>
@@ -48,3 +51,4 @@
 <h3>Expired Members</h3>
 <p>Expired members are currently hidden. <a href="{$submenuitems.ctte.expiredmembers.link}">Click here to view expired members</a></p>
 {/if}
+{/block}

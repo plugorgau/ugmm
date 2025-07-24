@@ -1,3 +1,6 @@
+{extends file="base.tpl"}
+{block name=body}
+
 {literal}
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
@@ -130,3 +133,4 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
     </fieldset>
   </form>
 
+{/block}

@@ -1,3 +1,6 @@
+{extends file="base.tpl"}
+{block name=body}
+
 <p>
 Thank you {$newmember.displayName}.<br/>
 <br/>
@@ -32,4 +35,4 @@ There are a number of ways to pay.
 
 </p>
 
-
+{/block}

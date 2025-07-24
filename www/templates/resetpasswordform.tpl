@@ -1,3 +1,6 @@
+{extends file="base.tpl"}
+{block name=body}
+
 <h1>Password Reset</h1>
 {include file="messages.tpl"}
 
@@ -20,3 +23,5 @@ Please continue to <a href="/ugmm">login page to login</a> with your new passwor
     <input type="submit" value="Send Reset Email"/>
 </form>
 {/if}
+
+{/block}

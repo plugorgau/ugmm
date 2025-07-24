@@ -8,7 +8,8 @@
 <!-- CSS Stylesheet -->
 <link rel="stylesheet" type="text/css" href="style.css" id="plug_css" />
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
-
+{block name=head_extra}{/block}
+</head>
 
 <body>
 <div id="page" class="content">
@@ -20,7 +21,22 @@
 </div>
 <div id='content'>
 {if $title|default}
-<h2>{$title}</h2>
+<h1>{$title}</h1>
 {include file="menu.tpl"}
 {include file="messages.tpl"}
 {/if}
+{block name=body}{/block}
+
+</div> <!-- Close #content -->
+
+<p id="footer">
+This page is maintained by the <a href="/contact/">PLUG webmasters</a>. E-mail: {mailto address=$emails.webmasters encode="javascript_charcode"}<br/>
+
+Copyright &copy; 1996-{'Y'|date} PLUG, Inc.
+</p>
+
+<div id="generated">{page_gen_stats}</div>
+
+</div> <!-- Close #page -->
+</body>
+</html>

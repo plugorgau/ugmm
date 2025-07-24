@@ -1,3 +1,5 @@
+{extends file="base.tpl"}
+{block name=body}
 
   <h2>Shell Account Settings for {$member.uid}</h2>
 
@@ -59,3 +61,4 @@
     to take effect.</p>
   </form>
 
+{/block}

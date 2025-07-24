@@ -1,3 +1,6 @@
+{extends file="base.tpl"}
+{block name=body}
+
   <h2>Change your PLUG password</h2>
 
   <p>Your PLUG password is used to access the members area of the
@@ -55,3 +58,4 @@
     value="Cancel">
   </form>
 
+{/block}

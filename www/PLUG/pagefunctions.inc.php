@@ -46,7 +46,7 @@ define('NO_HEADER', false);
 define('USE_FOOTER', true);
 define('NO_FOOTER', false);
 
-function display_page($template, $pagetitle = '', $header = true, $footer = true)
+function display_page($template, $pagetitle = '')
 {
         global $smarty, $error, $success, $TOPLEVEL, $PAGETITLE, $TITLE;
         assign_vars(); // Make assign_vars function if you need to assign vars after processing
@@ -88,10 +88,7 @@ function display_page($template, $pagetitle = '', $header = true, $footer = true
             $smarty->assign('title', $TITLE);  // Displayed in a h2 element
         //--------------------------
 
-        if ($header) $smarty->display('header.tpl');
-        if (!$footer) return $smarty->display($template);
-        $smarty->display($template);
-        return $smarty->display('footer.tpl');
+        return $smarty->display($template);
 }
 
 // Assign smart vars here

@@ -1,3 +1,6 @@
+{extends file="base.tpl"}
+{block name=body}
+
 <h2>Welcome, {$memberself.displayName}</h2>
 
 <p>Here you may check and update your current details in the PLUG membership
@@ -90,3 +93,5 @@ to PLUG machines. It is not associated with your PLUG mailing list
 subscriptions in any way.
 <p>
 <ul><li><a href="{$submenuitems.home.editselfpassword.link}">Change your PLUG password</a></ul></p>
+
+{/block}
