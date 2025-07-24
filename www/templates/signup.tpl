@@ -107,7 +107,7 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
             <li>
                 
                 <label for="password">Password</label>
-                <input id="password" name="password" type="password" placeholder="Choose a password"/><p>If no password is choosen, your account will be locked until you set a password using the password reset facility</p>
+                <input id="password" name="password" type="password" placeholder="Choose a password"/><p>If no password is chosen, your account will be locked until you set a password using the password reset facility</p>
             </li>                
             <li>
                 <label for="vpassword">Verify Password</label>
