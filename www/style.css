@@ -184,9 +184,23 @@ form#membersignup button:hover {
     height: 11px;
     float: right;
     display: none;
+    opacity: 0%;
+    transition: opacity 400ms ease-in, display 400ms allow-discrete;
 }
 
 #uidcheck {
     display: none;
+    opacity: 0%;
+    transition: opacity 400ms ease-in, display 400ms allow-discrete;
 }
 
+.fade-in {
+    display: block !important;
+    opacity: 100% !important;
+}
+
+@starting-style {
+    .fade-in {
+        opacity: 0% !important;
+    }
+}
