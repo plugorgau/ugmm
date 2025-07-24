@@ -1,4 +1,6 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Editing Member Details{/block}
+{block name=title}Edit Member Details{/block}
 {block name=body}
 
   <h2>Editing member details for {$member.displayName}</h2>

@@ -1,8 +1,6 @@
 <?php
 
 $ACCESS_LEVEL = 'all';
-$PAGETITLE = " - Signup";
-$TITLE = 'Signup';
 
 session_start();
 
@@ -72,7 +70,7 @@ if(isset($_POST['membersignup_form'])) {
             send_waitingpayment_email($member, $details);
             // TODO: Email user with instructions
             // TODO: Take them to a different page with payment details
-            display_page('signupcompleted.tpl', ' - Signup complete');
+            display_page('signupcompleted.tpl');
             exit();
             
         }

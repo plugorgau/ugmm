@@ -1,4 +1,6 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Add Member{/block}
+{block name=title}Add New Member{/block}
 {block name=body}
 
 {if $usercreated}

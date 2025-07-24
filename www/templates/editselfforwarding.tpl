@@ -1,4 +1,6 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Editing Member Email Forwarding{/block}
+{block name=title}Edit Member Email Forwarding{/block}
 {block name=body}
 
   <h2>Change e-mail forwarding for {$member.uid}@members.plug.org.au</h2>

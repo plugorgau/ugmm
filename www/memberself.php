@@ -2,8 +2,6 @@
 
 $ACCESS_LEVEL = 'all';
 $TOPLEVEL = 'home';
-$PAGETITLE = ' - Member Details';
-$TITLE = 'Your Membership Details';
 
 require_once('./PLUG/session.inc.php');
     

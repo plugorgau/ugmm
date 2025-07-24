@@ -126,7 +126,7 @@ else if(isset($_GET['uid']) && isset($_GET['reset']))
     }
 
 }
-    display_page('resetpasswordform.tpl', " - Reset Password");
+    display_page('resetpasswordform.tpl');
 
 
 # vim: set noexpandtab tabstop=4 shiftwidth=4 :

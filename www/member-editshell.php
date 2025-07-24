@@ -2,8 +2,6 @@
 
 $ACCESS_LEVEL = 'all';
 $TOPLEVEL = 'home';
-$PAGETITLE = ' - Editing Member Shell';
-$TITLE = 'Edit Member Shell';
 
 require_once('./PLUG/session.inc.php');
 

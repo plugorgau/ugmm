@@ -1,4 +1,6 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Signup{/block}
+{block name=title}Membership Signup{/block}
 {block name=body}
 
 {literal}
@@ -40,10 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {/literal}
-
-<h1>Membership Signup</h1>
-
-{include file="messages.tpl"}
 
 <a href="/ugmm/">Back to Members Area Login</a> | <a href="/">Back to main PLUG website</a>
 <p>

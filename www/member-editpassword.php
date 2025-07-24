@@ -2,8 +2,6 @@
 
 $ACCESS_LEVEL = 'all';
 $TOPLEVEL = 'home';
-$PAGETITLE = ' - Editing Member Password';
-$TITLE = 'Edit Member Password';
 
 require_once('./PLUG/session.inc.php');
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>PLUG - Members Area{$pagetitle}</title>
+<title>PLUG - Members Area{block name=pagetitle}{/block}</title>
 
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 <meta name="generator" content="UGMM V0.4" />
@@ -20,11 +20,9 @@
   <span style='font-weight: bold; font-size: 2.5em'>&nbsp; Perth Linux Users Group</span>
 </div>
 <div id='content'>
-{if $title|default}
-<h1>{$title}</h1>
+<h1>{block name=title}Title{/block}</h1>
 {include file="menu.tpl"}
 {include file="messages.tpl"}
-{/if}
 {block name=body}{/block}
 
 </div> <!-- Close #content -->

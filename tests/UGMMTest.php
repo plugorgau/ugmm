@@ -197,7 +197,7 @@ final class UGMMTest extends TestCase {
             'vpassword' => 'pass1234',
             'notes' => 'Sign up for testing',
         ]);
-        $this->assertText($page, 'title', ' - Signup complete');
+        $this->assertText($page, 'title', ' - Signup Complete');
 
         // Verify that we can log in as the new user
         $this->login($client, $uid, 'pass1234');

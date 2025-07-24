@@ -2,8 +2,6 @@
 
 $ACCESS_LEVEL = 'all';
 $TOPLEVEL = 'home';
-$PAGETITLE = ' - Editing Member Email Forwarding';
-$TITLE = 'Edit Member Email Forwarding';
 
 require_once('./PLUG/session.inc.php');
 

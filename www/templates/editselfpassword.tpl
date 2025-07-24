@@ -1,4 +1,6 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Editing Member Password{/block}
+{block name=title}Edit Member Password{/block}
 {block name=body}
 
   <h2>Change your PLUG password</h2>

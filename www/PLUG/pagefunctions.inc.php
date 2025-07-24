@@ -41,17 +41,12 @@ $smarty->registerPlugin('function', 'page_gen_stats', 'page_gen_stats');
 $error=array();
 $success = array();
 
-define('USE_HEADER', true);
-define('NO_HEADER', false);
-define('USE_FOOTER', true);
-define('NO_FOOTER', false);
-
-function display_page($template, $pagetitle = '')
+function display_page($template)
 {
-        global $smarty, $error, $success, $TOPLEVEL, $PAGETITLE, $TITLE;
+        global $smarty, $error, $success, $TOPLEVEL;
         assign_vars(); // Make assign_vars function if you need to assign vars after processing
 
-        //-- Needed by header.tpl --
+        //-- Needed by menu.tpl --
         try
         {
             list($topmenu, $menu) = generate_menus($TOPLEVEL);
@@ -79,14 +74,6 @@ function display_page($template, $pagetitle = '')
         $smarty->assign('errors', $error);
         $smarty->assign('success', $success);
         //---------------------------
-
-        //-- Needed by header.tpl --
-        $pagetitle = $pagetitle ? $pagetitle : @$PAGETITLE;
-
-        if ($pagetitle) $smarty->assign("pagetitle", $pagetitle); // Appended to contents of title element
-        if (isset($TITLE) )
-            $smarty->assign('title', $TITLE);  // Displayed in a h2 element
-        //--------------------------
 
         return $smarty->display($template);
 }

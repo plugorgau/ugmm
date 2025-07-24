@@ -1,7 +1,7 @@
 {extends file="base.tpl"}
+{block name=title}WARNING{/block}
 {block name=body}
 
-<h3>WARNING</h3>
-<p>You have attempted to access a page outside of your access level.</p>
+<p><strong>You have attempted to access a page outside of your access level.</strong></p>
 
 {/block}

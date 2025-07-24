@@ -1,7 +1,7 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Login{/block}
+{block name=title}PLUG Members Area{/block}
 {block name=body}
-
-<h2>PLUG Members Area</h2>
 
 <p>This area contains resources available to PLUG financial members.  If you
 are not yet a financial member, you may be interested in

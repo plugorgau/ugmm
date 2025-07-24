@@ -1,4 +1,6 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Membership List{/block}
+{block name=title}Membership List{/block}
 {block name=body}
 
 {function member_table}

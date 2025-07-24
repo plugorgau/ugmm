@@ -1,4 +1,6 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Resend Acknowledgement{/block}
+{block name=title}Edit Member{/block}
 {block name=body}
 
 <h3>Resend Payment Acknowledgement</h3>

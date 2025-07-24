@@ -1,4 +1,6 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Member Details{/block}
+{block name=title}Your Membership Details{/block}
 {block name=body}
 
 <h2>Welcome, {$memberself.displayName}</h2>

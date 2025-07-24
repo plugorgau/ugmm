@@ -2,8 +2,6 @@
 
 $ACCESS_LEVEL = 'committee';
 $TOPLEVEL = 'ctte';
-$PAGETITLE = ' - Add Member';
-$TITLE = 'Add New Member';
 
 require_once('./PLUG/session.inc.php');
 

@@ -1,8 +1,7 @@
 {extends file="base.tpl"}
+{block name=pagetitle} - Reset Password{/block}
+{block name=title}Reset Password{/block}
 {block name=body}
-
-<h1>Password Reset</h1>
-{include file="messages.tpl"}
 
 {if $successform}
 Please continue to <a href="/ugmm">login page to login</a> with your new password
