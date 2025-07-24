@@ -148,6 +148,7 @@ function redirect_with_messages($url)
     global $error, $success;
     $_SESSION['errormessages'] = $error;
     $_SESSION['successmessages'] = $success;
+    http_response_code(303);
     header('Location: ' . $url);
     exit();
 }

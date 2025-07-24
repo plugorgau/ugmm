@@ -113,6 +113,7 @@ $_SESSION['loggedinusername'] = $Auth->getUsername();
 
 if (! check_level($ACCESS_LEVEL))
 {
+    http_response_code(403);
     display_page('accessdenied.tpl');
     exit;
 }
