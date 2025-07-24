@@ -14,8 +14,8 @@ define('AUTH_DIR', dirname(dirname(dirname(__FILE__))) . "/lib/pear-Auth");
 set_include_path(get_include_path() . PATH_SEPARATOR . AUTH_DIR);
 
 require_once('/etc/private/ldapconnection.inc.php');
-require_once('pagefunctions.inc.php');
 require_once('config.inc.php');
+require_once('pagefunctions.inc.php');
 require_once('accesscheck.inc.php');
 require_once('Auth.php');
 

@@ -1,7 +1,5 @@
 <?php
 
-require_once('PLUG/pagefunctions.inc.php');
-
 require_once 'PLUG/Members.class.php';
 
 $OrgMembers = new Members($ldap);
