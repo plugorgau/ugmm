@@ -56,6 +56,11 @@ function loginForm($username = null, $status = null, &$auth = null)
     exit();
 }
 
+function loginCallback($username, &$auth)
+{
+    redirect_with_messages($_SERVER['REQUEST_URI']);
+}
+
 $options = array(
     'host' => 'ldapi:///',
     'basedn' => "ou=Users,dc=plug,dc=org,dc=au",
@@ -76,6 +81,7 @@ $Auth->setAdvancedSecurity(array(
 ));
 $Auth->setIdle(600);
 $Auth->setSessionName("secureplug");
+$Auth->setLoginCallback('loginCallback');
 
 
 /* *
