@@ -55,7 +55,18 @@ h3 { font-size: 1.2em; }
    
 #secondlevelmenu ul {
     clear: left;
-}   
+}
+
+/* member table */
+.membertable thead {
+    background: #8888aa;
+}
+.membertable tbody {
+    background: #ddddff;
+}
+.membertable .elevated_user {
+    background: #ffdddd;
+}
 
 
 /* Signup form, new css */
