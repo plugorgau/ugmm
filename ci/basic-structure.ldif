@@ -22,7 +22,7 @@ dn: cn=maxUid,ou=Users,dc=plug,dc=org,dc=au
 objectClass: namedObject
 objectClass: extensibleObject
 objectClass: top
-uidNumber: 10000
+uidNumber: 10002
 cn: maxUid
 x-plug-paymentID: 1
 

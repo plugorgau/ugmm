@@ -1,4 +1,4 @@
-dn: uidNumber=6969,ou=Users,dc=plug,dc=org,dc=au
+dn: uidNumber=10001,ou=Users,dc=plug,dc=org,dc=au
 objectClass: top
 objectClass: person
 objectClass: posixAccount
@@ -7,8 +7,8 @@ objectClass: shadowAccount
 objectClass: mailForwardingAccount
 uid: bobtest
 displayName: Bob Test
-uidNumber: 6969
-gidNumber: 6969
+uidNumber: 10001
+gidNumber: 10001
 homeDirectory: /home/bobtest
 userPassword: test432bob
 loginShell: /bin/bash
@@ -22,9 +22,9 @@ mobile: 0469 000000
 description: A test user created by Alastair
 shadowExpire: -1
 
-dn: gidNumber=6969,ou=UPG,ou=Groups,dc=plug,dc=org,dc=au
-gidNumber: 6969
-member: uidNumber=6969,ou=Users,dc=plug,dc=org,dc=au
+dn: gidNumber=10001,ou=UPG,ou=Groups,dc=plug,dc=org,dc=au
+gidNumber: 10001
+member: uidNumber=10001,ou=Users,dc=plug,dc=org,dc=au
 objectClass: groupOfNames
 objectClass: posixGroup
 cn: bobtest
@@ -32,4 +32,4 @@ cn: bobtest
 dn: cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au
 changetype: modify
 add: member
-member: uidNumber=6969,ou=Users,dc=plug,dc=org,dc=au
+member: uidNumber=10001,ou=Users,dc=plug,dc=org,dc=au
