@@ -1,4 +1,7 @@
-<h2>PLUG Members Area</h2>
+{extends file="base.tpl"}
+{block name=pagetitle} - Login{/block}
+{block name=title}PLUG Members Area{/block}
+{block name=body}
 
 <p>This area contains resources available to PLUG financial members.  If you
 are not yet a financial member, you may be interested in
@@ -40,4 +43,6 @@ are not yet a financial member, you may be interested in
 
 <p><b>Note:</b> You will need to enable cookies in your browser to log in.
 <br>
-If you are having problems, please contact <a href="mailto:admin@plug.org.au">admin@plug.org.au</a>.</p>
+If you are having problems, please contact {mailto address=$emails.admin encode=hex}.</p>
+
+{/block}

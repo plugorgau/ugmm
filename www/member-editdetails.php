@@ -2,8 +2,6 @@
 
 $ACCESS_LEVEL = 'all';
 $TOPLEVEL = 'home';
-$PAGETITLE = ' - Editing Member Details';
-$TITLE = 'Edit Member Details';
 
 require_once('./PLUG/session.inc.php');
 

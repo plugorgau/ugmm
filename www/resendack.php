@@ -2,8 +2,6 @@
 
 $ACCESS_LEVEL = 'committee';
 $TOPLEVEL = 'ctte';
-$PAGETITLE = ' - Resend Acknowledgement';
-$TITLE = 'Edit Member';
 
 require_once('./PLUG/session.inc.php');
     

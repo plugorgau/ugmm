@@ -1,2 +1,7 @@
-<h3>WARNING</h3>
-<p>You have attempted to access a page outside of your access level.</p>
+{extends file="base.tpl"}
+{block name=title}WARNING{/block}
+{block name=body}
+
+<p><strong>You have attempted to access a page outside of your access level.</strong></p>
+
+{/block}

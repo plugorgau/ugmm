@@ -1,3 +1,8 @@
+{extends file="base.tpl"}
+{block name=pagetitle} - Resend Acknowledgement{/block}
+{block name=title}Edit Member{/block}
+{block name=body}
+
 <h3>Resend Payment Acknowledgement</h3>
 
 {if ! $success}
@@ -13,3 +18,5 @@
 </form>
 {/if}
 <a href="{$submenuitems.ctte.editmember.link}{$member.uidNumber}">Return to {$member.displayName} details</a>
+
+{/block}

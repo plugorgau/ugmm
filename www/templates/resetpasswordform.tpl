@@ -1,5 +1,7 @@
-<h1>Password Reset</h1>
-{include file="messages.tpl"}
+{extends file="base.tpl"}
+{block name=pagetitle} - Reset Password{/block}
+{block name=title}Reset Password{/block}
+{block name=body}
 
 {if $successform}
 Please continue to <a href="/ugmm">login page to login</a> with your new password
@@ -20,3 +22,5 @@ Please continue to <a href="/ugmm">login page to login</a> with your new passwor
     <input type="submit" value="Send Reset Email"/>
 </form>
 {/if}
+
+{/block}

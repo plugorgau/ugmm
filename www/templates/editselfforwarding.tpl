@@ -1,3 +1,8 @@
+{extends file="base.tpl"}
+{block name=pagetitle} - Editing Member Email Forwarding{/block}
+{block name=title}Edit Member Email Forwarding{/block}
+{block name=body}
+
   <h2>Change e-mail forwarding for {$member.uid}@members.plug.org.au</h2>
 
   <form method="post" action="" enctype=
@@ -10,7 +15,7 @@
         <th>Redirect email to</th>
 
         <td><input type="text" name="email_forward" value=
-        "{if isset($member.mailForward) and $member.mailForward}{$member.mailForward}{/if}" size="30"></td>
+        "{$member.mailForward|default}" size="30"></td>
       </tr>
     </table>If you would not like your PLUG email to be redirected,
     the above field should be blank.<br>
@@ -18,3 +23,4 @@
     <input type="submit" name="oops_button" value="Cancel">
   </form>
 
+{/block}

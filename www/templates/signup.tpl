@@ -1,3 +1,8 @@
+{extends file="base.tpl"}
+{block name=pagetitle} - Signup{/block}
+{block name=title}Membership Signup{/block}
+{block name=body}
+
 {literal}
 <script type="text/javascript">
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,10 +42,6 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 {/literal}
-
-<h1>Membership Signup</h1>
-
-{include file="messages.tpl"}
 
 <a href="/ugmm/">Back to Members Area Login</a> | <a href="/">Back to main PLUG website</a>
 <p>
@@ -106,7 +107,7 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
             <li>
                 
                 <label for="password">Password</label>
-                <input id="password" name="password" type="password" placeholder="Choose a password"/><p>If no password is choosen, your account will be locked until you set a password using the password reset facility</p>
+                <input id="password" name="password" type="password" placeholder="Choose a password"/><p>If no password is chosen, your account will be locked until you set a password using the password reset facility</p>
             </li>                
             <li>
                 <label for="vpassword">Verify Password</label>
@@ -130,3 +131,4 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
     </fieldset>
   </form>
 
+{/block}

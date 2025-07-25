@@ -1,9 +1,7 @@
 <?php
 
-class UnauthorisedException extends RuntimeException
-{
-}
-
+require_once('config.inc.php');
+require_once('accesscheck.inc.php');
 
 if (!isset($pagestarttime)) // For pages that don't need auth
 {
@@ -37,33 +35,73 @@ function page_gen_stats($params, $smarty) {
 }
 $smarty->registerPlugin('function', 'page_gen_stats', 'page_gen_stats');
 
+$toplevelmenu = array(
+    'home' => array('label' => "Home", 'link' => 'memberself', 'level' => 'all'),
+    //'admin' => array('label' => "Admin", 'link' => '', 'level' => 'admin'),
+    'ctte' => array('label' => "Committee", 'link' => 'ctte-members', 'level' => 'committee'),
+    'logout' => array('label' => "Logout", 'link' => 'logout', 'level' => 'all'),
+    //'web' => array('label' => "Webmasters", 'link' => '', 'level' => array('admin', 'committee', 'webmaster')),
+);
+
+// Submenu's level is defined by parent level
+$submenu = array(
+    'ctte' => array(
+        'members' => array('label' => "Membership List", 'link' => 'ctte-members'),
+        'expiredmembers' => array('label' => "Expired Members", 'link' => 'ctte-members?expiredmembers=1'),
+        'newmember' => array('label' => "New Member", 'link' => 'ctte-newmember'),
+        'editmember' => array('label' => '', 'link' => 'ctte-editmember?id='),
+        'resendack' => array('label' => '', 'link' => 'resendack?member_id='),
+    ),
+
+    'admin' => array(
+        'usergroups' => array('label' => "Manage User Groups", 'link' => '/~tim/plugldap/'),
+        'emailaliases' => array('label' => "Manage Email Aliases", 'link' => '/~tim/plugldap/'),
+    ),
+
+    'home' => array(
+        'editselfdetails' => array('label' => "Change details", 'link' => 'member-editdetails'),
+        'editselfforwarding' => array('label' => "Change forwarding", 'link' => 'member-editforwarding'),
+        'editselfshell' => array('label' => "Change shell", 'link' => 'member-editshell'),
+        'editselfpassword' => array('label' => "Change password", 'link' => 'member-editpassword'),
+    ),
+);
+
+// Assign menu arrays so we can softcode links in templates
+$smarty->assign('topmenuitems', $toplevelmenu);
+$smarty->assign('submenuitems', $submenu);
+
+// Membership amount
+$smarty->assign('CONCESSION_AMOUNT', "$" . CONCESSION_AMOUNT / 100);
+$smarty->assign('FULL_AMOUNT', "$" . FULL_AMOUNT / 100 );
+
+// Email addresses
+$smarty->assign('emails', array(
+    'webmasters' => WEBMASTERS_EMAIL,
+    'committee' => COMMITTEE_EMAIL,
+    'admin' => ADMIN_EMAIL,
+));
+
+// Shells
+$shells = array(
+    'zsh' => '/usr/bin/zsh',
+    'bash' => '/bin/bash',
+    'csh' => '/bin/csh',
+);
+
+
 // Need them defined as arrays for array_merge
 $error=array();
 $success = array();
 
-define('USE_HEADER', true);
-define('NO_HEADER', false);
-define('USE_FOOTER', true);
-define('NO_FOOTER', false);
-
-function display_page($template, $pagetitle = '', $header = true, $footer = true)
+function display_page($template)
 {
-        global $smarty, $error, $success, $TOPLEVEL, $PAGETITLE, $TITLE;
-        assign_vars(); // Make assign_vars function if you need to assign vars after processing
+        global $smarty, $error, $success, $TOPLEVEL;
 
-        //-- Needed by header.tpl --
-        try
-        {
-            list($topmenu, $menu) = generate_menus($TOPLEVEL);
+        //-- Needed by menu.tpl --
+        list($topmenu, $menu) = generate_menus($TOPLEVEL);
 
-            $smarty->assign('topmenu', $topmenu);
-            $smarty->assign('submenu', $menu);
-        }
-        catch (UnauthorisedException $e)
-        {
-            $smarty->assign('topmenu', array());
-            $smarty->assign('submenu', array());
-        }
+        $smarty->assign('topmenu', $topmenu);
+        $smarty->assign('submenu', $menu);
         //--------------------------
 
         //-- Needed by messages.tpl --
@@ -80,62 +118,8 @@ function display_page($template, $pagetitle = '', $header = true, $footer = true
         $smarty->assign('success', $success);
         //---------------------------
 
-        //-- Needed by header.tpl --
-        $pagetitle = $pagetitle ? $pagetitle : @$PAGETITLE;
-
-        if ($pagetitle) $smarty->assign("pagetitle", $pagetitle); // Appended to contents of title element
-        if (isset($TITLE) )
-            $smarty->assign('title', $TITLE);  // Displayed in a h2 element
-        //--------------------------
-
-        if ($header) $smarty->display('header.tpl');
-        if (!$footer) return $smarty->display($template);
-        $smarty->display($template);
-        return $smarty->display('footer.tpl');
+        return $smarty->display($template);
 }
-
-// Assign smart vars here
-function assign_vars()
-{
-    global $smarty;
-
-    // Assign menu arrays so we can softcode links in templates
-    global $toplevelmenu, $submenu;
-    $smarty->assign('topmenuitems', $toplevelmenu);
-    $smarty->assign('submenuitems', $submenu);
-
-    // Membership amount
-    $smarty->assign('CONCESSION_AMOUNT', "$" . CONCESSION_AMOUNT / 100);
-    $smarty->assign('FULL_AMOUNT', "$" . FULL_AMOUNT / 100 );
-
-    // Email addresses
-    $emails['webmasters'] = WEBMASTERS_EMAIL;
-    $emails['committee'] = COMMITTEE_EMAIL;
-    $emails['admin'] = ADMIN_EMAIL;
-    $smarty->assign('emails', $emails);
-}
-
-$toplevelmenu['home'] = array('label' => "Home", 'link' => 'memberself', 'level' => 'all');
-//$toplevelmenu['admin'] = array('label' => "Admin", 'link' => '', 'level' => 'admin');
-$toplevelmenu['ctte'] = array('label' => "Committee", 'link' => 'ctte-members', 'level' => 'committee');
-$toplevelmenu['logout'] = array('label' => "Logout", 'link' => 'logout', 'level' => 'all');
-//$toplevelmenu['web'] = array('label' => "Webmasters", 'link' => '', 'level' => array('admin', 'committee', 'webmaster'));
-
-// Submenu's level is defined by parent level
-$submenu['ctte']['members'] = array('label' => "Membership List", 'link' => 'ctte-members');
-$submenu['ctte']['expiredmembers'] = array('label' => "Expired Members", 'link' => $submenu['ctte']['members']['link']. '?expiredmembers=1');
-$submenu['ctte']['newmember'] = array('label' => "New Member", 'link' => 'ctte-newmember');
-$submenu['ctte']['editmember'] = array('label' => '', 'link' => 'ctte-editmember?id=');
-$submenu['ctte']['resendack'] = array('label' => '', 'link' => 'resendack?member_id=');
-
-$submenu['admin']['usergroups'] = array('label' => "Manage User Groups", 'link' => '/~tim/plugldap/');
-$submenu['admin']['emailaliases'] = array('label' => "Manage Email Aliases", 'link' => '/~tim/plugldap/');
-
-$submenu['home']['editselfdetails'] = array('label' => "Change details", 'link' => 'member-editdetails');
-$submenu['home']['editselfforwarding'] = array('label' => "Change forwarding", 'link' => 'member-editforwarding');
-$submenu['home']['editselfshell'] = array('label' => "Change shell", 'link' => 'member-editshell');
-$submenu['home']['editselfpassword'] = array('label' => "Change password", 'link' => 'member-editpassword');
-
 
 function generate_menus($top = '')
 {
@@ -147,11 +131,6 @@ function generate_menus($top = '')
     $topmenu = array();
 
     // Check if we are authenticated
-    if (!isset($Auth) || !$Auth->checkAuth())
-    {
-        throw new UnauthorisedException();
-    }
-
     foreach ($toplevelmenu as $key => $menu)
     {
         if (check_level($menu['level']))
@@ -169,14 +148,10 @@ function redirect_with_messages($url)
     global $error, $success;
     $_SESSION['errormessages'] = $error;
     $_SESSION['successmessages'] = $success;
+    http_response_code(303);
     header('Location: ' . $url);
     exit();
 }
-
-// Shells
-$shells['zsh'] = '/usr/bin/zsh';
-$shells['bash'] = '/bin/bash';
-$shells['csh'] = '/bin/csh';
 
 // Clean functions from GRASE Hotspot
 function cleantext($text)

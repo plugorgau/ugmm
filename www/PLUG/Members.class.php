@@ -994,10 +994,12 @@ class Person {
 
     function expiry()
     {
-        // * 86400 to get from days to seconds
+        $expiry = $this->userldaparray['shadowExpire'];
         return array(
-            'expiry' => date("d M y", $this->userldaparray['shadowExpire'] * 86400),
-            'formattedexpiry' => date("l, d F Y", $this->userldaparray['shadowExpire'] * 86400)
+            'expiry_raw' => $expiry,
+            // * 86400 to get from days to seconds
+            'expiry' => date("d M y", $expiry * 86400),
+            'formattedexpiry' => date("l, d F Y", $expiry * 86400)
         );
     }
 

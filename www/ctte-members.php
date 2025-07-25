@@ -2,8 +2,6 @@
 
 $ACCESS_LEVEL = 'committee';
 $TOPLEVEL = 'ctte';
-$PAGETITLE = ' - Membership List';
-$TITLE = 'Membership List';
 
 require_once('./PLUG/session.inc.php');
     

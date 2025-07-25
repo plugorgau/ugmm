@@ -1,61 +1,67 @@
 
 
-
-body { background: #f0f0f0; font-family: helvetica, arial; /*font-size: 12px*/ }
-#page { background: #ffffff; width: 960px; margin: 0px auto; padding: 1em; 
+html { background: #f0f0f0; font-family: helvetica, arial; /*font-size: 12px*/ }
+body { background: #ffffff; width: 960px; margin: 10px auto; padding: 1em; 
 	border-left: 1px solid #e0e0e0; border-right: 1px solid #e0e0e0 }
-#footer { border-top: 1px dashed #e0e0e0; margin-top: 1em }
+footer { border-top: 1px dashed #e0e0e0; margin-top: 1em }
 table th { text-align: right; font-size: 1em }
 h1 { font-size: 2em; }
 h2 { font-size: 1.5em; }
 h3 { font-size: 1.2em; }
 
-#toplevelmenu ul {
+#toplevelmenu {
+    display: flex;
     margin: 0;
     padding: 0;
     list-style-type: none;
-/*    height: 80px;*/
-    width: 900px;
-
-    margin: auto;
-}
-#toplevelmenu li {
-    float: left;
 }
 
-#toplevelmenu ul a {
+#toplevelmenu a {
     display: block;
-   border-top: 1px solid #96d1f8;
-   background: #65a9d7;
-   background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
-   background: -moz-linear-gradient(top, #3e779d, #65a9d7);
-   padding: 7.5px 15px;
-   -webkit-border-radius: 0px;
-   -moz-border-radius: 0px;
-   border-radius: 0px;
-   -webkit-box-shadow: rgba(0,0,0,1) 0 1px 0;
-   -moz-box-shadow: rgba(0,0,0,1) 0 1px 0;
-   box-shadow: rgba(0,0,0,1) 0 1px 0;
-   text-shadow: rgba(0,0,0,.4) 0 1px 0;
-   color: white;
-   font-size: 15px;
-   font-family: Helvetica, Arial, Sans-Serif;
-   text-decoration: none;
-   vertical-align: middle;
-   }
-#toplevelmenu ul a:hover {
-   border-top-color: #28597a;
-   background: #28597a;
-   color: #ccc;
-   }
-#toplevelmenu ul a:active {
-   border-top-color: #1b435e;
-   background: #1b435e;
-   }
-   
-#secondlevelmenu ul {
-    clear: left;
-}   
+    border-top: 1px solid #96d1f8;
+    background: #65a9d7;
+    background: linear-gradient(to bottom, #3e779d, #65a9d7);
+    padding: 7.5px 15px;
+    box-shadow: rgba(0,0,0,1) 0 1px 0;
+    text-shadow: rgba(0,0,0,.4) 0 1px 0;
+    color: white;
+    font-size: 15px;
+    font-family: Helvetica, Arial, Sans-Serif;
+    text-decoration: none;
+    vertical-align: middle;
+}
+#toplevelmenu a:hover {
+    border-top-color: #28597a;
+    background: #28597a;
+    color: #ccc;
+}
+#toplevelmenu a:active {
+    border-top-color: #1b435e;
+    background: #1b435e;
+}
+
+#secondlevelmenu {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+#secondlevelmenu li {
+    display: inline;
+}
+#secondlevelmenu li:not(:first-child)::before {
+    content: " | ";
+}
+
+/* member table */
+.membertable thead {
+    background: #8888aa;
+}
+.membertable tbody {
+    background: #ddddff;
+}
+.membertable .elevated_user {
+    background: #ffdddd;
+}
 
 
 /* Signup form, new css */
@@ -69,8 +75,6 @@ form#membersignup, form#membersignup ol {
 
 form#membersignup {
     background: #006699;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
     border-radius: 5px;
     counter-reset: fieldsets;
     padding: 20px;
@@ -105,8 +109,6 @@ form#membersignup ol li {
     border-color: rgba(255,255,255,.6);
     border-style: solid;
     border-width: 2px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
     border-radius: 5px;
     line-height: 30px;
     list-style: none;
@@ -136,9 +138,6 @@ form#membersignup input:not([type=radio]),
 form#membersignup textarea {
     background: #ffffff;
     border: none;
-    -moz-border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -khtml-border-radius: 3px;
     border-radius: 3px;
     font: italic 13px Georgia, "Times New Roman", Times, serif;
     outline: none;
@@ -151,9 +150,6 @@ form#membersignup textarea:focus {
 }
 
 form#membersignup button {
-    -moz-border-radius: 20px;
-    -webkit-border-radius: 20px;
-    -khtml-border-radius: 20px;
     border-radius: 20px;
     color: #ffffff;
     display: block;

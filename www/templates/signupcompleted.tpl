@@ -1,3 +1,8 @@
+{extends file="base.tpl"}
+{block name=pagetitle} - Signup Complete{/block}
+{block name=title}Signup Complete{/block}
+{block name=body}
+
 <p>
 Thank you {$newmember.displayName}.<br/>
 <br/>
@@ -32,4 +37,4 @@ There are a number of ways to pay.
 
 </p>
 
-
+{/block}

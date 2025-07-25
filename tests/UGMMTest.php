@@ -197,7 +197,7 @@ final class UGMMTest extends TestCase {
             'vpassword' => 'pass1234',
             'notes' => 'Sign up for testing',
         ]);
-        $this->assertText($page, 'title', ' - Signup complete');
+        $this->assertText($page, 'title', ' - Signup Complete');
 
         // Verify that we can log in as the new user
         $this->login($client, $uid, 'pass1234');
@@ -209,6 +209,17 @@ final class UGMMTest extends TestCase {
         $page = $client->clickLink('Committee');
         $this->assertText($page, 'title', ' - Membership List');
         // TODO: Check the page content
+    }
+
+    public function testCommitteeMembersAccessDenied() {
+        global $base_url;
+
+        $client = new HttpBrowser();
+        $this->login($client, 'bobtest', 'test432bob');
+        $page = $client->request('GET', $base_url . '/ctte-members');
+        // Regular users cannot see pages requiring committee access
+        $this->assertText($page, 'h1', 'WARNING');
+        $this->assertSame($client->getResponse()->getStatusCode(), 403);
     }
 
     public function testCommitteeNewMember() {

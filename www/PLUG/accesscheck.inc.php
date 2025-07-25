@@ -6,12 +6,18 @@ function check_level($ACCESS_LEVEL)
     global $Auth;
     // Require admin level unless defined. This prevents us from accidentally forgetting to set an access level and users getting access to things they aren't allowed
     $ACCESS_LEVEL = isset($ACCESS_LEVEL) ? $ACCESS_LEVEL : 'admin';
-    // Check if level of access required is in the memberOf array
 
-    $user_details = $Auth->getAuthData();
-    
+    // Unauthenticated users have no access
+    if (!isset($Auth) || !$Auth->checkAuth())
+    {
+        return FALSE;
+    }
+
     if ($ACCESS_LEVEL == "all") return TRUE;
 
+    // Check if level of access required is in the memberOf array
+    $user_details = $Auth->getAuthData();
+    
     if (!is_array($ACCESS_LEVEL)) $ACCESS_LEVEL = array($ACCESS_LEVEL);
     
     foreach($ACCESS_LEVEL as $level)
@@ -36,14 +42,6 @@ function check_level($ACCESS_LEVEL)
     
     return FALSE;
 }
-
-if (! check_level($ACCESS_LEVEL))
-{
-
-    display_page('accessdenied.tpl');
-    exit;
-}
-
 
 # vim: set tabstop=4 shiftwidth=4 :
 # Local Variables:

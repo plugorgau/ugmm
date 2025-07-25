@@ -2,8 +2,6 @@
 
 $ACCESS_LEVEL = 'all';
 $TOPLEVEL = 'home';
-$PAGETITLE = 'Logout';
-$TITLE = 'Logout';
 
 require_once('./PLUG/session.inc.php');
 

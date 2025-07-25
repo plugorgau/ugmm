@@ -1,3 +1,8 @@
+{extends file="base.tpl"}
+{block name=pagetitle} - Edit Member{/block}
+{block name=title}Edit Member{/block}
+{block name=body}
+
   <h3>Personal Details</h3>
 
   <form method="post" action="" enctype=
@@ -44,7 +49,7 @@
         <tr>
           <th>Postal Address</th>
 
-          <td><input name="street_address" value="{if isset($member.street)}{$member.street}{/if}"
+          <td><input name="street_address" value="{$member.street|default}"
           size="50" type="text"></td>
         </tr>
 
@@ -52,20 +57,20 @@
           <th>Home Phone</th>
 
           <td><input name="home_phone" size="20" type="text" value=
-          "{if isset($member.homePhone)}{$member.homePhone}{/if}"></td>
+          "{$member.homePhone|default}"></td>
         </tr>
 
         <tr>
           <th>Work Phone</th>
 
-          <td><input name="work_phone" value="{if isset($member.pager)}{$member.pager}{/if}"
+          <td><input name="work_phone" value="{$member.pager|default}"
           size="20" type="text"></td>
         </tr>
 
         <tr>
           <th>Mobile Phone</th>
 
-          <td><input name="mobile_phone" value="{if isset($member.mobile)}{$member.mobile}{/if}"
+          <td><input name="mobile_phone" value="{$member.mobile|default}"
           size="20" type="text"></td>
         </tr>
 
@@ -87,9 +92,8 @@
           <th valign="top">Notes</th>
 
           <td>
-          <textarea name="notes" rows="3" cols="40">
-{if isset($member.description)}{$member.description}{/if}
-</textarea></td>
+          <textarea name="notes" rows="3" cols="40">{$member.description|default}</textarea>
+          </td>
         </tr>
       </tbody>
     </table><input name="go_go_button" value=
@@ -262,3 +266,5 @@
     "submit"><br>
   </form>
 *}
+
+{/block}
