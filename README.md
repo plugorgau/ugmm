@@ -15,9 +15,9 @@ To build, run
 ```
 debuild -i -us -uc -b
 ```
-This will give you a file like plug-ugmm_0.6.5_all.deb which you can then install with the command
+This will give you a file like plug-ugmm_0.7.0_all.deb which you can then install with the command
 ```
-sudo gdebi plug-ugmm_0.6.5_all.deb
+sudo gdebi plug-ugmm_0.7.0_all.deb
 ```
 
 ## Usage documentation
