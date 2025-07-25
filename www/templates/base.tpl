@@ -14,13 +14,15 @@
 <body>
 
 <header>
+  <div>
   <a href="/"><img src="/logo.png" alt="[logo]" class="logo" style='vertical-align: middle'></a>
-
   <span style='font-weight: bold; font-size: 2.5em'>&nbsp; Perth Linux Users Group</span>
+  </div>
+
+{include file="menu.tpl"}
 </header>
 <article>
 <h1>{block name=title}Title{/block}</h1>
-{include file="menu.tpl"}
 {include file="messages.tpl"}
 {block name=body}{/block}
 </article>
