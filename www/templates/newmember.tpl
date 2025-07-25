@@ -21,27 +21,27 @@
         <tr>
           <th>First Name *</th>
 
-          <td><input name="first_name" value="{if isset($member.givenName)}{$member.givenName}{/if}"
+          <td><input name="first_name" value="{$member.givenName|default}"
           size="30" type="text"></td>
         </tr>
 
         <tr>
           <th>Last Name</th>
 
-          <td><input name="last_name" value="{if isset($member.sn)}{$member.sn}{/if}" size=
+          <td><input name="last_name" value="{$member.sn|default}" size=
           "30" type="text"></td>
         </tr>
 
         <tr>
           <th>E-mail Address *</th>
 
-          <td><input name="email_address" value="{if isset($member.mail)}{$member.mail}{/if}" size="30" type="text"></td>
+          <td><input name="email_address" value="{$member.mail|default}" size="30" type="text"></td>
         </tr>
 
         <tr>
           <th>Postal Address *</th>
 
-          <td><input name="street_address" value="{if isset($member.street)}{$member.street}{/if}"
+          <td><input name="street_address" value="{$member.street|default}"
           size="50" type="text"></td>
         </tr>
 
@@ -49,33 +49,33 @@
           <th>Home Phone</th>
 
           <td><input name="home_phone" size="20" type="text" value=
-          "{if isset($member.homePhone)}{$member.homePhone}{/if}"></td>
+          "{$member.homePhone|default}"></td>
         </tr>
 
         <tr>
           <th>Work Phone</th>
 
-          <td><input name="work_phone" value="{if isset($member.pager)}{$member.pager}{/if}"
+          <td><input name="work_phone" value="{$member.pager|default}"
           size="20" type="text"></td>
         </tr>
 
         <tr>
           <th>Mobile Phone</th>
 
-          <td><input name="mobile_phone" value="{if isset($member.mobile)}{$member.mobile}{/if}"
+          <td><input name="mobile_phone" value="{$member.mobile|default}"
           size="20" type="text"></td>
         </tr>
         <tr>
           <th>Username *</th>
 
-          <td><input name="uid" value="{if isset($member.uid)}{$member.uid}{/if}"
+          <td><input name="uid" value="{$member.uid|default}"
           size="30" type="text"></td>
         </tr>  
 
         <tr>
           <th>Password *</th>
 
-          <td><input name="password" value="{if isset($member.password)}{$member.password}{/if}"
+          <td><input name="password" value="{$member.password|default}"
            type="password"></td>
         </tr>  
         
@@ -90,9 +90,8 @@
           <th valign="top">Notes</th>
 
           <td>
-          <textarea name="notes" rows="3" cols="40">
-{if isset($member.description)}{$member.description}{/if}
-</textarea></td>
+          <textarea name="notes" rows="3" cols="40">{$member.description|default}</textarea>
+          </td>
         </tr>
       </tbody>
     </table><input name="go_go_button" value=

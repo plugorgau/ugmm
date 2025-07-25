@@ -35,28 +35,16 @@ to edit them.
 
 <table border="0">
 <tr><th>E-mail Address</th><td>{foreach from=$memberself.mail item=mail}{$mail}<br/>{/foreach}</td></tr>
-<tr><th>Postal Address</th><td>{$memberself.street}</td></tr>
-{if isset($memberself.homePhone)}
-<tr><th>Home Phone</th><td>{$memberself.homePhone}</td></tr>
-{else}
-<tr><th>Home Phone</th><td>N/A</td></tr>
-{/if}
-{if isset($memberself.pager)}
-<tr><th>Work Phone</th><td>{$memberself.pager}</td></tr>
-{else}
-<tr><th>Work Phone</th><td>N/A</td></tr>
-{/if}
-{if isset($memberself.mobile)}
-<tr><th>Mobile Phone</th><td>{$memberself.mobile}</td></tr>
-{else}
-<tr><th>Mobile Phone</th><td>N/A</td></tr>
-{/if}
+<tr><th>Postal Address</th><td>{$memberself.street|default:'N/A'}</td></tr>
+<tr><th>Home Phone</th><td>{$memberself.homePhone|default:'N/A'}</td></tr>
+<tr><th>Work Phone</th><td>{$memberself.pager|default:'N/A'}</td></tr>
+<tr><th>Mobile Phone</th><td>{$memberself.mobile|default:'N/A'}</td></tr>
 
 </table>
 
 <p>
 <ul><li><a href="{$submenuitems.home.editselfdetails.link}">Edit your personal details</a>
-<li>Requests to change your name should be sent to <a href="mailto:&#99;&#111;&#109;&#109;&#105;&#116;&#116;&#101;&#101;&#64;&#112;&#108;&#117;&#103;&#46;&#111;&#114;&#103;&#46;&#97;&#117;">&#99;&#111;&#109;&#109;&#105;&#116;&#116;&#101;&#101;&#64;&#112;&#108;&#117;&#103;&#46;&#111;&#114;&#103;&#46;&#97;&#117;</a>.</ul></p>
+<li>Requests to change your name should be sent to {mailto address=$emails.committee encode="hex"}.</ul></p>
 <h3><a name="email"></a>E-mail Forwarding</h3>
 {if isset($memberself.mailForward) and $memberself.mailForward}
 <p>Mail sent to your PLUG email address ({$memberself.uid}@members.plug.org.au) is being redirected to {$memberself.mailForward}.</p>

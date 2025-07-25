@@ -29,27 +29,27 @@
         <th>Postal Address<sup>*</sup></th>
 
         <td><input type="text" name="street_address" value=
-        "{$member.street}" size="50"></td>
+        "{$member.street|default}" size="50"></td>
       </tr>
 
       <tr>
         <th>Home Phone</th>
 
-        <td><input type="text" name="home_phone" size="20" value="{if isset($member.homePhone)}{$member.homePhone}{/if}"></td>
+        <td><input type="text" name="home_phone" size="20" value="{$member.homePhone|default}"></td>
       </tr>
 
       <tr>
         <th>Work Phone</th>
 
         <td><input type="text" name="work_phone" value=
-        "{if isset($member.pager) and $member.pager}{$member.pager}{/if}" size="20"></td>
+        "{$member.pager|default}" size="20"></td>
       </tr>
 
       <tr>
         <th>Mobile Phone</th>
 
         <td><input type="text" name="mobile_phone" value=
-        "{if isset($member.mobile)}{$member.mobile}{/if}" size="20"></td>
+        "{$member.mobile|default}" size="20"></td>
       </tr>
     </table><input type="submit" name="go_go_button" value=
     "Update"> <input type="submit" name="oops_button" value=
