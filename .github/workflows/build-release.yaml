@@ -1,0 +1,53 @@
+name: build-release
+
+on:
+  release:
+    types:
+      - published
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: debian:stable
+    steps:
+      - name: Install git into debian container
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y git
+      - uses: actions/checkout@v4
+        with:
+          path: plug-ugmm
+          submodules: true
+      - name: Install dependencies
+        run: |
+          DEBIAN_FRONTEND=noninteractive apt-get build-dep -y ./plug-ugmm
+      - name: Build package
+        run: |
+          cd plug-ugmm && dpkg-buildpackage -i -us -uc
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build
+          path: |
+            plug-ugmm_*.dsc
+            plug-ugmm_*.tar.xz
+            plug-ugmm_*_all.deb
+          retention-days: 7
+
+  upload:
+    needs: [build]
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: write
+      id-token: write
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: build
+          path: build
+      - uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: build/plug-ugmm_*
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: build/plug-ugmm_*
