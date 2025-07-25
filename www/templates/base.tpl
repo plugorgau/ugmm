@@ -12,29 +12,26 @@
 </head>
 
 <body>
-<div id="page" class="content">
 
-<div id="header">
+<header>
   <a href="/"><img src="/logo.png" alt="[logo]" class="logo" style='vertical-align: middle'></a>
 
   <span style='font-weight: bold; font-size: 2.5em'>&nbsp; Perth Linux Users Group</span>
-</div>
-<div id='content'>
+</header>
+<article>
 <h1>{block name=title}Title{/block}</h1>
 {include file="menu.tpl"}
 {include file="messages.tpl"}
 {block name=body}{/block}
+</article>
 
-</div> <!-- Close #content -->
-
-<p id="footer">
-This page is maintained by the <a href="/contact/">PLUG webmasters</a>. E-mail: {mailto address=$emails.webmasters encode="javascript_charcode"}<br/>
+<footer>
+<p>This page is maintained by the <a href="/contact/">PLUG webmasters</a>. E-mail: {mailto address=$emails.webmasters encode="javascript_charcode"}<br/>
 
 Copyright &copy; 1996-{'Y'|date} PLUG, Inc.
 </p>
 
 <div id="generated">{page_gen_stats}</div>
-
-</div> <!-- Close #page -->
+</footer>
 </body>
 </html>
