@@ -1,4 +1,4 @@
-dn: uidNumber=6000,ou=Users,dc=plug,dc=org,dc=au
+dn: uidNumber=10000,ou=Users,dc=plug,dc=org,dc=au
 objectClass: top
 objectClass: person
 objectClass: posixAccount
@@ -7,8 +7,8 @@ objectClass: shadowAccount
 objectClass: mailForwardingAccount
 uid: chair
 displayName: PLUG Chair
-uidNumber: 6000
-gidNumber: 6000
+uidNumber: 10000
+gidNumber: 10000
 homeDirectory: /home/chair
 userPassword: chairpass
 loginShell: /bin/bash
@@ -21,9 +21,9 @@ street: 42 Test Bvd, Nowheresville 6969
 mobile: 0469 000000
 shadowExpire: -1
 
-dn: gidNumber=6000,ou=UPG,ou=Groups,dc=plug,dc=org,dc=au
-gidNumber: 6000
-member: uidNumber=6000,ou=Users,dc=plug,dc=org,dc=au
+dn: gidNumber=10000,ou=UPG,ou=Groups,dc=plug,dc=org,dc=au
+gidNumber: 10000
+member: uidNumber=10000,ou=Users,dc=plug,dc=org,dc=au
 objectClass: groupOfNames
 objectClass: posixGroup
 cn: chair
@@ -31,10 +31,10 @@ cn: chair
 dn: cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au
 changetype: modify
 add: member
-member: uidNumber=6000,ou=Users,dc=plug,dc=org,dc=au
+member: uidNumber=10000,ou=Users,dc=plug,dc=org,dc=au
 
 
 dn: cn=committee,ou=Groups,dc=plug,dc=org,dc=au
 changetype: modify
 add: member
-member: uidNumber=6000,ou=Users,dc=plug,dc=org,dc=au
+member: uidNumber=10000,ou=Users,dc=plug,dc=org,dc=au

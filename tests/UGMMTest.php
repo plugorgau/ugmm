@@ -73,7 +73,7 @@ final class UGMMTest extends TestCase {
         $this->assertText($rows->eq(0), 'th', 'Username');
         $this->assertText($rows->eq(0), 'td', 'bobtest');
         $this->assertText($rows->eq(1), 'th', 'Unix User ID');
-        $this->assertText($rows->eq(1), 'td', '6969');
+        $this->assertText($rows->eq(1), 'td', '10001');
         $this->assertText($rows->eq(2), 'th', 'Shell');
         $this->assertText($rows->eq(2), 'td', '/bin/bash');
         $this->assertText($rows->eq(3), 'th', 'Account expires');
