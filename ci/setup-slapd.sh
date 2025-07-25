@@ -34,6 +34,7 @@ dpkg-reconfigure slapd
 ldapadd -H ldapi:// -Y EXTERNAL -f $curdir/load-memberof.ldif
 
 # Add UGMM's plugpen schema
+ldapadd -H ldapi:// -Y EXTERNAL -f /etc/ldap/schema/namedobject.ldif
 ldapadd -H ldapi:// -Y EXTERNAL -f $curdir/../plugpen.ldif
 
 # Load basic structure
