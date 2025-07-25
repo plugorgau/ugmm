@@ -43,6 +43,6 @@ are not yet a financial member, you may be interested in
 
 <p><b>Note:</b> You will need to enable cookies in your browser to log in.
 <br>
-If you are having problems, please contact <a href="mailto:admin@plug.org.au">admin@plug.org.au</a>.</p>
+If you are having problems, please contact {mailto address=$emails.admin encode=hex}.</p>
 
 {/block}
