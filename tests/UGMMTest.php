@@ -9,7 +9,7 @@ require_once '/usr/share/php/Symfony/Component/BrowserKit/autoload.php';
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\BrowserKit\HttpBrowser;
 
-$base_url = 'http://localhost:8000';
+const BASE_URL = 'http://localhost:8000';
 
 final class UGMMTest extends TestCase {
 
@@ -22,9 +22,7 @@ final class UGMMTest extends TestCase {
     }
 
     public function login(HttpBrowser $client, string $username, string $password): Crawler {
-        global $base_url;
-
-        $page = $client->request('GET', $base_url);
+        $page = $client->request('GET', BASE_URL);
         $this->assertText($page, 'title', ' - Login');
         return $client->submitForm('Log In', [
             'username' => $username,
@@ -174,10 +172,8 @@ final class UGMMTest extends TestCase {
     }
 
     public function testSignup() {
-        global $base_url;
-
         $client = new HttpBrowser();
-        $page = $client->request('GET', $base_url);
+        $page = $client->request('GET', BASE_URL);
         $this->assertText($page, 'title', ' - Login');
         $page = $client->clickLink('Signup Form');
         $this->assertText($page, 'title', ' - Signup');
@@ -212,11 +208,9 @@ final class UGMMTest extends TestCase {
     }
 
     public function testCommitteeMembersAccessDenied() {
-        global $base_url;
-
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
-        $page = $client->request('GET', $base_url . '/ctte-members');
+        $page = $client->request('GET', BASE_URL . '/ctte-members');
         // Regular users cannot see pages requiring committee access
         $this->assertText($page, 'h1', 'WARNING');
         $this->assertSame($client->getResponse()->getStatusCode(), 403);
@@ -276,10 +270,8 @@ final class UGMMTest extends TestCase {
     }
 
     public function testResetPassword() {
-        global $base_url;
-
         $client = new HttpBrowser();
-        $page = $client->request('GET', $base_url);
+        $page = $client->request('GET', BASE_URL);
         $this->assertText($page, 'title', ' - Login');
         $page = $client->clickLink('Forgotten your password?');
         $this->assertText($page, 'title', ' - Reset Password');
