@@ -8,7 +8,7 @@ umask 022
 
 #DEBHELPER#
 
-rm -rf /usr/share/plug-ugmm/www/templates_c/
+find /var/cache/plug-ugmm/templates_c -type f -exec rm -r {} \;
 
 
 exit 0

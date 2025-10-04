@@ -1,2 +1,3 @@
 etc/ldap/schema
-usr/share/plug-ugmm/www/templates_c
+var/cache/plug-ugmm
+var/cache/plug-ugmm/templates_c

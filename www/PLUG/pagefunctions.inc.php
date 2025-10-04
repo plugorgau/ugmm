@@ -18,6 +18,7 @@ require_once('smarty4/Smarty.class.php');
 
 // create object
 $smarty = new Smarty;
+$smarty->setCompileDir('/var/cache/plug-ugmm/templates_c');
 $smarty->compile_check = true;
 
 $smarty->registerPlugin('modifier', 'date', 'date');

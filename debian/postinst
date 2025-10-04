@@ -11,12 +11,12 @@ if [ "$action" != configure ]
 fi
 
 fix_dir_perms(){
-    chown www-data /usr/share/plug-ugmm/www/templates_c
-    chmod 700 /usr/share/plug-ugmm/www/templates_c
+    chown www-data /var/cache/plug-ugmm/templates_c
+    chmod 700 /var/cache/plug-ugmm/templates_c
 }
 
 clear_template_cache(){
-    find /usr/share/plug-ugmm/www/templates_c -type f -exec rm -r {} \;
+    find /var/cache/plug-ugmm/templates_c -type f -exec rm -r {} \;
 }
 
 #DEBHELPER#
@@ -27,5 +27,3 @@ clear_template_cache
 
 
 exit 0
-
-
