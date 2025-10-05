@@ -1,10 +1,14 @@
 {extends file="base.tpl"}
 {block name=pagetitle} - Membership List{/block}
 {block name=title}Membership List{/block}
+{block name=head_extra}
+<link href="/javascript/sortable-tablesort/sortable-base.min.css" rel="stylesheet" />
+<script src="/javascript/sortable-tablesort/sortable.min.js"></script>
+{/block}
 {block name=body}
 
 {function member_table}
-<table class="membertable">
+<table class="membertable sortable asc">
   <thead>
     <tr>
       <th>ID</th>
@@ -25,7 +29,7 @@
       <td>{$user.displayName}</td>
       <td>{$user.mail}{if isset($user.mailForward) and $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
       <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
-      <td>{if $user.expiry_raw > 1}{$user.expiry}{/if}</td>
+      <td data-sort="{$user.expiry_raw}">{if $user.expiry_raw > 1}{$user.expiry}{/if}</td>
       <td>{if $user.shellEnabled}T{/if}</td>
       <td><a href="{$submenuitems.ctte.editmember.link}{$user.uidNumber}">Edit</a></td>
     </tr>
