@@ -2,6 +2,10 @@ Source: plug-ugmm
 Section: web
 Priority: optional
 Maintainer: Timothy White <tim@purewhite.id.au>
+Uploaders:
+  Alastair Irvine <alastair@plug.org.au>,
+  Benjamin Arntzen <zorlin@gmail.com>,
+  James Henstridge <james@jamesh.id.au>,
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 3.9.8
 Homepage: http://www.plug.org.au/projects/ugmm/
