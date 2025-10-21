@@ -15,7 +15,7 @@
 
 <header>
   <div>
-  <a href="/"><img src="/logo.png" alt="[logo]" class="logo" style='vertical-align: middle'></a>
+  <a href="{$external_links.home}"><img src="/logo.png" alt="[logo]" class="logo" style='vertical-align: middle'></a>
   <span style='font-weight: bold; font-size: 2.5em'>&nbsp; Perth Linux Users Group</span>
   </div>
 
@@ -28,7 +28,7 @@
 </article>
 
 <footer>
-<p>This page is maintained by the <a href="/contact/">PLUG webmasters</a>. E-mail: {mailto address=$emails.webmasters encode="javascript_charcode"}<br/>
+<p>This page is maintained by the <a href="{$external_links.contact}">PLUG webmasters</a>. E-mail: {mailto address=$emails.webmasters encode="javascript_charcode"}<br/>
 
 Copyright &copy; 1996-{'Y'|date} PLUG, Inc.
 </p>

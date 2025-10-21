@@ -10,6 +10,14 @@ const FULL_AMOUNT = 5000;
 const CONCESSION_TYPE = 2;
 const FULL_TYPE = 1;
 
+const EXTERNAL_LINKS = array(
+    "home" => "https://www.plug.org.au/",
+    "contact" => "https://www.plug.org.au/contact/",
+    "membership" => "https://www.plug.org.au/membership/",
+    "lists" => "https://www.plug.org.au/resources/mailing-list/",
+    "events" => "https://www.plug.org.au/events/",
+);
+
 const COMMITTEE_EMAIL = "committee@plug.org.au";
 const CONTACT_EMAIL = "committee@plug.org.au";
 const WEBMASTERS_EMAIL = "webmasters@plug.org.au";
