@@ -1,4 +1,6 @@
 www/* /usr/share/plug-ugmm/www/
+lib/PLUG/* /usr/share/plug-ugmm/lib/PLUG/
+lib/expiredmembers.php /usr/share/plug-ugmm/lib/
 
 lib/pear-Auth/Auth.php /usr/share/plug-ugmm/lib/pear-Auth/
 lib/pear-Auth/Auth/*   /usr/share/plug-ugmm/lib/pear-Auth/Auth/
