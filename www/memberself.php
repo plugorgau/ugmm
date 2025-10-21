@@ -3,7 +3,7 @@
 $ACCESS_LEVEL = 'all';
 $TOPLEVEL = 'home';
 
-require_once('./PLUG/session.inc.php');
+require_once('../lib/PLUG/session.inc.php');
     
     $memberself = new Person($ldap);
     $memberauthdata = $Auth->getAuthData();

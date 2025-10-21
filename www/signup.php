@@ -4,9 +4,9 @@ $ACCESS_LEVEL = 'all';
 
 session_start();
 
-require_once('PLUG/pagefunctions.inc.php');
+require_once('../lib/PLUG/pagefunctions.inc.php');
 
-require_once 'PLUG/Members.class.php';
+require_once '../lib/PLUG/Members.class.php';
 
 $OrgMembers = new Members($ldap);
 

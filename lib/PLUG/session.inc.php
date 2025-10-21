@@ -9,7 +9,7 @@
 
 /**/
 // It is safe to assume that lib/ is present next to www/ during dev and after install
-define('AUTH_DIR', dirname(dirname(dirname(__FILE__))) . "/lib/pear-Auth");
+define('AUTH_DIR', dirname(dirname(__FILE__)) . "/pear-Auth");
 //# define('AUTH_DIR', "/usr/share/plug-ugmm/lib/pear-Auth");
 set_include_path(get_include_path() . PATH_SEPARATOR . AUTH_DIR);
 

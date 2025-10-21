@@ -3,7 +3,7 @@
 $ACCESS_LEVEL = 'committee';
 $TOPLEVEL = 'ctte';
 
-require_once('./PLUG/session.inc.php');
+require_once('../lib/PLUG/session.inc.php');
 
     $OrgMembers = new Members($ldap);
     
