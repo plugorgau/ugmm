@@ -1,5 +1,5 @@
 <?php
-// This file is in the www subdirectory - however it is actually called by a cron script
+// This file is called by a cron script
 
 // Start of code for emailing expired members and moving them into the expired group
 
