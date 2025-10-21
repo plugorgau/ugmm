@@ -10,7 +10,7 @@ require_once('../lib/PLUG/session.inc.php');
     
     if(intval($_GET['member_id']) < 10000)
     {
-        header("Location: ldapusers.php");
+        header("Location: ctte-members");
     }
     
     $memberid = intval($_GET['member_id']);

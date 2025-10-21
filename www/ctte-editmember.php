@@ -9,7 +9,7 @@ require_once('../lib/PLUG/session.inc.php');
     
     if(intval($_GET['id']) < 10000)
     {
-        header("Location: ldapusers.php");
+        header("Location: ctte-members");
     }
  
      if(isset($_POST['personals_form']) && !verify_nonce($_POST['nonce'],'editmember'))
