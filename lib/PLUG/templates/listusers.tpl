@@ -38,9 +38,10 @@
 </table>
 {/function}
 
-<h3>New Members Awaiting Payment ({$pendingusers|@sizeof})</h3>
+<details>
+<summary><h3>New Members Awaiting Payment ({$pendingusers|@sizeof})</h3></summary>
 {member_table users=$pendingusers}
-
+</details>
 
 <h3>Current Members ({$currentusers|@sizeof})</h3>
 {member_table users=$currentusers}
