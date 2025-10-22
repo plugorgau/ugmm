@@ -5,7 +5,7 @@
 
 <p>This area contains resources available to PLUG financial members.  If you
 are not yet a financial member, you may be interested in
-<a href="/membership">joining PLUG</a>. (<a href="signup">Signup Form</a>)
+<a href="{$external_links.membership}">joining PLUG</a>. (<a href="signup">Signup Form</a>)
 
 	
 </p><h3>Log in</h3>

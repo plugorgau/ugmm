@@ -4,7 +4,7 @@
 {block name=body}
 
 {if $successform}
-Please continue to <a href="/ugmm">login page to login</a> with your new password
+Please continue to <a href="memberself">login page to login</a> with your new password
 {* TODO: link to login page *}
 
 {elseif $resetform}

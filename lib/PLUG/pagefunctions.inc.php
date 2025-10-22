@@ -76,6 +76,9 @@ $smarty->assign('submenuitems', $submenu);
 $smarty->assign('CONCESSION_AMOUNT', "$" . CONCESSION_AMOUNT / 100);
 $smarty->assign('FULL_AMOUNT', "$" . FULL_AMOUNT / 100 );
 
+// External links
+$smarty->assign('external_links', EXTERNAL_LINKS);
+
 // Email addresses
 $smarty->assign('emails', array(
     'webmasters' => WEBMASTERS_EMAIL,
