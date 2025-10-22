@@ -3,7 +3,7 @@
 // Start of code for sorting all members into groups
 
 require_once('/etc/private/ldapconnection.inc.php');
-require_once '/usr/share/plug-ugmm/www/PLUG/Members.class.php';
+require_once '/usr/share/plug-ugmm/lib/PLUG/Members.class.php';
 
 $OrgMembers = new Members($ldap);
 

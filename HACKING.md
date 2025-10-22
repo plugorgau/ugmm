@@ -47,7 +47,7 @@ Create configuration and cache directories needed by ugmm:
 
 ```
 mkdir -p /etc/private
-cp /usr/share/plug-ugmm/www/PLUG/ldapconnection.inc.php.example /etc/private/ldapconnection.inc.php
+cp /usr/share/plug-ugmm/lib/PLUG/ldapconnection.inc.php.example /etc/private/ldapconnection.inc.php
 mkdir -p /var/cache/plug-ugmm/templates_c
 chown www-data:www-data /var/cache/plug-ugmm/templates_c
 ```

@@ -3,14 +3,14 @@
 $ACCESS_LEVEL = 'committee';
 $TOPLEVEL = 'ctte';
 
-require_once('./PLUG/session.inc.php');
+require_once('../lib/PLUG/session.inc.php');
     
     $OrgMembers = new Members($ldap);
     
     
     if(intval($_GET['member_id']) < 10000)
     {
-        header("Location: ldapusers.php");
+        header("Location: ctte-members");
     }
     
     $memberid = intval($_GET['member_id']);

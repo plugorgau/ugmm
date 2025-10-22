@@ -48,7 +48,7 @@ cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au group.
 
 ## System package configuration
 
-Copy /usr/share/plug-ugmm/www/PLUG/ldapconnection.inc.php.example to
+Copy /usr/share/plug-ugmm/lib/PLUG/ldapconnection.inc.php.example to
 /etc/private/ldapconnection.inc.php and modify it to suit your LDAP
 database.
 

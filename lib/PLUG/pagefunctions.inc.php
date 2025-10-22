@@ -18,6 +18,7 @@ require_once('smarty4/Smarty.class.php');
 
 // create object
 $smarty = new Smarty;
+$smarty->setTemplateDir(dirname(__FILE__) . "/templates");
 $smarty->setCompileDir('/var/cache/plug-ugmm/templates_c');
 $smarty->compile_check = true;
 

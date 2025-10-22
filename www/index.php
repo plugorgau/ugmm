@@ -1,3 +1,3 @@
 <?php
-header("Location: /ugmm/memberself");
+header("Location: memberself");
 exit(0);

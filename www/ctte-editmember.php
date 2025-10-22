@@ -3,13 +3,13 @@
 $ACCESS_LEVEL = 'committee';
 $TOPLEVEL = 'ctte';
 
-require_once('./PLUG/session.inc.php');
+require_once('../lib/PLUG/session.inc.php');
 
     $OrgMembers = new Members($ldap);
     
     if(intval($_GET['id']) < 10000)
     {
-        header("Location: ldapusers.php");
+        header("Location: ctte-members");
     }
  
      if(isset($_POST['personals_form']) && !verify_nonce($_POST['nonce'],'editmember'))
