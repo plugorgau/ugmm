@@ -33,7 +33,7 @@ jobs:
           sudo ln -s ../sites-available/ugmm-nginx.conf /etc/nginx/sites-enabled/
           sudo systemctl restart nginx.service
           sudo mkdir -p /etc/private
-          sudo cp /usr/share/plug-ugmm/www/PLUG/ldapconnection.inc.php.example /etc/private/ldapconnection.inc.php
+          sudo cp /usr/share/plug-ugmm/lib/PLUG/ldapconnection.inc.php.example /etc/private/ldapconnection.inc.php
       - name: Set up fake sendmail
         run: |
           sudo cp ci/fake-sendmail.sh /usr/sbin/sendmail
