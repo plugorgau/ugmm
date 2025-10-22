@@ -63,6 +63,10 @@ h3 { font-size: 1.2em; }
     background: #ffdddd;
 }
 
+summary > h3 {
+    display: inline-block;
+}
+
 
 /* Signup form, new css */
 
