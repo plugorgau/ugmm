@@ -51,7 +51,7 @@
 
 {if $expiredusers}
 
-<h3>Expired Members ({$expiredusers|@sizeof})</h3>
+<h3 id="expired">Expired Members ({$expiredusers|@sizeof})</h3>
 {member_table users=$expiredusers}
 
 {else}
