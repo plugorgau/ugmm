@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $ACCESS_LEVEL = 'committee';
 $TOPLEVEL = 'ctte';
 
@@ -75,7 +77,7 @@ require_once('../lib/PLUG/session.inc.php');
         if(!$error)
         {
             
-            $member->makePayment($payment_type, $payment_years, $payment_date, $payment_comment, $payment_ack);
+            $member->makePayment(intval($payment_type), intval($payment_years), $payment_date, $payment_comment, boolval($payment_ack));
             if($member->is_error())
             {
                 $success = $member->get_messages();

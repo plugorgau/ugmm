@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once('config.inc.php');
 require_once('accesscheck.inc.php');
 
@@ -25,7 +27,7 @@ $smarty->compile_check = true;
 $smarty->registerPlugin('modifier', 'date', 'date');
 $smarty->registerPlugin('modifier', 'sizeof', 'sizeof');
 
-function page_gen_stats($params, $smarty) {
+function page_gen_stats($params, $smarty): string {
    global $pagestarttime;
    $mtime = microtime();
    $mtime = explode(" ",$mtime);
@@ -98,7 +100,7 @@ $shells = array(
 $error=array();
 $success = array();
 
-function display_page($template)
+function display_page(string $template): mixed
 {
         global $smarty, $error, $success, $TOPLEVEL;
 
@@ -126,7 +128,7 @@ function display_page($template)
         return $smarty->display($template);
 }
 
-function generate_menus($top = '')
+function generate_menus(?string $top = ''): array
 {
     global $Auth, $toplevelmenu, $submenu;
 
@@ -148,7 +150,7 @@ function generate_menus($top = '')
     return array($topmenu, $smenu);
 }
 
-function redirect_with_messages($url)
+function redirect_with_messages(string $url): void
 {
     global $error, $success;
     $_SESSION['errormessages'] = $error;
@@ -159,7 +161,7 @@ function redirect_with_messages($url)
 }
 
 // Clean functions from GRASE Hotspot
-function cleantext($text)
+function cleantext(string $text): string
 {
 
 	$text = strip_tags($text);
@@ -172,7 +174,7 @@ function cleantext($text)
 	return trim($text);
 }
 
-function cleanpassword($text)
+function cleanpassword(string $text): string
 {
     // TODO: Filter out prohibited chars?
     return $text;
@@ -186,7 +188,7 @@ function clean_number($number)
 }
 
 */
-function clean_int($number)
+function clean_int(mixed $number): int
 {
     return intval($number);
     //return intval(clean_number($number));
