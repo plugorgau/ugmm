@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once('/etc/private/ldapconnection.inc.php');
 require_once('config.inc.php');
 
@@ -10,19 +12,19 @@ class Members {
 
     // Class for plug, contains members of type Member/Person
 
-    private $currentmembers;
-    private $overduemembers;
-    private $expiredmembers;
-    private $pendingmembers;
+    private array $currentmembers;
+    private array $overduemembers;
+    private array $expiredmembers;
+    private array $pendingmembers;
 
-    private $ldap;
+    private Net_LDAP2 $ldap;
 
-    function __construct($ldap)
+    function __construct(Net_LDAP2 $ldap)
     {
         $this->ldap = $ldap;
     }
 
-    private function load_ldapmembers_from_group($group)
+    private function load_ldapmembers_from_group(string $group): array
     {
         // Fetch entry for group and all member attributes
         $dn = "cn=$group,ou=Groups,".LDAP_BASE;
@@ -51,7 +53,7 @@ class Members {
         return $memberdetails;
     }
 
-    function load_members_dn_from_filter($filter)
+    function load_members_dn_from_filter(string $filter): array
     {
         $filter = Net_LDAP2_Filter::parse($filter);
         $searchbase = "ou=Users,".LDAP_BASE;
@@ -81,54 +83,54 @@ class Members {
 
     }
 
-    function load_current_members()
+    function load_current_members(): void
     {
         $this->currentmembers = $this->load_ldapmembers_from_group('currentmembers');
         // TODO load Payments
     }
 
-    function load_expired_members()
+    function load_expired_members(): void
     {
         $this->expiredmembers = $this->load_ldapmembers_from_group('expiredmembers');
         // TODO load Payments
     }
 
-    function load_overdue_members()
+    function load_overdue_members(): void
     {
         $this->overduemembers = $this->load_ldapmembers_from_group('overduemembers');
         // TODO load Payments
     }
 
-    function load_pending_members()
+    function load_pending_members(): void
     {
         $this->pendingmembers = $this->load_ldapmembers_from_group('pendingmembers');
     }
 
-    function get_current_members()
+    function get_current_members(): array
     {
         $this->load_current_members();
         return $this->currentmembers;
     }
 
-    function get_overdue_members()
+    function get_overdue_members(): array
     {
         $this->load_overdue_members();
         return $this->overduemembers;
     }
 
-    function get_expired_members()
+    function get_expired_members(): array
     {
         $this->load_expired_members();
         return $this->expiredmembers;
     }
 
-    function get_pending_members()
+    function get_pending_members(): array
     {
         $this->load_pending_members();
         return $this->pendingmembers;
     }
 
-    function get_member_object($uidNumber)
+    function get_member_object(int $uidNumber): Person
     {
         $uidNumber = intval($uidNumber); // Sanitise
         $dn = "uidNumber=$uidNumber,ou=Users,".LDAP_BASE;
@@ -145,7 +147,7 @@ class Members {
             PEAR_ERROR_RETURN);
     }
 
-    function get_member_by_email($email)
+    function get_member_by_email(string $email): Person|bool
     {
         $filter = Net_LDAP2_Filter::create('mail', 'equals',  $email);
         $searchbase = "ou=Users,".LDAP_BASE;
@@ -170,7 +172,7 @@ class Members {
 
         $entry = $search->shiftEntry();
 
-        return $this->get_member_object($entry->getValue('uidNumber', 'single'));
+        return $this->get_member_object(intval($entry->getValue('uidNumber', 'single')));
 
     }
 
@@ -186,7 +188,7 @@ class Members {
           }*/
 
 
-    function check_username_available($username)
+    function check_username_available(string $username): int
     {
         $filter = Net_LDAP2_Filter::create('uid', 'equals',  $username);
         $searchbase = 'ou=Users,'.LDAP_BASE;
@@ -205,7 +207,7 @@ class Members {
         return $search->count();
     }
 
-    function next_uidNumber()
+    function next_uidNumber(): string
     {
         $dn = "cn=maxUid,ou=Users,".LDAP_BASE;
         // Get next uidNumber from maxUid
@@ -235,7 +237,7 @@ class Members {
 
     }
 
-    function next_freeuidNumber($uidNumber)
+    function next_freeuidNumber(string $uidNumber): string
     {
         // Loop checking that it's actually available
         /* This code should work but dnExists is broken
@@ -247,7 +249,7 @@ class Members {
         return $uidNumber;
     }
 
-    function our_dnExists($dn)
+    function our_dnExists(string $dn): bool
     {
         $entry = $this->ldap->getEntry($dn, array('dn'));
         if (PEAR::isError($entry))
@@ -285,7 +287,7 @@ class Members {
 
       }*/
 
-    function new_member($username, $firstname, $lastname, $address, $home, $work, $mobile, $email, $password, $notes)
+    function new_member(string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $password, string $notes): Person
     {
         $newmember = new Person($this->ldap);
         $pendingID = isset($_SESSION['pendingID']) ? $this->next_freeuidNumber($_SESSION['pendingID']) : $this->next_uidNumber();
@@ -301,7 +303,7 @@ class Members {
         return $newmember;
     }
 
-    function delete_member($dn)
+    function delete_member(string $dn): void
     {
         if($this->ldap->dnExists($dn))
             $this->ldap->delete($dn, TRUE);
@@ -311,9 +313,9 @@ class Members {
 
 class Payment
 {
-    private $dn;
-    private $ldap;
-    private $paymentarray = array(
+    private string $dn;
+    private Net_LDAP2 $ldap;
+    private array $paymentarray = array(
         'objectClass' => array('top', 'x-plug-payment'),
         'x-plug-paymentAmount' => 0,
         'x-plug-paymentDate' => '',
@@ -322,12 +324,12 @@ class Payment
         'x-plug-paymentDescription' => '',
         'x-plug-paymentYears' => 0);
 
-    function __construct($ldap)
+    function __construct(Net_LDAP2 $ldap)
     {
         $this->ldap = $ldap;
     }
 
-    function load_ldap($dn)
+    function load_ldap(string $dn): void
     {
         $this->dn = $dn;
         $this->ldapentry = $this->ldap->getEntry($dn, array(
@@ -369,12 +371,12 @@ class Payment
 
           $this->create_new_ldap_payment();
           }*/
-    function new_payment($parentdn, $type, $years, $date, $description, $id = false)
+    function new_payment(string $parentdn, int $type, int $years, string $date, string $description, int|bool $id = false): void
     {
         global $payment_modifier_amount; //Hack for change in payment amounts
         if(!isset($payment_modifier_amount)) $payment_modifier_amount = 1;
         if(! $id)
-            $id = $this->next_paymentID();
+            $id = self::next_paymentID($this->ldap);
 
         $this->dn = "x-plug-paymentID=$id,$parentdn";
         $this->paymentarray['x-plug-paymentYears'] = $years;
@@ -395,12 +397,12 @@ class Payment
         $this->create_new_ldap_payment();
     }
 
-    function paymentarray()
+    function paymentarray(): array
     {
         return $this->paymentarray;
     }
 
-    private function create_new_ldap_payment()
+    private function create_new_ldap_payment(): void
     {
         // TODO: Check if exists first
         $entry = Net_LDAP2_Entry::createFresh($this->dn, array_filter($this->paymentarray));
@@ -410,12 +412,12 @@ class Payment
         }
     }
 
-    private function next_paymentID()
+    private static function next_paymentID(Net_LDAP2 $ldap): int
     {
         $dn = "cn=maxUid,ou=Users,".LDAP_BASE;
         // Get next paymentID from maxUid
 
-        $entry = $this->ldap->getEntry($dn, array('x-plug-paymentID'));
+        $entry = $ldap->getEntry($dn, array('x-plug-paymentID'));
 
         if (PEAR::isError($entry)) {
             throw new Exception('LDAP Error: '.$entry->getMessage());
@@ -435,7 +437,7 @@ class Payment
                     'uidNumber')
             );
 
-            $search = $this->ldap->search($searchbase, $filter, $options);
+            $search = $ldap->search($searchbase, $filter, $options);
 
             if (PEAR::isError($search)) {
                 throw new Exception($search->getMessage() . "\n");
@@ -463,7 +465,7 @@ class Payment
 }
 
 class Person {
-    private $dn;
+    private string $dn;
     /*    private $uid;
           private $displayName;
           private $uidNumber;
@@ -483,85 +485,66 @@ class Person {
 
           private $objectClass = array('top',  'person', 'posixAccount', 'inetOrgPerson');*/
 
-    private $userldaparray;
-    private $userorigldaparray;
-    private $ldapentry;
+    private array $userldaparray;
+    private array $userorigldaparray;
+    private Net_LDAP2_Entry|PEAR_Error $ldapentry;
 
-    private $payments = array();
+    private array $payments = array();
 
-    private $ldap;
+    private Net_LDAP2 $ldap;
 
-    private $errors = array();
-    private $messages = array();
-    private $errorstate = FALSE;
-    private $passworderrors = array();
+    private array $errors = array();
+    private array $messages = array();
+    private bool $errorstate = FALSE;
+    private array $passworderrors = array();
 
-    function __construct($ldap)
+    private const _DEFAULTS = array(
+        'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount'),
+        'uid' => '',
+        'displayName' => '',
+        'uidNumber' => '',
+        'gidNumber' => '',
+        'homeDirectory' => '',
+        'userPassword' => '',
+        'loginShell' => '',
+        'mail' => '',
+        'mailForward' => '',
+        'givenName' => '',
+        'sn' => '',
+        'cn' => '',
+        'street' => '',
+        'homePhone' => '',
+        'mobile' => '',
+        'pager' => '',
+        'description' => '',
+        'shadowExpire' => '1', // Start all users off as expired
+        'memberOf' => array(),
+        'createTimestamp' => '',
+        'modifyTimestamp' => '',
+    );
+
+    function __construct(Net_LDAP2 $ldap)
     {
         $this->ldap = $ldap;
 
-        $this->userldaparray = array(
-            'uid' => '',
-            'displayName' => '',
-            'uidNumber' => '',
-            'gidNumber' => '',
-            'homeDirectory' => '',
-            'userPassword' => '',
-            'loginShell' => '',
-            'mail' => '',
-            'mailForward' => '',
-            'givenName' => '',
-            'sn' => '',
-            'cn' => '',
-            'street' => '',
-            'homePhone' => '',
-            'mobile' => '',
-            'pager' => '',
-            'description' => '',
-            'shadowExpire' => '1', // Start all users off as expired
-            'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount'),
-        );
+        $this->userldaparray = self::_DEFAULTS;
     }
 
-    function load_ldap($dn)
+    function load_ldap(string $dn): void
     {
         $this->dn = $dn;
-        $this->ldapentry = $this->ldap->getEntry($dn, array(
-            'objectClass',
-            'uid',
-            'displayName',
-            'uidNumber',
-            'gidNumber',
-            'homeDirectory',
-            'userPassword',
-            'loginShell',
-            'mail',
-            'mailForward',
-            'givenName',
-            'sn',
-            'cn',
-            'street',
-            'homePhone',
-            'mobile',
-            'pager',
-            'description',
-            'shadowExpire',
-            'memberOf',
-            'createTimestamp',
-            'modifyTimestamp'
-        ));
+        $this->ldapentry = $this->ldap->getEntry($dn, array_keys(self::_DEFAULTS));
         if (PEAR::isError($this->ldapentry)) {
             throw new Exception('LDAP Error: load_ldap: '.$this->ldapentry->getMessage());
         }
 
-        $this->userldaparray = $this->ldapentry->getValues();
+        $this->userldaparray = array_merge(self::_DEFAULTS, $this->ldapentry->getValues());
         $this->userorigldaparray = $this->userldaparray;
         //$this->explode_user_ldap_array();
         //$this->load_payments();
-
     }
 
-    function create_person($uid, $username, $firstname, $lastname, $address, $home, $work, $mobile, $email, $forward, $password, $notes)
+    function create_person(string $uid, string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $forward, string $password, string $notes): void
     {
         $this->dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
         $this->change_uid($uid, $uid);
@@ -588,26 +571,26 @@ class Person {
 
     }
 
-    function is_error()
+    function is_error(): bool
     {
         $this->errors = array_filter($this->errors);
         if(sizeof($this->errors)) $this->errorstate = TRUE;
         return $this->errorstate;
     }
 
-    function get_errors()
+    function get_errors(): array
     {
         $this->errors = array_filter($this->errors);
         return $this->errors;
     }
 
-    function get_messages()
+    function get_messages(): array
     {
         $this->messages = array_filter($this->messages);
         return $this->messages;
     }
 
-    function change_expiry($date) // $date as string
+    function change_expiry(string $date): void // $date as string
     {
         // TODO: UTC issues?
         // $date needs to be converted to DAYS since epoch
@@ -616,7 +599,7 @@ class Person {
         $this->userldaparray['shadowExpire'] = abs(floor(strtotime($date)/ 86400));
     }
 
-    function increase_expiry($years)
+    function increase_expiry(string $years): void
     {
         // TODO: Do we need to worry about leap years?
         /*// To allow for leap years, do this fancy instead of just $years * 365
@@ -632,7 +615,7 @@ class Person {
         $this->userldaparray['shadowExpire'] += $years * 365;
     }
 
-    function change_name($firstname, $lastname)
+    function change_name(string $firstname, string $lastname): void
     {
         if($firstname == '')
         {
@@ -652,7 +635,7 @@ class Person {
 
     }
 
-    function change_address($address)
+    function change_address(string $address): void
     {
         if($address == '')
         {
@@ -666,7 +649,7 @@ class Person {
         }
     }
 
-    function change_username($username)
+    function change_username(string $username): void
     {
         if($this->userldaparray['uid'] == '' || $username != $this->userldaparray['uid'])
         {
@@ -686,7 +669,7 @@ class Person {
         }
     }
 
-    private function change_uid($uid, $gid)
+    private function change_uid(int|string $uid, int|string $gid): void
     {
         if($uid < 10000 || $gid < 10000 || $uid == '' || $gid == '')
         {
@@ -699,7 +682,7 @@ class Person {
         }
     }
 
-    function change_shell($loginShell)
+    function change_shell(string $loginShell): void
     {
         if($loginShell != $this->userldaparray['loginShell'])
         {
@@ -708,7 +691,7 @@ class Person {
         }
     }
 
-    private function change_homedir($homedir)
+    private function change_homedir(string $homedir): void
     {
         if($homedir != $this->userldaparray['homeDirectory'])
         {
@@ -718,7 +701,7 @@ class Person {
 
     }
 
-    function change_email($email)
+    function change_email(string $email): void
     {
         if($email == '' && ! FORCE)
         {
@@ -741,7 +724,7 @@ class Person {
         }
     }
 
-    function change_forward($forward)
+    function change_forward(string $forward): void
     {
         if(isset($this->userldaparray['mailForward']))
             $existing_mailForward = $this->userldaparray['mailForward'];
@@ -762,7 +745,7 @@ class Person {
 
     }
 
-    function change_password($password)
+    function change_password(string $password): void
     {
         // Can't check if password hasn't changed, so always do this
         // Check if we are passing an already crypted password
@@ -779,24 +762,24 @@ class Person {
         // $this->update_ldap();
     }
 
-    function change_phone($home, $work, $mobile)
+    function change_phone(string $home, string $work, string $mobile): void
     {
         $this->userldaparray['homePhone'] = $home;
         $this->userldaparray['mobile'] = $mobile;
         $this->userldaparray['pager'] = $work;
     }
 
-    function change_description($description)
+    function change_description(string $description): void
     {
         $this->userldaparray['description'] = $description;
     }
 
-    function disable_shell()
+    function disable_shell(): bool
     {
         return $this->remove_from_group('shell');
     }
 
-    function enable_shell()
+    function enable_shell(): bool
     {
         return $this->add_to_group('shell');
     }
@@ -845,7 +828,7 @@ class Person {
                   $this->description = $this->userldaparray['description'];*/
     }
 
-    private function create_new_ldap_person()
+    private function create_new_ldap_person(): bool
     {
         // TODO: Check if exists first
         $entry = Net_LDAP2_Entry::createFresh($this->dn, array_filter($this->userldaparray));
@@ -859,7 +842,7 @@ class Person {
         return TRUE;
     }
 
-    private function create_new_ldap_group()
+    private function create_new_ldap_group(): void
     {
         $gid = $this->userldaparray['gidNumber'];
         $group = array(
@@ -881,7 +864,7 @@ class Person {
 
     }
 
-    private function create_new_ldap_system_group($dn, $cn)
+    private function create_new_ldap_system_group(string $dn, string $cn): void
     {
         $gids = array(
             'admin' => 1001,
@@ -918,7 +901,7 @@ class Person {
 
     }
 
-    public function update_ldap()
+    public function update_ldap(): void
     {
         //$this->create_user_ldap_array();
         /*print_r(@array_diff_assoc(
@@ -945,7 +928,7 @@ class Person {
         $this->load_ldap($this->dn);
     }
 
-    private function memberOf_filter()
+    private function memberOf_filter(): array
     {
         $filtergroups = array('expiredmembers', 'currentmembers', 'overduemembers', 'pendingmembers', 'shell');
         // Filters memberOf to just give system group names
@@ -971,28 +954,28 @@ class Person {
         return array($validgroups, $allgroups);
     }
 
-    private function is_shell_enabled()
+    private function is_shell_enabled(): bool
     {
         list($validgroups, $allgroups) = $this->memberOf_filter();
         if(in_array('shell', $allgroups)) return true;
         return false;
     }
 
-    private function is_membership_current()
+    private function is_membership_current(): bool
     {
         list($validgroups, $allgroups) = $this->memberOf_filter();
         if(in_array('currentmembers', $allgroups)) return true;
         return false;
     }
 
-    private function is_membership_overdue()
+    private function is_membership_overdue(): bool
     {
         list($validgroups, $allgroups) = $this->memberOf_filter();
         if(in_array('overduemembers', $allgroups)) return true;
         return false;
     }
 
-    function expiry()
+    function expiry(): array
     {
         $expiry = $this->userldaparray['shadowExpire'];
         return array(
@@ -1003,7 +986,7 @@ class Person {
         );
     }
 
-    function set_status_group()
+    function set_status_group(): void
     {
         // Due to memberOf being out of sync, we need to sync the ldap object
         $this->update_ldap();
@@ -1044,7 +1027,7 @@ class Person {
 
     }
 
-    function add_to_group($group)
+    function add_to_group(string $group): bool
     {
         $groupdn = "cn=$group,ou=Groups,".LDAP_BASE;
         $groups = is_array(@$this->userldaparray['memberOf']) ? @$this->userldaparray['memberOf'] : array(@$this->userldaparray['memberOf']);
@@ -1089,7 +1072,7 @@ class Person {
         return TRUE; // TODO: return error if error?
     }
 
-    function remove_from_group($group)
+    function remove_from_group(string $group): bool
     {
         $groupdn = "cn=$group,ou=Groups,".LDAP_BASE;
         $groups = is_array(@$this->userldaparray['memberOf']) ? @$this->userldaparray['memberOf'] : array(@$this->userldaparray['memberOf']);
@@ -1131,7 +1114,7 @@ class Person {
 
     /* Display and Get functions */
 
-    public function print_ldif()
+    public function print_ldif(): void
     {
         echo "<p><h3>".$this->dn."</h3>\n";
 
@@ -1150,7 +1133,7 @@ class Person {
         echo "</p>\n";
     }
 
-    function userarray()
+    function userarray(): array
     {
         list($sysgroups, $allgroups) = $this->memberOf_filter();
         return array_merge(
@@ -1164,7 +1147,7 @@ class Person {
         );
     }
 
-    public function send_user_email($body, $subject)
+    public function send_user_email(string $body, string $subject): bool
     {
         $headers = "Reply-To: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
         $headers .= "Return-Path: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
@@ -1182,7 +1165,7 @@ class Person {
         return FALSE;
     }
 
-    function load_payments()
+    function load_payments(): void
     {
         $filter = Net_LDAP2_Filter::create('objectClass', 'equals',  'x-plug-payment');
         $searchbase = $this->dn;
@@ -1234,7 +1217,7 @@ class Person {
 
     }
 
-    function clean_payment_struct($payment)
+    function clean_payment_struct(array $payment): void
     {
         // smarty tempalte doesn't like - in var names
         $cleanpayment = array();
@@ -1251,7 +1234,7 @@ class Person {
         $this->payments[$cleanpayment['id']] = $cleanpayment;
     }
 
-    function clean_payment($payment)
+    function clean_payment(array $payment): void
     {
         // smarty tempalte doesn't like - in var names
         $cleanpayment = array();
@@ -1271,12 +1254,12 @@ class Person {
         //print_r($payment);
     }
 
-    function paymentsarray()
+    function paymentsarray(): array
     {
         return $this->payments;
     }
 
-    function makePayment($type, $years, $date, $description, $ack, $id = false)
+    function makePayment(int $type, int $years, string $date, string $description, bool $ack, int|bool $id = false): int
     {
         if($date == '') $date = date("YmdHis",time());
 
@@ -1318,7 +1301,7 @@ class Person {
         return $paymentarray['x-plug-paymentID'];
     }
 
-    function sendPaymentReceipt($paymentid)
+    function sendPaymentReceipt(int $paymentid): bool
     {
 
         if(!isset($this->payments[$paymentid]))
@@ -1373,7 +1356,7 @@ PLUG Membership Scripts";
 
     // Password reset hashing
 
-    function create_hash($tick = 0)
+    function create_hash(int $tick = 0): string
     {
         // Derived from WP nonce code
         $tick =ceil(time() / 21600) - $tick; // To check we check current and previous tick
@@ -1387,7 +1370,7 @@ PLUG Membership Scripts";
         return $hash;
     }
 
-    function check_hash($hash)
+    function check_hash(string $hash): bool
     {
         if($hash == $this->create_hash())
             return TRUE;
@@ -1397,7 +1380,7 @@ PLUG Membership Scripts";
     }
 
     // Validation function available globally
-    function is_valid_password($password)
+    function is_valid_password(string $password): bool
     {
         list($valid, $error) = PLUGFunction::is_valid_password($password);
         /*        $error = array();
@@ -1436,7 +1419,7 @@ PLUG Membership Scripts";
       return $error;
       }*/
 
-    function get_password_errors()
+    function get_password_errors(): array
     {
         return $this->passworderrors;
     }
@@ -1444,7 +1427,7 @@ PLUG Membership Scripts";
 
 
     //Duplicate functions from PLUG class. Is there a better way of doing this as this class doesn't have access to the PLUG object?
-    private function check_username_available($username)
+    private function check_username_available(string $username): bool
     {
         $filter = Net_LDAP2_Filter::create('uid', 'equals',  $username);
         $searchbase = 'ou=Users,'.LDAP_BASE;
@@ -1463,7 +1446,7 @@ PLUG Membership Scripts";
         return FALSE;
     }
 
-    private function check_email_available($email)
+    private function check_email_available(string $email): int
     {
         $filter = Net_LDAP2_Filter::create('mail', 'equals',  $email);
         $searchbase = 'ou=Users,'.LDAP_BASE;
@@ -1483,13 +1466,13 @@ PLUG Membership Scripts";
     }
 
     // OO Getters only enable those that are needed
-    function uid() { return $this->userldaparray['uidNumber'];}
+    function uid(): int|string { return $this->userldaparray['uidNumber'];}
 
-    function username() { return $this->userldaparray['uid'];}
+    function username(): string { return $this->userldaparray['uid'];}
 
-    function givenName() { return $this->userldaparray['givenName'];}
+    function givenName(): string { return $this->userldaparray['givenName'];}
 
-    function mail() { return $this->userldaparray['mail'];}
+    function mail(): string { return $this->userldaparray['mail'];}
     /*    function dn() { return  $dn;}
           function username() { return $uid;}
           function displayname() { return $displayName;}
@@ -1512,7 +1495,7 @@ PLUG Membership Scripts";
 class PLUGFunction
 {
     // Validation function available globally
-    static function is_valid_password($password)
+    static function is_valid_password(string $password): array
     {
         $error = array();
         $newpassword = cleanpassword($password);
@@ -1533,7 +1516,7 @@ class PLUGFunction
 
     }
 
-    static function check_password_strength($password)
+    static function check_password_strength(string $password): array
     {
         $error = array();
         if(strlen($password) < 7)
@@ -1564,7 +1547,7 @@ return crypt($password,$salt.'$');
 }*/
 
 // http://blog.ricky-stevens.com/php-sha512-password-hashing/
-function createPasswordHash($strPlainText) {
+function createPasswordHash(string $strPlainText): string {
 
     if (CRYPT_SHA512 != 1) {
         throw new Exception('Hashing mechanism not supported.');
@@ -1582,7 +1565,7 @@ function createPasswordHash($strPlainText) {
 
 }
 
-function validatePassword($strPlainText, $strHash) {
+function validatePassword(string $strPlainText, string $strHash): bool {
 
     if (CRYPT_SHA512 != 1) {
         throw new Exception('Hashing mechanism not supported.');

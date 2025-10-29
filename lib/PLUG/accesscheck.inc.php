@@ -1,7 +1,8 @@
 <?php
 
+declare(strict_types=1);
 
-function check_level($ACCESS_LEVEL)
+function check_level(string $ACCESS_LEVEL): bool
 {
     global $Auth;
     // Require admin level unless defined. This prevents us from accidentally forgetting to set an access level and users getting access to things they aren't allowed

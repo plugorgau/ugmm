@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 require_once '../lib/PLUG/Members.class.php';
 
 $OrgMembers = new Members($ldap);
