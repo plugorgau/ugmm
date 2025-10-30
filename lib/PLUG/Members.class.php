@@ -123,7 +123,6 @@ class Members {
         {
             $thismember = new Person($this->ldap);
             $thismember->load_ldap($dn);
-            $thismember->load_payments();
             return $thismember;
         }
         return PEAR::raiseError (
@@ -168,7 +167,6 @@ class Members {
           $dn = "uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au";
           $thismember = new Person($this->ldap);
           $thismember->load_ldap($dn);
-          $thismember->load_payments();
           return $thismember->userarray();
           }*/
 
@@ -500,7 +498,7 @@ class Person {
     private array $userorigldaparray;
     private Net_LDAP2_Entry|PEAR_Error $ldapentry;
 
-    private array $payments = array();
+    private ?array $_payments = null;
 
     private Net_LDAP2 $ldap;
 
@@ -552,7 +550,6 @@ class Person {
         $this->userldaparray = array_merge(self::_DEFAULTS, $this->ldapentry->getValues());
         $this->userorigldaparray = $this->userldaparray;
         //$this->explode_user_ldap_array();
-        //$this->load_payments();
     }
 
     function create_person(string $uid, string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $forward, string $password, string $notes): void
@@ -1176,23 +1173,28 @@ class Person {
         return FALSE;
     }
 
-    function load_payments(): void
+    private function load_payments(): void
     {
-        $this->payments = Payment::load_for($this->ldap, $this->dn);
+        if ($this->_payments === null && !$this->is_error()) {
+            $this->_payments = Payment::load_for($this->ldap, $this->dn);
+        }
     }
 
-    function paymentsarray(): array
-    {
-        return $this->payments;
+    public array $payments {
+        get {
+            $this->load_payments();
+            return $this->_payments ? $this->_payments : array();
+        }
     }
 
     function makePayment(int $type, int $years, string $date, string $description, bool $ack, int|bool $id = false): int
     {
         if($date == '') $date = date("YmdHis",time());
 
+        $this->load_payments();
         $payment = Payment::create($this->ldap, $this->dn, $type, $years, $date, $description, $id);
-        $this->payments[$payment->id] = $payment;
-        krsort($this->payments);
+        $this->_payments[$payment->id] = $payment;
+        krsort($this->_payments);
 
         // If the payment date is before the expiry date, increase the expiry date.
         // If the payment date is after the expiry date, set the expiry date to the payment date + x years.
