@@ -12,10 +12,10 @@ class Members {
 
     // Class for plug, contains members of type Member/Person
 
-    private array $currentmembers;
-    private array $overduemembers;
-    private array $expiredmembers;
-    private array $pendingmembers;
+    private ?array $currentmembers = null;
+    private ?array $overduemembers = null;
+    private ?array $expiredmembers = null;
+    private ?array $pendingmembers = null;
 
     private Net_LDAP2 $ldap;
 
@@ -83,50 +83,35 @@ class Members {
 
     }
 
-    function load_current_members(): void
-    {
-        $this->currentmembers = $this->load_ldapmembers_from_group('currentmembers');
-        // TODO load Payments
-    }
-
-    function load_expired_members(): void
-    {
-        $this->expiredmembers = $this->load_ldapmembers_from_group('expiredmembers');
-        // TODO load Payments
-    }
-
-    function load_overdue_members(): void
-    {
-        $this->overduemembers = $this->load_ldapmembers_from_group('overduemembers');
-        // TODO load Payments
-    }
-
-    function load_pending_members(): void
-    {
-        $this->pendingmembers = $this->load_ldapmembers_from_group('pendingmembers');
-    }
-
     function get_current_members(): array
     {
-        $this->load_current_members();
+        if ($this->currentmembers === null) {
+            $this->currentmembers = $this->load_ldapmembers_from_group('currentmembers');
+        }
         return $this->currentmembers;
     }
 
     function get_overdue_members(): array
     {
-        $this->load_overdue_members();
+        if ($this->overduemembers === null) {
+            $this->overduemembers = $this->load_ldapmembers_from_group('overduemembers');
+        }
         return $this->overduemembers;
     }
 
     function get_expired_members(): array
     {
-        $this->load_expired_members();
+        if ($this->expiredmembers === null) {
+            $this->expiredmembers = $this->load_ldapmembers_from_group('expiredmembers');
+        }
         return $this->expiredmembers;
     }
 
     function get_pending_members(): array
     {
-        $this->load_pending_members();
+        if ($this->pendingmembers === null) {
+            $this->pendingmembers = $this->load_ldapmembers_from_group('pendingmembers');
+        }
         return $this->pendingmembers;
     }
 
