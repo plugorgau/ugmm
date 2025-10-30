@@ -313,103 +313,129 @@ class Members {
 
 class Payment
 {
-    private string $dn;
-    private Net_LDAP2 $ldap;
-    private array $paymentarray = array(
+    private readonly Net_LDAP2_Entry $entry;
+
+    private const _DEFAULTS = array(
         'objectClass' => array('top', 'x-plug-payment'),
         'x-plug-paymentAmount' => 0,
         'x-plug-paymentDate' => '',
         'x-plug-paymentID' => '',
-        'x-plug-paymentType' => '',
+        'x-plug-paymentType' => FULL_TYPE,
         'x-plug-paymentDescription' => '',
         'x-plug-paymentYears' => 0);
 
-    function __construct(Net_LDAP2 $ldap)
+    public function __construct(Net_LDAP2_Entry $entry)
     {
-        $this->ldap = $ldap;
+        $this->entry = $entry;
     }
 
-    function load_ldap(string $dn): void
+    public string $dn {
+        get => $this->entry->dn();
+    }
+
+    public int $amount {
+        get => intval($this->entry->getValue('x-plug-paymentAmount', 'single'));
+    }
+
+    public string $date {
+        get => $this->entry->getValue('x-plug-paymentDate', 'single');
+    }
+
+    public int $id {
+        get => intval($this->entry->getValue('x-plug-paymentID', 'single'));
+    }
+
+    public int $type {
+        get => intval($this->entry->getValue('x-plug-paymentType', 'single'));
+    }
+
+    public string $description {
+        get {
+            $d = $this->entry->getValue('x-plug-paymentDescription', 'single');
+            return $d ? $d : '';
+        }
+    }
+
+    public int $years {
+        get => intval($this->entry->getValue('x-plug-paymentYears', 'single'));
+    }
+
+    public string $formatteddate {
+        get => date('Y-m-d', strtotime($this->date));
+    }
+
+    public string $formattedamount {
+        get => sprintf("$%.2f", $this->amount/100);
+    }
+
+    public string $formattedtype {
+        get => $this->type == FULL_TYPE ? "Full" : "Concession";
+    }
+
+    public static function load_ldap(Net_LDAP2 $ldap, string $dn): Payment
     {
-        $this->dn = $dn;
-        $this->ldapentry = $this->ldap->getEntry($dn, array(
-            'objectClass',
-            'x-plug-paymentAmount',
-            'x-plug-paymentDate',
-            'x-plug-paymentID',
-            'x-plug-paymentType',
-            'x-plug-paymentDescription',
-            'x-plug-paymentYears'
-        ));
-        if (PEAR::isError($this->ldapentry)) {
-            throw new Exception('LDAP Error: '.$this->ldapentry->getMessage());
+        $ldapentry = $ldap->getEntry($dn, array_keys(self::_DEFAULTS));
+        if (PEAR::isError($ldapentry)) {
+            throw new Exception('LDAP Error: '.$ldapentry->getMessage());
         }
 
-        $this->paymentarray = $this->ldapentry->getValues();
-        //$this->userorigldaparray = $this->userldaparray;
-        //$this->explode_user_ldap_array();
-
+        return new self($ldapentry);
     }
 
-    /*    function new_payment($parentdn, $id, $type, $amount, $date, $description)
-          {
-          $this->dn = "x-plug-paymentID=$id,$parentdn";
-          $this->paymentarray['x-plug-paymentAmount'] = $amount;
-          $this->paymentarray['x-plug-paymentDate'] = date('YmdHis',strtotime($date)). "+0800";
-          $this->paymentarray['x-plug-paymentID'] = $id;
-          $this->paymentarray['x-plug-paymentType'] = $type;
-          $this->paymentarray['x-plug-paymentDescription'] = $description;
-          if($type == CONCESSION_TYPE)
-          {
-          // Concession
-          $this->paymentarray['x-plug-paymentYears'] = $amount / CONCESSION_AMOUNT;
-          }else
-          {
-          // Assume full
-          $this->paymentarray['x-plug-paymentYears'] = $amount / FULL_AMOUNT;
-          }
+    public static function load_for(Net_LDAP2 $ldap, string $parentdn): array {
+        $filter = Net_LDAP2_Filter::create('objectClass', 'equals',  'x-plug-payment');
+        $options = array(
+            'scope' => 'sub',
+            'attributes' => array_keys(self::_DEFAULTS),
+        );
 
-          $this->create_new_ldap_payment();
-          }*/
-    function new_payment(string $parentdn, int $type, int $years, string $date, string $description, int|bool $id = false): void
+        $search = $ldap->search($parentdn, $filter, $options);
+
+        if (PEAR::isError($search)) {
+            throw new Exception($search->getMessage() . "\n");
+        }
+
+        $payments = array();
+        foreach ($search->entries() as $entry) {
+            $payment = new self($entry);
+            $payments[$payment->id] = $payment;
+        }
+        krsort($payments);
+        return $payments;
+    }
+
+    public static function create(Net_LDAP2 $ldap, string $parentdn, int $type, int $years, string $date, string $description, int|bool $id = false): Payment
     {
         global $payment_modifier_amount; //Hack for change in payment amounts
         if(!isset($payment_modifier_amount)) $payment_modifier_amount = 1;
         if(! $id)
-            $id = self::next_paymentID($this->ldap);
+            $id = self::next_paymentID($ldap);
 
-        $this->dn = "x-plug-paymentID=$id,$parentdn";
-        $this->paymentarray['x-plug-paymentYears'] = $years;
-        $this->paymentarray['x-plug-paymentDate'] = date('YmdHis',strtotime($date)). "+0800";
-        $this->paymentarray['x-plug-paymentID'] = $id;
-        $this->paymentarray['x-plug-paymentType'] = $type;
-        $this->paymentarray['x-plug-paymentDescription'] = $description;
+        $dn = "x-plug-paymentID=$id,$parentdn";
+        $attrs = self::_DEFAULTS;
+        $attrs['x-plug-paymentYears'] = $years;
+        $attrs['x-plug-paymentDate'] = date('YmdHis',strtotime($date)). "+0800";
+        $attrs['x-plug-paymentID'] = $id;
+        $attrs['x-plug-paymentType'] = $type;
+        $attrs['x-plug-paymentDescription'] = $description;
         if($type == CONCESSION_TYPE)
         {
             // Concession
-            $this->paymentarray['x-plug-paymentAmount'] = $years * CONCESSION_AMOUNT * $payment_modifier_amount;
+            $attrs['x-plug-paymentAmount'] = $years * CONCESSION_AMOUNT * $payment_modifier_amount;
         }else
         {
             // Assume full
-            $this->paymentarray['x-plug-paymentAmount'] = $years * FULL_AMOUNT * $payment_modifier_amount;
+            $attrs['x-plug-paymentAmount'] = $years * FULL_AMOUNT * $payment_modifier_amount;
         }
 
-        $this->create_new_ldap_payment();
-    }
-
-    function paymentarray(): array
-    {
-        return $this->paymentarray;
-    }
-
-    private function create_new_ldap_payment(): void
-    {
         // TODO: Check if exists first
-        $entry = Net_LDAP2_Entry::createFresh($this->dn, array_filter($this->paymentarray));
-        $ldapres = $this->ldap->add($entry);
+        $entry = Net_LDAP2_Entry::createFresh($dn, array_filter($attrs));
+        $ldapres = $ldap->add($entry);
         if (PEAR::isError($ldapres)) {
             throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
         }
+
+        return new self($entry);
     }
 
     private static function next_paymentID(Net_LDAP2 $ldap): int
@@ -1167,91 +1193,7 @@ class Person {
 
     function load_payments(): void
     {
-        $filter = Net_LDAP2_Filter::create('objectClass', 'equals',  'x-plug-payment');
-        $searchbase = $this->dn;
-        $options = array(
-            'scope' => 'sub',
-            'attributes' => array(
-                'dn',
-                'x-plug-paymentAmount',
-                'x-plug-paymentDate',
-                'x-plug-paymentID',
-                'x-plug-paymentType',
-                'x-plug-paymentDescription',
-                'x-plug-paymentYears')
-        );
-
-        $search = $this->ldap->search($searchbase, $filter, $options);
-
-        if (PEAR::isError($search)) {
-            throw new Exception($search->getMessage() . "\n");
-        }
-
-        $payments = $search->sorted_as_struct(array('x-plug-paymentID'));
-
-
-
-        foreach($payments as $payment)
-        {
-            $this->clean_payment_struct($payment);
-            // smarty tempalte doesn't like - in var names
-            /*$cleanpayment = array();
-              $cleanpayment['amount'] = $payment['x-plug-paymentAmount'][0];
-              $cleanpayment['date'] = $payment['x-plug-paymentDate'][0];
-              $cleanpayment['id'] = $payment['x-plug-paymentID'][0];
-              $cleanpayment['type'] = $payment['x-plug-paymentType'][0];
-              $cleanpayment['years'] = $payment['x-plug-paymentYears'][0];
-              $cleanpayment['dn'] = $payment['dn'];
-              $cleanpayment['description'] = $payment['x-plug-paymentDescription'][0];
-              $cleanpayment['formatteddate'] = date('Y-m-d', strtotime($cleanpayment['date']));
-              $cleanpayment['formattedamount'] = sprintf("$%.2f",$cleanpayment['amount']/100);
-              $cleanpayment['formattedtype'] = $cleanpayment['type'] == FULL_TYPE ? "Full" : "Concession";
-              $this->payments[$cleanpayment['id']] = $cleanpayment;*/
-
-        }
-
-        arsort($this->payments);
-        /*        echo "<pre>";
-                  print_r($this->payments);
-                  echo "</pre>"; */
-
-    }
-
-    function clean_payment_struct(array $payment): void
-    {
-        // smarty tempalte doesn't like - in var names
-        $cleanpayment = array();
-        $cleanpayment['amount'] = $payment['x-plug-paymentAmount'][0];
-        $cleanpayment['date'] = $payment['x-plug-paymentDate'][0];
-        $cleanpayment['id'] = $payment['x-plug-paymentID'][0];
-        $cleanpayment['type'] = $payment['x-plug-paymentType'][0];
-        $cleanpayment['years'] = $payment['x-plug-paymentYears'][0];
-        $cleanpayment['dn'] = $payment['dn'];
-        $cleanpayment['description'] = isset($payment['x-plug-paymentDescription']) ? $payment['x-plug-paymentDescription'][0] : '';
-        $cleanpayment['formatteddate'] = date('Y-m-d', strtotime($cleanpayment['date']));
-        $cleanpayment['formattedamount'] = sprintf("$%.2f",$cleanpayment['amount']/100);
-        $cleanpayment['formattedtype'] = $cleanpayment['type'] == FULL_TYPE ? "Full" : "Concession";
-        $this->payments[$cleanpayment['id']] = $cleanpayment;
-    }
-
-    function clean_payment(array $payment): void
-    {
-        // smarty tempalte doesn't like - in var names
-        $cleanpayment = array();
-        $cleanpayment['amount'] = $payment['x-plug-paymentAmount'];
-        $cleanpayment['date'] = $payment['x-plug-paymentDate'];
-        $cleanpayment['id'] = $payment['x-plug-paymentID'];
-        $cleanpayment['type'] = $payment['x-plug-paymentType'];
-        $cleanpayment['years'] = $payment['x-plug-paymentYears'];
-        $cleanpayment['dn'] = @$payment['dn'];
-        $cleanpayment['description'] = $payment['x-plug-paymentDescription'];
-        $cleanpayment['formatteddate'] = date('Y-m-d', strtotime($cleanpayment['date']));
-        $cleanpayment['formattedamount'] = sprintf("$%.2f",$cleanpayment['amount']/100);
-        $cleanpayment['formattedtype'] = $cleanpayment['type'] == FULL_TYPE ? "Full" : "Concession";
-        $this->payments[$cleanpayment['id']] = $cleanpayment;
-        krsort($this->payments);
-        //print_r($this->payments);
-        //print_r($payment);
+        $this->payments = Payment::load_for($this->ldap, $this->dn);
     }
 
     function paymentsarray(): array
@@ -1263,10 +1205,9 @@ class Person {
     {
         if($date == '') $date = date("YmdHis",time());
 
-        $payment = new Payment($this->ldap);
-        $payment->new_payment($this->dn, $type, $years, $date, $description, $id);
-        $paymentarray = $payment->paymentarray();
-        $this->clean_payment($paymentarray);
+        $payment = Payment::create($this->ldap, $this->dn, $type, $years, $date, $description, $id);
+        $this->payments[$payment->id] = $payment;
+        krsort($this->payments);
 
         // If the payment date is before the expiry date, increase the expiry date.
         // If the payment date is after the expiry date, set the expiry date to the payment date + x years.
@@ -1294,11 +1235,11 @@ class Person {
 
         if($ack)
         {
-            $this->sendPaymentReceipt($paymentarray['x-plug-paymentID']);
+            $this->sendPaymentReceipt($payment->id);
         }
 
         $this->messages[] = "Payment processed";
-        return $paymentarray['x-plug-paymentID'];
+        return $payment->id;
     }
 
     function sendPaymentReceipt(int $paymentid): bool
@@ -1322,15 +1263,16 @@ Thank you for your payment.
 PLUG Membership Scripts";
 
 
+        $payment = $this->payments[$paymentid];
         $expiry = $this->expiry();
 
         $body = sprintf($body,
                         $this->userldaparray['displayName'],
-                        $this->payments[$paymentid]['formattedamount'],
-                        $this->payments[$paymentid]['years'],
-                        $this->payments[$paymentid]['years'] > 1 ? 's' : '',
-                        $this->payments[$paymentid]['formattedtype'],
-                        $this->payments[$paymentid]['formatteddate'],
+                        $payment->formattedamount,
+                        $payment->years,
+                        $payment->years > 1 ? 's' : '',
+                        $payment->formattedtype,
+                        $payment->formatteddate,
                         $expiry['formattedexpiry'],
                         COMMITTEE_EMAIL);
 
