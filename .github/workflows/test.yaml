@@ -57,3 +57,7 @@ jobs:
 
       - name: Run tests
         run: phpunit --testdox tests
+
+      - name: Show web server errors on failure
+        if: failure()
+        run: sudo cat /var/log/nginx/error.log
