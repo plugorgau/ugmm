@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 // Copy this to /etc/private/ldapconnection.inc.php and modify it to suit your ldap database
 
 require_once 'Net/LDAP2.php';

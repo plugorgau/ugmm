@@ -1,7 +1,10 @@
 <?php
+
 // This file is called by a cron script
 
 // Start of code for emailing expired members and moving them into the expired group
+
+declare(strict_types=1);
 
 require_once('/etc/private/ldapconnection.inc.php');
 require_once('/usr/share/plug-ugmm/lib/PLUG/config.inc.php');

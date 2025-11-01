@@ -147,18 +147,18 @@
       </tr>
 {foreach from=$member.payments item=payment} 
       <tr bgcolor="#DDDDFF">
-        <td>{$payment.formatteddate}</td>
+        <td>{$payment->formatteddate}</td>
 
-        <td>{$payment.formattedamount}</td>
+        <td>{$payment->formattedamount}</td>
 
-        <td>{$payment.formattedtype}</td>
+        <td>{$payment->formattedtype}</td>
 
-        <td>{$payment.years}</td>
+        <td>{$payment->years}</td>
 
-        <td>{$payment.description}</td>
+        <td>{$payment->description}</td>
 
         <td><a href=
-        "{$submenuitems.ctte.resendack.link}{$member.uidNumber}&payment_id={$payment.id}">Resend
+        "{$submenuitems.ctte.resendack.link}{$member.uidNumber}&payment_id={$payment->id}">Resend
         Ack</a></td>
       </tr>
       
