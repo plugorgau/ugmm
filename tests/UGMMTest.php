@@ -199,6 +199,42 @@ final class UGMMTest extends TestCase {
         $this->login($client, $uid, 'pass1234');
     }
 
+    public function testSignupBadData() {
+        $client = new HttpBrowser();
+        $page = $client->request('GET', BASE_URL);
+        $this->assertText($page, 'title', ' - Login');
+        $page = $client->clickLink('Signup Form');
+        $this->assertText($page, 'title', ' - Signup');
+
+        // Try signing up with an existing user's details
+        $page = $client->submitForm('Signup', [
+            'givenName' => 'Test',
+            'sn' => 'Last-name',
+            'mail' => 'bob@example.com',
+            'street' => '123 Fake St',
+            'homePhone' => '08 5550 1111',
+            'pager' => '08 5550 2222',
+            'mobile' => '08 5550 3333',
+            'uid' => 'bobtest',
+            'password' => 'pass1234',
+            'vpassword' => 'pass1234',
+            'notes' => 'Sign up for testing',
+        ]);
+        $this->assertText($page, 'title', ' - Signup');
+        $this->assertText($page, '#errormessages strong', 'Username not available');
+        // The previously entered information appears in the form
+        $form = $page->selectButton('Signup')->form();
+        $this->assertSame($form['givenName']->getValue(), 'Test');
+        $this->assertSame($form['sn']->getValue(), 'Last-name');
+        $this->assertSame($form['mail']->getValue(), 'bob@example.com');
+        $this->assertSame($form['street']->getValue(), '123 Fake St');
+        $this->assertSame($form['homePhone']->getValue(), '08 5550 1111');
+        $this->assertSame($form['pager']->getValue(), '08 5550 2222');
+        $this->assertSame($form['mobile']->getValue(), '08 5550 3333');
+        $this->assertSame($form['uid']->getValue(), '');
+        $this->assertSame($form['notes']->getValue(), 'Sign up for testing');
+    }
+
     public function testCommitteeMembers() {
         $client = new HttpBrowser();
         $this->login($client, 'chair', 'chairpass');

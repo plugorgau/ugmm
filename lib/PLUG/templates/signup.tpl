@@ -62,7 +62,7 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
         <ol>
             <li>
                 <label for="givenName">First name</label>
-                <input id="givenName" name="givenName" type="text" placeholder="First Name" required autofocus value="{if isset($newmember)}}{$newmember.givenName}{/if}"/>
+                <input id="givenName" name="givenName" type="text" placeholder="First Name" required autofocus value="{if isset($newmember)}{$newmember.givenName}{/if}"/>
             </li>
             <li>
                 <label for="sn">Last name</label>
