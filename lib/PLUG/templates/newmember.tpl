@@ -12,11 +12,10 @@
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="newmember_form" value="1" type="hidden">
-    <input name="nonce" value="{'newmember'|nonce}" type="hidden">    
+    <input name="nonce" value="{'newmember'|nonce}" type="hidden">
 
     <table border="0">
       <tbody>
-       
 
         <tr>
           <th>First Name *</th>
@@ -70,21 +69,21 @@
 
           <td><input name="uid" value="{$member.uid|default}"
           size="30" type="text"></td>
-        </tr>  
+        </tr>
 
         <tr>
           <th>Password *</th>
 
           <td><input name="password" value="{$member.password|default}"
            type="password"></td>
-        </tr>  
-        
+        </tr>
+
         <tr>
           <th>Verify Password *</th>
 
           <td><input name="verifypassword" value=""
            type="password"></td>
-        </tr>          
+        </tr>
 
         <tr>
           <th valign="top">Notes</th>

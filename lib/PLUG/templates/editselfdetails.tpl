@@ -13,7 +13,7 @@
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
-    <input name="nonce" value="{'editselfdetails'|nonce}" type="hidden">      
+    <input name="nonce" value="{'editselfdetails'|nonce}" type="hidden">
     <input type="hidden" name="edit_selfmember" value="1"><input type=
     "hidden" name="forced" value="0">
 

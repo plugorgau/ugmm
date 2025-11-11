@@ -9,7 +9,7 @@
   website and login to PLUG machines. It is not associated with
   your PLUG mailing list subscriptions in any way. Changes to your
   PLUG password takes effect immediately.</p>
-  
+
   Your password must:
 
   <ul>
@@ -26,12 +26,12 @@
     <li>be as long as you like (100 characters is not an
     unreasonable limit)</li>
   </ul>
-  
+
   <p>Accounts detected with weak passwords will be disabled</p>
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
-    <input name="nonce" value="{'editselfpassword'|nonce}" type="hidden">      
+    <input name="nonce" value="{'editselfpassword'|nonce}" type="hidden">
     <input type="hidden" name="edit_selfpassword" value="1">
 
     <table border="0">
