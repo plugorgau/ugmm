@@ -12,61 +12,58 @@ require_once '../lib/PLUG/Members.class.php';
 
 $OrgMembers = new Members($ldap);
 
-if(isset($_POST['membersignup_form'])) {
+if (isset($_POST['membersignup_form'])) {
     // Check password matches
-    if($_POST['password'] != $_POST['vpassword'])
-    {
-        $error[] = "Passwords don't match";      
+    if ($_POST['password'] != $_POST['vpassword']) {
+        $error[] = "Passwords don't match";
     }
-    
+
     $password = $_POST['password'];
 
-    // Password strength check? Assign random password if null?    
-    if(strlen(trim($_POST['password'])) == 0)
-        $password = '{crypt}accountlocked'.time();    
-    
+    // Password strength check? Assign random password if null?
+    if (strlen(trim($_POST['password'])) == 0) {
+        $password = '{crypt}accountlocked'.time();
+    }
+
     list($valid, $perrors) = PLUGFunction::is_valid_password($password);
-    if(!$error && !$valid)
-    {
+    if (!$error && !$valid) {
         $error = array_merge($error, $perrors);
     }
-        
 
-    
+
+
     // TODO check for email address already used
-        
-    if(! $error)
-    {
+
+    if (! $error) {
         $notes = "";
-        if(strlen(trim($_POST['notes'])) > 0)
+        if (strlen(trim($_POST['notes'])) > 0) {
             $notes = "Signup Notes\n".trim($_POST['notes']);
-            
+        }
+
         $member = $OrgMembers->new_member(
             trim($_POST['uid']),
             trim($_POST['givenName']),
             trim($_POST['sn']),
             trim($_POST['street']),
             trim($_POST['homePhone']),
-            trim($_POST['pager']), 
+            trim($_POST['pager']),
             trim($_POST['mobile']),
             trim($_POST['mail']),
             $password,
             $notes
         );
-        
-        if($member->is_error())
-        {
+
+        if ($member->is_error()) {
             $error = array_merge($error, $member->get_errors());
-            
+
             // Member details so can edit and correct
-            $memberdetails = $member->userarray();            
+            $memberdetails = $member->userarray();
             $smarty->assign('newmember', @$memberdetails);
             $smarty->assign('newmembernotes', $_POST['notes']);
-        }else
-        {
+        } else {
             //$success = array_merge($success, $member->get_messages());
             $success[] = "Your membership is pending payment";
-            $smarty->assign("usercreated", TRUE);
+            $smarty->assign("usercreated", true);
             $details = $member->userarray();
             $smarty->assign("newmember", $details);
             send_waitingpayment_email($member, $details);
@@ -74,13 +71,13 @@ if(isset($_POST['membersignup_form'])) {
             // TODO: Take them to a different page with payment details
             display_page('signupcompleted.tpl');
             exit();
-            
+
         }
 
-    }else{
+    } else {
         $memberdetails = $_POST;
         $smarty->assign('newmember', @$memberdetails);
-        $smarty->assign('newmembernotes', $_POST['notes']);     
+        $smarty->assign('newmembernotes', $_POST['notes']);
     }
 }
 
@@ -112,13 +109,14 @@ Regards,
 
 PLUG Membership Scripts";
 
-    $body = sprintf($body,
+    $body = sprintf(
+        $body,
         $details['displayName'],
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );
-        
+
     $subject = "Your PLUG Membership is awaiting payment";
-    
+
     $member->send_user_email($body, $subject);
 }

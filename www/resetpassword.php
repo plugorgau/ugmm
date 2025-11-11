@@ -10,36 +10,36 @@ require_once '../lib/PLUG/Members.class.php';
 
 $OrgMembers = new Members($ldap);
 
-$smarty->assign('resetform', FALSE);
-$smarty->assign('successform', FALSE);
+$smarty->assign('resetform', false);
+$smarty->assign('successform', false);
 
-if(isset($_POST['resetpassword_form']))
-{
+if (isset($_POST['resetpassword_form'])) {
 
     $memberemail = $_POST['email']; // TODO cleanup
-    
+
     // search for member by email
-    
+
     // if member by email then get object
-   
+
     $member = $OrgMembers->get_member_by_email($memberemail);
-    
-    if($member)    
-    {
+
+    if ($member) {
         $reseturl  = 'http';
-        if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") $reseturl .= "s";
-        
+        if (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") {
+            $reseturl .= "s";
+        }
+
         $reseturl .= "://";
         $reseturl .= $_SERVER['HTTP_HOST'];
         $parts = explode('?', $_SERVER['REQUEST_URI'], 2);
         $reseturl .= $parts[0];
         $reseturl .= "?uid=".$member->uid();
         $reseturl .= "&reset=".$member->create_hash();
-        
+
         $name = $member->givenName();
-        
-       //TODO move this into class as well?
-        $resetemail ="
+
+        //TODO move this into class as well?
+        $resetemail = "
 Hi $name,
 You recently asked to reset your PLUG password. To complete your request, please follow this link:
 
@@ -51,84 +51,66 @@ Thanks,
 The PLUG Password Reset facility";
 
 
-        if(mail($member->mail(), 'PLUG Password Reset', $resetemail, "From: admin@plug.org.au"))
-        {
-            $success[] = _('An email has been sent to your address with a reset link');            
-        }
-        else
-        {
+        if (mail($member->mail(), 'PLUG Password Reset', $resetemail, "From: admin@plug.org.au")) {
+            $success[] = _('An email has been sent to your address with a reset link');
+        } else {
             $error[] = _('There was an error sending the reset email. Please report this to admin@plug.org.au');
         }
 
 
-    }
-    else
-    {
+    } else {
         $error[] = _('Incorrect email address. Please check the address. If you are still having trouble please contact the admins at admin @ plug.org.au');
     }
-    
-}
-else if(isset($_GET['uid']) && isset($_GET['reset']))
-{
+
+} elseif (isset($_GET['uid']) && isset($_GET['reset'])) {
     $member = $OrgMembers->get_member_object(intval($_GET['uid']));
-    
-    if(PEAR::isError($member))
-    {
+
+    if (PEAR::isError($member)) {
         $error[] = $member->getMessage();
-    }
-    elseif($member->check_hash($_GET['reset']))
-    {
+    } elseif ($member->check_hash($_GET['reset'])) {
         // Hash matches
-        
-        $smarty->assign('resetform', TRUE);
-        $smarty->assign('username', $member->username());        
-    
-        if(isset($_POST['newpasswordreset_form']))
-        {
-            if($_POST['newpasswordconfirm'] != $_POST['newpassword'])
+
+        $smarty->assign('resetform', true);
+        $smarty->assign('username', $member->username());
+
+        if (isset($_POST['newpasswordreset_form'])) {
+            if ($_POST['newpasswordconfirm'] != $_POST['newpassword']) {
                 $error[] = _("Passwords don't match");
-                
-            if(! $error && $member->is_valid_password($_POST['newpassword']))
-            {
+            }
+
+            if (! $error && $member->is_valid_password($_POST['newpassword'])) {
                 // Change password
                 $member->change_password(cleanpassword($_POST['newpassword']));
-                if($member->is_error())
-                {
+                if ($member->is_error()) {
                     $error = "Error changing password";
                     $error = array_merge($error, $member->get_errors());
-                }else{
+                } else {
                     $success = array_merge($success, $member->get_messages());
-                    $smarty->assign('resetform', FALSE);
-                    $smarty->assign('successform', TRUE);
-                    
+                    $smarty->assign('resetform', false);
+                    $smarty->assign('successform', true);
+
                     $member->update_ldap();
-                    
+
                 }
 
-            }
-            else
-            {
+            } else {
                 $error = array_merge($error, $member->get_password_errors());
-            
-            }
-                
 
-        }
-        else
-        {
+            }
+
+
+        } else {
             // Display password reset form
             $success[] = _('Please enter a new password for your account.');
-            $smarty->assign('resetform', TRUE);
-        }    
+            $smarty->assign('resetform', true);
+        }
 
-    }
-    else
-    {
+    } else {
         $error[] = _('This reset link is invalid or has expired. Please get a new link');
     }
 
 }
-    display_page('resetpasswordform.tpl');
+display_page('resetpasswordform.tpl');
 
 
 # vim: set noexpandtab tabstop=4 shiftwidth=4 :

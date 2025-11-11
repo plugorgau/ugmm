@@ -14,5 +14,5 @@ $Auth->logout();
 header('Location: '. $toplevelmenu['home']['link']);
 ?>
 Redirecting to login page
-<?
+<?php
 exit();

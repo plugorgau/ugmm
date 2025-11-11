@@ -5,13 +5,12 @@ declare(strict_types=1);
 require_once('config.inc.php');
 require_once('accesscheck.inc.php');
 
-if (!isset($pagestarttime)) // For pages that don't need auth
-{
+if (!isset($pagestarttime)) { // For pages that don't need auth
     /* Page load time */
-       $mtime = microtime();
-       $mtime = explode(" ",$mtime);
-       $mtime = $mtime[1] + $mtime[0];
-       $pagestarttime = $mtime;
+    $mtime = microtime();
+    $mtime = explode(" ", $mtime);
+    $mtime = $mtime[1] + $mtime[0];
+    $pagestarttime = $mtime;
     /**/
 
 }
@@ -19,7 +18,7 @@ if (!isset($pagestarttime)) // For pages that don't need auth
 require_once('smarty4/Smarty.class.php');
 
 // create object
-$smarty = new Smarty;
+$smarty = new Smarty();
 $smarty->setTemplateDir(dirname(__FILE__) . "/templates");
 $smarty->setCompileDir('/var/cache/plug-ugmm/templates_c');
 $smarty->compile_check = true;
@@ -27,15 +26,16 @@ $smarty->compile_check = true;
 $smarty->registerPlugin('modifier', 'date', 'date');
 $smarty->registerPlugin('modifier', 'sizeof', 'sizeof');
 
-function page_gen_stats($params, $smarty): string {
-   global $pagestarttime;
-   $mtime = microtime();
-   $mtime = explode(" ",$mtime);
-   $mtime = $mtime[1] + $mtime[0];
-   $endtime = $mtime;
-   $totaltime = round(($endtime - $pagestarttime), 2);
-   $totalmem = memory_get_peak_usage(true) / 1024 / 1024;
-   return 'Page generated in '.$totaltime.' seconds using ' . $totalmem . 'Mb mem';
+function page_gen_stats($params, $smarty): string
+{
+    global $pagestarttime;
+    $mtime = microtime();
+    $mtime = explode(" ", $mtime);
+    $mtime = $mtime[1] + $mtime[0];
+    $endtime = $mtime;
+    $totaltime = round(($endtime - $pagestarttime), 2);
+    $totalmem = memory_get_peak_usage(true) / 1024 / 1024;
+    return 'Page generated in '.$totaltime.' seconds using ' . $totalmem . 'Mb mem';
 }
 $smarty->registerPlugin('function', 'page_gen_stats', 'page_gen_stats');
 
@@ -76,7 +76,7 @@ $smarty->assign('submenuitems', $submenu);
 
 // Membership amount
 $smarty->assign('CONCESSION_AMOUNT', "$" . CONCESSION_AMOUNT / 100);
-$smarty->assign('FULL_AMOUNT', "$" . FULL_AMOUNT / 100 );
+$smarty->assign('FULL_AMOUNT', "$" . FULL_AMOUNT / 100);
 
 // External links
 $smarty->assign('external_links', EXTERNAL_LINKS);
@@ -97,35 +97,34 @@ $shells = array(
 
 
 // Need them defined as arrays for array_merge
-$error=array();
+$error = array();
 $success = array();
 
 function display_page(string $template): mixed
 {
-        global $smarty, $error, $success, $TOPLEVEL;
+    global $smarty, $error, $success, $TOPLEVEL;
 
-        //-- Needed by menu.tpl --
-        list($topmenu, $menu) = generate_menus($TOPLEVEL);
+    //-- Needed by menu.tpl --
+    list($topmenu, $menu) = generate_menus($TOPLEVEL);
 
-        $smarty->assign('topmenu', $topmenu);
-        $smarty->assign('submenu', $menu);
-        //--------------------------
+    $smarty->assign('topmenu', $topmenu);
+    $smarty->assign('submenu', $menu);
+    //--------------------------
 
-        //-- Needed by messages.tpl --
-        // Bring in messages from session
-        if (isset($_SESSION['errormessages']) || isset($_SESSION['successmessages']))
-        {
-            $error = array_merge($error, $_SESSION['errormessages']);
-            $success = array_merge($success, $_SESSION['successmessages']);
-            unset($_SESSION['errormessages']);
-            unset($_SESSION['successmessages']);
-        }
+    //-- Needed by messages.tpl --
+    // Bring in messages from session
+    if (isset($_SESSION['errormessages']) || isset($_SESSION['successmessages'])) {
+        $error = array_merge($error, $_SESSION['errormessages']);
+        $success = array_merge($success, $_SESSION['successmessages']);
+        unset($_SESSION['errormessages']);
+        unset($_SESSION['successmessages']);
+    }
 
-        $smarty->assign('errors', $error);
-        $smarty->assign('success', $success);
-        //---------------------------
+    $smarty->assign('errors', $error);
+    $smarty->assign('success', $success);
+    //---------------------------
 
-        return $smarty->display($template);
+    return $smarty->display($template);
 }
 
 function generate_menus(?string $top = ''): array
@@ -138,13 +137,12 @@ function generate_menus(?string $top = ''): array
     $topmenu = array();
 
     // Check if we are authenticated
-    foreach ($toplevelmenu as $key => $menu)
-    {
-        if (check_level($menu['level']))
-        {
+    foreach ($toplevelmenu as $key => $menu) {
+        if (check_level($menu['level'])) {
             $topmenu[$key]  = $menu;
-            if ($key == $top)
+            if ($key == $top) {
                 $smenu = $submenu[$key];
+            }
         }
     }
     return array($topmenu, $smenu);
@@ -164,14 +162,14 @@ function redirect_with_messages(string $url): void
 function cleantext(string $text): string
 {
 
-	$text = strip_tags($text);
-	$text = str_replace("<", "", $text);
-	$text = str_replace(">", "", $text);
+    $text = strip_tags($text);
+    $text = str_replace("<", "", $text);
+    $text = str_replace(">", "", $text);
 
-#	$text = htmlspecialchars($text, ENT_NOQUOTES);
-#	$text = mysql_real_escape_string($text);
+    #	$text = htmlspecialchars($text, ENT_NOQUOTES);
+    #	$text = mysql_real_escape_string($text);
 
-	return trim($text);
+    return trim($text);
 }
 
 function cleanpassword(string $text): string

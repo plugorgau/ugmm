@@ -12,13 +12,12 @@ $filter = "(shadowExpire=*)";
 
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
-foreach($members as $dn)
-{
+foreach ($members as $dn) {
     $member = new Person($ldap);
     $member->load_ldap($dn);
 
     $details = $member->userarray();
-    
+
     echo "User ".$details['displayName']. " is being grouped correctly\n";
     // Set correct group
     $member->set_status_group();

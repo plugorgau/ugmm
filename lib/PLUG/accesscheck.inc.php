@@ -9,39 +9,37 @@ function check_level(string $ACCESS_LEVEL): bool
     $ACCESS_LEVEL = isset($ACCESS_LEVEL) ? $ACCESS_LEVEL : 'admin';
 
     // Unauthenticated users have no access
-    if (!isset($Auth) || !$Auth->checkAuth())
-    {
-        return FALSE;
+    if (!isset($Auth) || !$Auth->checkAuth()) {
+        return false;
     }
 
-    if ($ACCESS_LEVEL == "all") return TRUE;
+    if ($ACCESS_LEVEL == "all") {
+        return true;
+    }
 
     // Check if level of access required is in the memberOf array
     $user_details = $Auth->getAuthData();
-    
-    if (!is_array($ACCESS_LEVEL)) $ACCESS_LEVEL = array($ACCESS_LEVEL);
-    
-    foreach($ACCESS_LEVEL as $level)
-    {
+
+    if (!is_array($ACCESS_LEVEL)) {
+        $ACCESS_LEVEL = array($ACCESS_LEVEL);
+    }
+
+    foreach ($ACCESS_LEVEL as $level) {
         $groupname = "cn=$level,ou=Groups,".LDAP_BASE;
-        
-        if (is_array($user_details['memberOf']))
-        {
+
+        if (is_array($user_details['memberOf'])) {
             $groups = $user_details['memberOf'];
-        }
-        else
-        {
+        } else {
             $groups = array($user_details['memberOf']);
         }
 
-        if (in_array($groupname, $groups))
-        {
+        if (in_array($groupname, $groups)) {
             // User is in correct group!
-            return TRUE;
+            return true;
         }
     }
-    
-    return FALSE;
+
+    return false;
 }
 
 # vim: set tabstop=4 shiftwidth=4 :
