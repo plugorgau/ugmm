@@ -61,3 +61,14 @@ jobs:
       - name: Show web server errors on failure
         if: failure()
         run: sudo cat /var/log/nginx/error.log
+
+  code-style:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          submodules: true
+      - name: Check PHP coding style
+        uses: docker://ghcr.io/php-cs-fixer/php-cs-fixer:3-php8.4
+        with:
+          args: check
