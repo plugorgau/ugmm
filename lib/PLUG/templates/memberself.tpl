@@ -17,7 +17,7 @@ Your membership will expire on {$memberself.formattedexpiry}.
 {/foreach}
 
 *}
-{*<li>Administrators: <a href="admin/">Admin Area</a> [<a href="admin/aliases">Mail Aliases</a>] [<a href="admin/groups">Unix Groups</a>] 
+{*<li>Administrators: <a href="admin/">Admin Area</a> [<a href="admin/aliases">Mail Aliases</a>] [<a href="admin/groups">Unix Groups</a>]
 
 <li>Committee: <a href="committee/">Committee Area</a> [<a href="committee/membership-list">View Members</a>] [<a href="committee/membership-edit">Add Member</a>]
 <li>Webmasters: <a href="webslave/">Webmasters Area</a>*}

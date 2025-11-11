@@ -14,31 +14,30 @@ $OrgMembers = new Members($ldap);
 
 
 // Create days after epoch for now and find all accounts < this (grace period of 5 days?)
-$overdue = ceil(date("U", strtotime("-5 days"))/ 86400);
-$expired = ceil(date("U", strtotime("-3 months"))/ 86400);
+$overdue = ceil(date("U", strtotime("-5 days")) / 86400);
+$expired = ceil(date("U", strtotime("-3 months")) / 86400);
 
-// ********* Overdue members 
+// ********* Overdue members
 // Select all accounts where membership is set as current, but renewal is now overdue
 $filter = "(&(shadowExpire<=$overdue)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
-foreach($members as $dn)
-{
+foreach ($members as $dn) {
     $member = new Person($ldap);
     $member->load_ldap($dn);
 
     $details = $member->userarray();
-    
+
     echo "User ".$details['displayName']. " has expired\n";
-    // Email that their payment is overdue?    
+    // Email that their payment is overdue?
     send_overdue_email($member, $details);
-    // Remove from group current. Add to group overdue    
+    // Remove from group current. Add to group overdue
     $member->set_status_group();
 
 }
 
-// ********* Expired members 
+// ********* Expired members
 
 // Select all accounts where membership is set as overdue, but have now passed
 // the 3 months allowed by the constitution
@@ -46,37 +45,35 @@ $filter = "(&(shadowExpire<=$expired)(memberOf=cn=overduemembers,ou=Groups,".LDA
 
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
-foreach($members as $dn)
-{
+foreach ($members as $dn) {
     $member = new Person($ldap);
     $member->load_ldap($dn);
 
     $details = $member->userarray();
-    
+
     echo "User ".$details['displayName']. " has expired\n";
-    // Email that their account has expired?    
+    // Email that their account has expired?
     send_expired_email($member, $details);
     // Remove from group overdue. Add to group expired
     $member->set_status_group();
 
 }
 
-// ********* Expiring members 
+// ********* Expiring members
 
 // Create days after epoch for now + 30 days and find all accounts = this
-$future = ceil(time()/ 86400) + 30;
+$future = ceil(time() / 86400) + 30;
 
 // Select all accounts which are set as current
 $filter = "(&(shadowExpire=$future)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
-foreach($members as $dn)
-{
+foreach ($members as $dn) {
     $member = new Person($ldap);
     $member->load_ldap($dn);
     $details = $member->userarray();
-    
+
     echo "User ".$details['displayName']. " is expiring in 30 days\n";
     send_expiring_email($member, $details);
 
@@ -110,20 +107,24 @@ Regards,
 
 PLUG Membership Scripts";
 
-    $body = sprintf($body,
+    $body = sprintf(
+        $body,
         $details['displayName'],
         $details['formattedexpiry'],
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );
-        
+
     $subject = "Your PLUG Membership has Expired";
-    
-    if($member->send_user_email($body, $subject))
-    {
-        foreach($member->get_messages() as $message) echo "$message\n";
-    }else{
-        foreach($member->get_errors() as $message) echo "$message\n";    
+
+    if ($member->send_user_email($body, $subject)) {
+        foreach ($member->get_messages() as $message) {
+            echo "$message\n";
+        }
+    } else {
+        foreach ($member->get_errors() as $message) {
+            echo "$message\n";
+        }
     }
 }
 function send_overdue_email($member, $details)
@@ -150,20 +151,24 @@ Regards,
 
 PLUG Membership Scripts";
 
-    $body = sprintf($body,
+    $body = sprintf(
+        $body,
         $details['displayName'],
         $details['formattedexpiry'],
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );
-        
+
     $subject = "Your PLUG Membership Renewal is Overdue";
-    
-    if($member->send_user_email($body, $subject))
-    {
-        foreach($member->get_messages() as $message) echo "$message\n";
-    }else{
-        foreach($member->get_errors() as $message) echo "$message\n";    
+
+    if ($member->send_user_email($body, $subject)) {
+        foreach ($member->get_messages() as $message) {
+            echo "$message\n";
+        }
+    } else {
+        foreach ($member->get_errors() as $message) {
+            echo "$message\n";
+        }
     }
 }
 
@@ -191,20 +196,24 @@ Regards,
 
 PLUG Membership Scripts";
 
-    $body = sprintf($body,
+    $body = sprintf(
+        $body,
         $details['displayName'],
         $details['formattedexpiry'],
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );
-        
+
     $subject = "Your PLUG Membership is Expiring";
-    
-    if($member->send_user_email($body, $subject))
-    {
-        foreach($member->get_messages() as $message) echo "$message\n";
-    }else{
-        foreach($member->get_errors() as $message) echo "$message\n";    
+
+    if ($member->send_user_email($body, $subject)) {
+        foreach ($member->get_messages() as $message) {
+            echo "$message\n";
+        }
+    } else {
+        foreach ($member->get_errors() as $message) {
+            echo "$message\n";
+        }
     }
 }
 
@@ -233,18 +242,22 @@ Regards,
 
 PLUG Membership Scripts";
 
-    $body = sprintf($body,
+    $body = sprintf(
+        $body,
         $details['displayName'],
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );
-        
+
     $subject = "Your PLUG Membership is awaiting payment";
-    
-    if($member->send_user_email($body, $subject))
-    {
-        foreach($member->get_messages() as $message) echo "$message\n";
-    }else{
-        foreach($member->get_errors() as $message) echo "$message\n";    
+
+    if ($member->send_user_email($body, $subject)) {
+        foreach ($member->get_messages() as $message) {
+            echo "$message\n";
+        }
+    } else {
+        foreach ($member->get_errors() as $message) {
+            echo "$message\n";
+        }
     }
 }

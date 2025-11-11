@@ -7,21 +7,20 @@
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
-    <input name="nonce" value="{'editselfshell'|nonce}" type="hidden">      
+    <input name="nonce" value="{'editselfshell'|nonce}" type="hidden">
     <input type="hidden" name="edit_selfshell" value="1">
 
     {if $member.shellEnabled}
     <p>Your shell account is enabled</p>
     <p><input type="submit" name="disable_shell" value=
     "Disable Shell Account"></p>
-    
+
     {else}
     <p>Your shell account is disabled</p>
     <p><input type="submit" name="enable_shell" value=
     "Enable Shell Account"></p>
-    
-    {/if}    
 
+    {/if}
 
     <h3>Shell Account Details</h3>
 
@@ -56,7 +55,7 @@
     </table><input type="submit" name="go_go_button" value=
     "Change Shell"> <input type="submit" name="oops_button" value=
     "Cancel">
-    
+
     <!-- byobu-enable-->
 
     <p><b>Note:</b> It may take up to 10 minutes for these changes

@@ -8,7 +8,7 @@
 {if ! $success}
 <form method="post" action="?member_id={$member.uidNumber}&amp;payment_id={$payment.id}" enctype="application/x-www-form-urlencoded">
     <input type="hidden" name="resend_ack_form" value="1"  />
-    <input name="nonce" value="{'resendack'|nonce}" type="hidden">        
+    <input name="nonce" value="{'resendack'|nonce}" type="hidden">
     <input type="hidden" name="member_id" value="{$member.uidNumber}"  />
     <input type="hidden" name="payment_id" value="{$payment.id}"  />
     <p>Are you sure you want to send an acknowledgement for this payment to {$member.displayName} ?</p>

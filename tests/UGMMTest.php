@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 use PHPUnit\Framework\TestCase;
 
@@ -11,17 +12,20 @@ use Symfony\Component\BrowserKit\HttpBrowser;
 
 const BASE_URL = 'http://localhost:8000';
 
-final class UGMMTest extends TestCase {
-
-    private function assertText(Crawler $page, string $selector, string $value) {
+final class UGMMTest extends TestCase
+{
+    private function assertText(Crawler $page, string $selector, string $value)
+    {
         $text = implode('\n', $page->filter($selector)->each(
             function (Crawler $crawler, $i): string {
                 return $crawler->text();
-            }));
+            }
+        ));
         $this->assertStringContainsString($value, $text);
     }
 
-    public function login(HttpBrowser $client, string $username, string $password): Crawler {
+    public function login(HttpBrowser $client, string $username, string $password): Crawler
+    {
         $page = $client->request('GET', BASE_URL);
         $this->assertText($page, 'title', ' - Login');
         return $client->submitForm('Log In', [
@@ -30,20 +34,23 @@ final class UGMMTest extends TestCase {
         ]);
     }
 
-    public function testLoginSuccess() {
+    public function testLoginSuccess()
+    {
         $client = new HttpBrowser();
         $page = $this->login($client, 'bobtest', 'test432bob');
         $this->assertText($page, 'title', ' - Member Details');
     }
 
-    public function testLoginFailure() {
+    public function testLoginFailure()
+    {
         $client = new HttpBrowser();
         $page = $this->login($client, 'bobtest', 'wrong');
         $this->assertText($page, 'title', 'PLUG - Members Area - Login');
         $this->assertText($page, '#errormessages strong', 'Incorrect Login.');
     }
 
-    public function testLogout() {
+    public function testLogout()
+    {
         $client = new HttpBrowser();
         $page = $this->login($client, 'bobtest', 'test432bob');
         $this->assertText($page, 'title', ' - Member Details');
@@ -51,7 +58,8 @@ final class UGMMTest extends TestCase {
         $this->assertText($page, 'title', ' - Login');
     }
 
-    public function testMemberselfInfo() {
+    public function testMemberselfInfo()
+    {
         $client = new HttpBrowser();
         $page = $this->login($client, 'bobtest', 'test432bob');
 
@@ -78,7 +86,8 @@ final class UGMMTest extends TestCase {
         $this->assertText($rows->eq(3), 'td', 'Wednesday, 31 December 1969');
     }
 
-    public function testMemberEditDetails() {
+    public function testMemberEditDetails()
+    {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Edit your personal details');
@@ -109,7 +118,8 @@ final class UGMMTest extends TestCase {
         ]);
     }
 
-    public function testMemberEditDetailsCancel() {
+    public function testMemberEditDetailsCancel()
+    {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Edit your personal details');
@@ -121,7 +131,8 @@ final class UGMMTest extends TestCase {
         $this->assertText($rows->eq(2), 'td', 'N/A');
     }
 
-    public function testMemberEditForwarding() {
+    public function testMemberEditForwarding()
+    {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Change your e-mail forwarding');
@@ -133,7 +144,8 @@ final class UGMMTest extends TestCase {
         // TODO: test posting the form
     }
 
-    public function testMemberEditShell() {
+    public function testMemberEditShell()
+    {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Change your shell account settings');
@@ -145,7 +157,8 @@ final class UGMMTest extends TestCase {
         // TODO: test posting the form
     }
 
-    public function testMemberEditPassword() {
+    public function testMemberEditPassword()
+    {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Change your PLUG password');
@@ -171,7 +184,8 @@ final class UGMMTest extends TestCase {
         ]);
     }
 
-    public function testSignup() {
+    public function testSignup()
+    {
         $client = new HttpBrowser();
         $page = $client->request('GET', BASE_URL);
         $this->assertText($page, 'title', ' - Login');
@@ -199,7 +213,8 @@ final class UGMMTest extends TestCase {
         $this->login($client, $uid, 'pass1234');
     }
 
-    public function testSignupBadData() {
+    public function testSignupBadData()
+    {
         $client = new HttpBrowser();
         $page = $client->request('GET', BASE_URL);
         $this->assertText($page, 'title', ' - Login');
@@ -235,7 +250,8 @@ final class UGMMTest extends TestCase {
         $this->assertSame($form['notes']->getValue(), 'Sign up for testing');
     }
 
-    public function testCommitteeMembers() {
+    public function testCommitteeMembers()
+    {
         $client = new HttpBrowser();
         $this->login($client, 'chair', 'chairpass');
         $page = $client->clickLink('Committee');
@@ -243,7 +259,8 @@ final class UGMMTest extends TestCase {
         // TODO: Check the page content
     }
 
-    public function testCommitteeMembersAccessDenied() {
+    public function testCommitteeMembersAccessDenied()
+    {
         $client = new HttpBrowser();
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->request('GET', BASE_URL . '/ctte-members');
@@ -252,7 +269,8 @@ final class UGMMTest extends TestCase {
         $this->assertSame($client->getResponse()->getStatusCode(), 403);
     }
 
-    public function testCommitteeNewMember() {
+    public function testCommitteeNewMember()
+    {
         $client = new HttpBrowser();
         $this->login($client, 'chair', 'chairpass');
         $page = $client->clickLink('Committee');
@@ -291,7 +309,8 @@ final class UGMMTest extends TestCase {
         $link = $page->filter('a')->reduce(
             function (Crawler $node, $i): bool {
                 return str_contains($node->text(), ' to make payment');
-            })->link();
+            }
+        )->link();
         $page = $client->click($link);
         $this->assertText($page, 'title', ' - Edit Member');
 
@@ -305,7 +324,8 @@ final class UGMMTest extends TestCase {
         $this->assertText($page, '#successmessages li', 'Payment processed');
     }
 
-    public function testResetPassword() {
+    public function testResetPassword()
+    {
         $client = new HttpBrowser();
         $page = $client->request('GET', BASE_URL);
         $this->assertText($page, 'title', ' - Login');

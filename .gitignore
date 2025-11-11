@@ -1,5 +1,3 @@
-www/templates_c/
-
 debian/debhelper-build-stamp
 debian/files
 debian/plug-ugmm.debhelper.log
@@ -7,4 +5,5 @@ debian/plug-ugmm.substvars
 debian/plug-ugmm/
 debian/.debhelper/
 
+/.php-cs-fixer.cache
 *~

@@ -7,7 +7,7 @@
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
-    <input name="nonce" value="{'editselfforwarding'|nonce}" type="hidden">      
+    <input name="nonce" value="{'editselfforwarding'|nonce}" type="hidden">
     <input type="hidden" name="edit_selfforwarding" value="1">
 
     <table border="0">

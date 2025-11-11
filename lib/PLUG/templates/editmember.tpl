@@ -8,7 +8,7 @@
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="personals_form" value="1" type="hidden">
-    <input name="nonce" value="{'editmember'|nonce}" type="hidden">    
+    <input name="nonce" value="{'editmember'|nonce}" type="hidden">
     <input name="id" value="{$member.uidNumber}" type="hidden">
 
     <table border="0">
@@ -18,13 +18,13 @@
 
           <td>{$member.uidNumber}</td>
         </tr>
-        
+
         <tr>
           <th>Username</th>
 
           <td><input name="uid" value="{$member.uid}"
           size="30" type="text"></td>
-        </tr>        
+        </tr>
 
         <tr>
           <th>First Name</th>
@@ -106,7 +106,7 @@
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="payment_form" value="1" type="hidden">
-    <input name="nonce" value="{'makepayment'|nonce}" type="hidden">    
+    <input name="nonce" value="{'makepayment'|nonce}" type="hidden">
     <input name="id" value="{$member.uidNumber}" type="hidden">
     Receive payment for <label><input name="membership_type" value=
     "1" checked="checked" type="radio">Full ({$FULL_AMOUNT}/yr)</label>
@@ -145,7 +145,7 @@
 
         <th></th>
       </tr>
-{foreach from=$member.payments item=payment} 
+{foreach from=$member.payments item=payment}
       <tr bgcolor="#DDDDFF">
         <td>{$payment->formatteddate}</td>
 
@@ -161,8 +161,7 @@
         "{$submenuitems.ctte.resendack.link}{$member.uidNumber}&payment_id={$payment->id}">Resend
         Ack</a></td>
       </tr>
-      
-{/foreach}      
+{/foreach}
     </tbody>
   </table>
 
@@ -171,7 +170,7 @@
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="email_form" value="1" type="hidden">
-    <input name="nonce" value="{'updateemailforwarding'|nonce}" type="hidden">        
+    <input name="nonce" value="{'updateemailforwarding'|nonce}" type="hidden">
     <input name="id" value="{$member.uidNumber}" type="hidden">
     E-mail forwarded to <input name="email_forward" value="{if isset($member.mailForward) and $member.mailForward}{$member.mailForward}{/if}" size="30" type="text">
     <input name="go_go_button" value="Update Forwarding" type="submit"><br>
@@ -184,14 +183,14 @@
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="shell_form" value="1" type="hidden">
-    <input name="nonce" value="{'updateshelllock'|nonce}" type="hidden">        
-    <input name="id" value="{$member.uidNumber}" type="hidden">  
-    
+    <input name="nonce" value="{'updateshelllock'|nonce}" type="hidden">
+    <input name="id" value="{$member.uidNumber}" type="hidden">
+
 {if ! $member.shellEnabled}
   This users shell account is currently disabled.
-  
+
  <input name="unlock_button" value="Enable Shell Account" type="submit">
-{else}  
+{else}
   This member's shell account is enabled.
 
  <input name="lock_button" value="Disable Shell Account" type="submit">
@@ -200,14 +199,14 @@
   </form>
 
   <h3>Reset Password</h3>
-  
+
   <p>It is recommended that you force users to change their password using the password reset facility. You can direct the user to <a href="resetpassword">Password Reset</a> or can change the password to something random and force a reset via email.</p>
   <p>If locking an account due to abuse, disable the shell account as well</p>
-  
+
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="passwordlock_form" value="1" type="hidden">
-    <input name="nonce" value="{'lockpassword'|nonce}" type="hidden">            
+    <input name="nonce" value="{'lockpassword'|nonce}" type="hidden">
     <input name="id" value="{$member.uidNumber}" type="hidden">
 
     <input type="submit" name="force_pw_change" value="Disable password and force reset"/><p>This will disable the account by resetting the password to an invalid value and disable shell access. Please direct the user to <a href="resetpassword">Password Reset</a> to renable access.</p>
@@ -216,10 +215,8 @@
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="password_form" value="1" type="hidden">
-    <input name="nonce" value="{'updatepassword'|nonce}" type="hidden">            
+    <input name="nonce" value="{'updatepassword'|nonce}" type="hidden">
     <input name="id" value="{$member.uidNumber}" type="hidden">
-    
-    
 
     <table>
       <tbody>
@@ -247,7 +244,7 @@
     </table>
 
   </form>
-  
+
   <em>Delete User Not Implemented at this time</em>
 {*
   <h3>Delete Member</h3>
