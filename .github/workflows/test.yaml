@@ -8,39 +8,47 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: podman exec -w ${{ github.workspace }} ugmm-test bash -e {0}
+
     steps:
       - uses: actions/checkout@v5
         with:
           submodules: true
+      - name: Set up Debian container
+        shell: bash
+        run: |
+          podman run -d -t --name ugmm-test --privileged -v ${HOME}:${HOME} --env-host --env DEBIAN_FRONTEND=noninteractive jrei/systemd-debian:13
       - name: Install build-deps
         run: |
-          sudo apt-get update
-          sudo apt-get install --yes devscripts
-          sudo apt-get build-dep --yes .
+          rm -f /usr/sbin/policy-rc.d
+          apt-get update
+          apt-get install --yes devscripts
+          apt-get build-dep --yes .
       - name: Build plug-ugmm package
-        run: debuild -i -us -uc -b --lintian-opts --profile=debian
+        run: debuild -i -us -uc -b --lintian-opts
       - name: List package content
         run: debc
       - name: Install package
-        run: sudo apt-get install ../plug-ugmm_*.deb
+        run: apt-get install -y nginx php-fpm ../plug-ugmm_*.deb
 
       - name: Set up testing LDAP server
-        run: sudo ./ci/setup-slapd.sh
+        run: ./ci/setup-slapd.sh
       - name: Set up nginx
         run: |
-          sudo apt-get install -y nginx php-fpm
-          sudo cp ./ci/ugmm-nginx.conf /etc/nginx/sites-available/
-          sudo ln -s ../sites-available/ugmm-nginx.conf /etc/nginx/sites-enabled/
-          sudo systemctl restart nginx.service
-          sudo mkdir -p /etc/private
-          sudo cp /usr/share/plug-ugmm/lib/PLUG/ldapconnection.inc.php.example /etc/private/ldapconnection.inc.php
+          cp ./ci/ugmm-nginx.conf /etc/nginx/sites-available/
+          ln -s ../sites-available/ugmm-nginx.conf /etc/nginx/sites-enabled/
+          systemctl restart nginx.service
+          mkdir -p /etc/private
+          cp /usr/share/plug-ugmm/lib/PLUG/ldapconnection.inc.php.example /etc/private/ldapconnection.inc.php
       - name: Set up fake sendmail
         run: |
-          sudo cp ci/fake-sendmail.sh /usr/sbin/sendmail
+          cp ci/fake-sendmail.sh /usr/sbin/sendmail
 
       - name: Install testing dependencies
         run: |
-          sudo apt-get install -y \
+          apt-get install -y \
               phpunit \
               php-symfony-browser-kit \
               php-symfony-css-selector \
