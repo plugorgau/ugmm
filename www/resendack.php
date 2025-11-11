@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $ACCESS_LEVEL = 'committee';
 $TOPLEVEL = 'ctte';
 
@@ -16,7 +18,7 @@ require_once('../lib/PLUG/session.inc.php');
     $memberid = intval($_GET['member_id']);
     $member = $OrgMembers->get_member_object($memberid);
     $memberdetails = $member->userarray(); 
-    $memberpayments = $member->paymentsarray();       
+    $memberpayments = $member->payments;
     
     $paymentid = intval($_GET['payment_id']);
     

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 $ACCESS_LEVEL = 'all';
 
 require_once('../lib/PLUG/pagefunctions.inc.php');

@@ -1,5 +1,8 @@
 <?php
+
 /* Based off session.inc.php which is also written by me (Timothy White) and GPL'ed */
+
+declare(strict_types=1);
 
 /* Page load time */
    $mtime = microtime();
@@ -20,7 +23,7 @@ require_once('Auth.php');
 
 require_once 'Members.class.php';
 
-function loginForm($username = null, $status = null, &$auth = null)
+function loginForm(?string $username = null, mixed $status = null, Auth &$auth = null): void
 {
     global $smarty;
     $smarty->clearAssign('MenuItems');
@@ -55,7 +58,7 @@ function loginForm($username = null, $status = null, &$auth = null)
     exit();
 }
 
-function loginCallback($username, &$auth)
+function loginCallback(string $username, Auth &$auth): void
 {
     redirect_with_messages($_SERVER['REQUEST_URI']);
 }
@@ -126,13 +129,13 @@ if (! check_level($ACCESS_LEVEL))
 
 // Nonce code based on Wordpress nonce code but added storing in session to make real nonce (instead of wordpress nonce which is valid for 6-12 hours (or even 24) and can be reused as many times in that time.
 
-function nonce_tick() {
+function nonce_tick(): float {
     $nonce_life = 86400 / 2;
 
     return ceil(time() / ( $nonce_life / 2 ));
 }
 
-function verify_nonce($nonce, $action = -1) {
+function verify_nonce(string $nonce, string|int $action = -1): bool {
 
     // Check if nonce exists
     if (!isset($_SESSION['nonce'][$nonce]))
@@ -154,7 +157,7 @@ function verify_nonce($nonce, $action = -1) {
     return $valid;
 }
 
-function create_nonce($action = -1, $tick = 0, $randnum = 0) {
+function create_nonce(string|int $action = -1, int $tick = 0, int $randnum = 0): string {
     $user = $_SESSION['loggedinusername'];
     $i = nonce_tick() - $tick;
 
