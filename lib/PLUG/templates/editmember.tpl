@@ -130,8 +130,8 @@
 
   <h4>Past Payments</h4>
 
-  <table>
-    <tbody>
+  <table id="past-payments">
+    <thead>
       <tr bgcolor="#8888AA">
         <th>Date</th>
 
@@ -145,6 +145,8 @@
 
         <th></th>
       </tr>
+    </thead>
+    <tbody>
 {foreach from=$member.payments item=payment}
       <tr bgcolor="#DDDDFF">
         <td>{$payment->formatteddate}</td>

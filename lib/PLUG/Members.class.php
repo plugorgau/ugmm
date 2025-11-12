@@ -401,7 +401,7 @@ class Payment
         $dn = "x-plug-paymentID=$id,$parentdn";
         $attrs = self::_DEFAULTS;
         $attrs['x-plug-paymentYears'] = $years;
-        $attrs['x-plug-paymentDate'] = date('YmdHis', strtotime($date)). "+0800";
+        $attrs['x-plug-paymentDate'] = date('YmdHisO', strtotime($date));
         $attrs['x-plug-paymentID'] = $id;
         $attrs['x-plug-paymentType'] = $type;
         $attrs['x-plug-paymentDescription'] = $description;

@@ -315,13 +315,23 @@ final class UGMMTest extends TestCase
         $this->assertText($page, 'title', ' - Edit Member');
 
         // Make a payment
+        $payment_date = new DateTimeImmutable()->format('Y-m-d');
         $page = $client->submitForm('Make Payment', [
+            'payment_date' => $payment_date,
             'receipt_number' => 'test payment',
             'payment_ack' => '1',
         ]);
         $this->assertText($page, 'title', ' - Edit Member');
         $this->assertText($page, '#successmessages li', 'Payment confirmation sent');
         $this->assertText($page, '#successmessages li', 'Payment processed');
+
+        $rows = $page->filter('#past-payments')->filter('tbody')->eq(0)->children();
+        $payment = $rows->eq(0)->children();
+        $this->assertText($payment->eq(0), 'td', $payment_date);
+        $this->assertText($payment->eq(1), 'td', '$50.00');
+        $this->assertText($payment->eq(2), 'td', 'Full');
+        $this->assertText($payment->eq(3), 'td', '1');
+        $this->assertText($payment->eq(4), 'td', 'test payment');
     }
 
     public function testResetPassword()

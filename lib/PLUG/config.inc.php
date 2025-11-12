@@ -6,6 +6,8 @@ declare(strict_types=1);
  * Define all things here that are Organisation specific
  */
 
+date_default_timezone_set('Australia/Perth');
+
 const CONCESSION_AMOUNT = 2000;
 const FULL_AMOUNT = 5000;
 
