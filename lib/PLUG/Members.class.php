@@ -344,7 +344,7 @@ class Payment
     }
 
     public string $formatteddate {
-        get => date('Y-m-d', strtotime($this->date));
+        get => new DateTimeImmutable($this->date)->format('Y-m-d');
     }
 
     public string $formattedamount {
@@ -401,7 +401,7 @@ class Payment
         $dn = "x-plug-paymentID=$id,$parentdn";
         $attrs = self::_DEFAULTS;
         $attrs['x-plug-paymentYears'] = $years;
-        $attrs['x-plug-paymentDate'] = date('YmdHisO', strtotime($date));
+        $attrs['x-plug-paymentDate'] = new DateTimeImmutable($date)->format('YmdHisO');
         $attrs['x-plug-paymentID'] = $id;
         $attrs['x-plug-paymentType'] = $type;
         $attrs['x-plug-paymentDescription'] = $description;
@@ -604,27 +604,14 @@ class Person
 
     public function change_expiry(string $date): void // $date as string
     {
-        // TODO: UTC issues?
-        // $date needs to be converted to DAYS since epoch
-        // We strtotime the date, divide by 86400, round down
-        // Take the ABS so that -1 becomes 1 as -1 is never expire
-        $this->userldaparray['shadowExpire'] = abs(floor(strtotime($date) / 86400));
+        $this->userldaparray['shadowExpire'] = date_to_shadow_expire(new DateTimeImmutable($date));
     }
 
     public function increase_expiry(string $years): void
     {
-        // TODO: Do we need to worry about leap years?
-        /*// To allow for leap years, do this fancy instead of just $years * 365
-          $date = date("YmdHis",$this->userldaparray['shadowExpire'] * 86400) . " + $years years";
-          $date = date("YmdHis",$this->userldaparray['shadowExpire'] * 86400);
-          date_add($date,date_interval_create_from_date_string("$years years"));
-          print_r(array($date));
-          if(!strtotime($date))
-          throw new Exception("Invalid date");
-          $this->userldaparray['shadowExpire'] = abs(floor(strtotime($date)/ 86400));*/
-
-        // Misses a day for leap years, oh well.
-        $this->userldaparray['shadowExpire'] += $years * 365;
+        $expiry = shadow_expire_to_date($this->userldaparray['shadowExpire']);
+        $expiry = $expiry->add(new DateInterval("P{$years}Y"));
+        $this->userldaparray['shadowExpire'] = date_to_shadow_expire($expiry);
     }
 
     public function change_name(string $firstname, string $lastname): void
@@ -972,12 +959,12 @@ class Person
 
     public function expiry(): array
     {
-        $expiry = $this->userldaparray['shadowExpire'];
+        $expiry_raw = (int)$this->userldaparray['shadowExpire'];
+        $expiry = shadow_expire_to_date($expiry_raw);
         return array(
-            'expiry_raw' => $expiry,
-            // * 86400 to get from days to seconds
-            'expiry' => date("d M y", $expiry * 86400),
-            'formattedexpiry' => date("l, d F Y", $expiry * 86400)
+            'expiry_raw' => $expiry_raw,
+            'expiry' => $expiry->format("d M y"),
+            'formattedexpiry' => $expiry->format("l, d F Y"),
         );
     }
 
@@ -989,15 +976,17 @@ class Person
         $groups = array('pendingmembers', 'expiredmembers', 'overduemembers', 'currentmembers');
 
         // Grace period of 3 months
-        $today = ceil(date("U", strtotime("today")) / 86400);
-        $grace = ceil(date("U", strtotime("-3 months")) / 86400);
-        if ($this->userldaparray['shadowExpire'] <= 1) {
+        $expiry_raw = (int)$this->userldaparray['shadowExpire'];
+        $expiry = shadow_expire_to_date($expiry_raw);
+        $today = new DateTimeImmutable();
+        $grace = $today->sub(new DateInterval("P3M"));
+        if ($expiry_raw <= 1) {
             // Pending group
             $validgroup = 'pendingmembers';
-        } elseif ($this->userldaparray['shadowExpire'] < $grace) {
+        } elseif ($expiry < $grace) {
             // Expired
             $validgroup = 'expiredmembers';
-        } elseif ($this->userldaparray['shadowExpire'] < $today) {
+        } elseif ($expiry < $today) {
             // Overdue
             $validgroup = 'overduemembers';
         } else {
@@ -1176,7 +1165,8 @@ class Person
         // If the payment date is before the expiry date, increase the expiry date.
         // If the payment date is after the expiry date, set the expiry date to the payment date + x years.
 
-        if ($this->userldaparray['shadowExpire'] > abs(floor(strtotime($date) / 86400))) {
+        $d = new DateTimeImmutable($date);
+        if (shadow_expire_to_date((int)$this->userldaparray['shadowExpire']) > $d) {
             // modify so that expuiry date is also based on previous expiry date for oversdue members
             /*        $grace = strtotime($date);
                       date_sub($grace, date_interval_create_from_date_string("3 months"));
@@ -1500,6 +1490,20 @@ function validatePassword(string $strPlainText, string $strHash): bool
     } else {
         return $strPlainText == $strHash;
     }
+}
+
+function shadow_expire_to_date(int $shadow_expire): DateTimeInterface
+{
+    return new DateTimeImmutable()->setTimestamp($shadow_expire * 86400);
+}
+
+function date_to_shadow_expire(DateTimeInterface $date): int
+{
+    // $date needs to be converted to DAYS since epoch.
+    // We convert to a timestamp, divide by 86400, round up (so it
+    // happens after the chosen date).
+    // Clamp to a minimum of 1, as -1 is never expire
+    return max((int)ceil($date->getTimestamp() / 86400), 1);
 }
 
 

@@ -13,7 +13,8 @@ require_once('/usr/share/plug-ugmm/lib/PLUG/Members.class.php');
 $OrgMembers = new Members($ldap);
 
 // Create days after epoch for now and find all accounts < this (grace period of 5 days?)
-$expired = ceil(date("U", strtotime("-3 months")) / 86400);
+$today = new DateTimeImmutable();
+$expired = date_to_shadow_expire($today->sub(new DateInterval("P3M")));
 
 // It is done in three parts to simplify the filters
 // Note that previous versions of ugmm classified members as "expired" when their

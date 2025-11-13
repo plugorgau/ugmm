@@ -14,12 +14,13 @@ $OrgMembers = new Members($ldap);
 
 
 // Create days after epoch for now and find all accounts < this (grace period of 5 days?)
-$overdue = ceil(date("U", strtotime("-5 days")) / 86400);
-$expired = ceil(date("U", strtotime("-3 months")) / 86400);
+$today = new DateTimeImmutable();
+$overdue = date_to_shadow_expire($today);
+$expired = date_to_shadow_expire($today->sub(new DateInterval("P3M")));
 
 // ********* Overdue members
 // Select all accounts where membership is set as current, but renewal is now overdue
-$filter = "(&(shadowExpire<=$overdue)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
+$filter = "(&(shadowExpire<$overdue)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
@@ -41,7 +42,7 @@ foreach ($members as $dn) {
 
 // Select all accounts where membership is set as overdue, but have now passed
 // the 3 months allowed by the constitution
-$filter = "(&(shadowExpire<=$expired)(memberOf=cn=overduemembers,ou=Groups,".LDAP_BASE."))";
+$filter = "(&(shadowExpire<$expired)(memberOf=cn=overduemembers,ou=Groups,".LDAP_BASE."))";
 
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
@@ -62,7 +63,7 @@ foreach ($members as $dn) {
 // ********* Expiring members
 
 // Create days after epoch for now + 30 days and find all accounts = this
-$future = ceil(time() / 86400) + 30;
+$future = date_to_shadow_expire($today->add(new DateInterval("P30D")));
 
 // Select all accounts which are set as current
 $filter = "(&(shadowExpire=$future)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
