@@ -14,6 +14,15 @@ const FULL_AMOUNT = 5000;
 const CONCESSION_TYPE = 2;
 const FULL_TYPE = 1;
 
+// The grace period during which a non-current member's membership
+// will be considered overdue rather than expired. This is specified
+// in terms of a PHP duration string as described here:
+//
+// https://www.php.net/manual/en/dateinterval.construct.php
+//
+// Here, it is set to three months, in line with PLUG's constitution.
+const GRACE_PERIOD = "P3M";
+
 const EXTERNAL_LINKS = array(
     "home" => "https://www.plug.org.au/",
     "contact" => "https://www.plug.org.au/contact/",

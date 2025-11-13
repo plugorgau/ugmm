@@ -979,7 +979,7 @@ class Person
         $expiry_raw = (int)$this->userldaparray['shadowExpire'];
         $expiry = shadow_expire_to_date($expiry_raw);
         $today = new DateTimeImmutable();
-        $grace = $today->sub(new DateInterval("P3M"));
+        $grace = $today->sub(new DateInterval(GRACE_PERIOD));
         if ($expiry_raw <= 1) {
             // Pending group
             $validgroup = 'pendingmembers';
