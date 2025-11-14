@@ -388,7 +388,7 @@ class Payment
         return $payments;
     }
 
-    public static function create(Net_LDAP2 $ldap, string $parentdn, int $type, int $years, string $date, string $description, int|bool $id = false): Payment
+    public static function create(Net_LDAP2 $ldap, string $parentdn, int $type, int $years, DateTimeImmutable $date, string $description, int|bool $id = false): Payment
     {
         global $payment_modifier_amount; //Hack for change in payment amounts
         if (!isset($payment_modifier_amount)) {
@@ -401,7 +401,7 @@ class Payment
         $dn = "x-plug-paymentID=$id,$parentdn";
         $attrs = self::_DEFAULTS;
         $attrs['x-plug-paymentYears'] = $years;
-        $attrs['x-plug-paymentDate'] = new DateTimeImmutable($date)->format('YmdHisO');
+        $attrs['x-plug-paymentDate'] = $date->format('YmdHisO');
         $attrs['x-plug-paymentID'] = $id;
         $attrs['x-plug-paymentType'] = $type;
         $attrs['x-plug-paymentDescription'] = $description;
@@ -602,16 +602,9 @@ class Person
         return $this->messages;
     }
 
-    public function change_expiry(string $date): void // $date as string
+    public function change_expiry(DateTimeImmutable $date): void
     {
-        $this->userldaparray['shadowExpire'] = date_to_shadow_expire(new DateTimeImmutable($date));
-    }
-
-    public function increase_expiry(string $years): void
-    {
-        $expiry = shadow_expire_to_date($this->userldaparray['shadowExpire']);
-        $expiry = $expiry->add(new DateInterval("P{$years}Y"));
-        $this->userldaparray['shadowExpire'] = date_to_shadow_expire($expiry);
+        $this->userldaparray['shadowExpire'] = date_to_shadow_expire($date);
     }
 
     public function change_name(string $firstname, string $lastname): void
@@ -1151,12 +1144,8 @@ class Person
         }
     }
 
-    public function makePayment(int $type, int $years, string $date, string $description, bool $ack, int|bool $id = false): int
+    public function makePayment(int $type, int $years, DateTimeImmutable $date, string $description, bool $ack, int|bool $id = false): int
     {
-        if ($date == '') {
-            $date = date("YmdHis", time());
-        }
-
         $this->load_payments();
         $payment = Payment::create($this->ldap, $this->dn, $type, $years, $date, $description, $id);
         $this->_payments[$payment->id] = $payment;
@@ -1165,19 +1154,15 @@ class Person
         // If the payment date is before the expiry date, increase the expiry date.
         // If the payment date is after the expiry date, set the expiry date to the payment date + x years.
 
-        $d = new DateTimeImmutable($date);
-        if (shadow_expire_to_date((int)$this->userldaparray['shadowExpire']) > $d) {
-            // modify so that expuiry date is also based on previous expiry date for oversdue members
-            /*        $grace = strtotime($date);
-                      date_sub($grace, date_interval_create_from_date_string("3 months"));
-
-                      if($this->userldaparray['shadowExpire'] > abs(floor(strtotime($grace)/ 86400)))
-            */
-            // Account has not yet expired, increase expiry
-            $this->increase_expiry($years);
+        $expiry = shadow_expire_to_date((int)$this->userldaparray['shadowExpire']);
+        $period = new DateInterval('P'.$years.'Y');
+        if ($expiry->add(new DateInterval(GRACE_PERIOD)) > $date) {
+            // Account is current, or within the overdue grace period:
+            // use the old expiry as the start point.
+            $this->change_expiry($expiry->add($period));
         } else {
             // Account has expired, change expiry from payment date/now
-            $this->change_expiry($date . "+ $years years");
+            $this->change_expiry($date->add($period));
         }
 
         $this->update_ldap();
