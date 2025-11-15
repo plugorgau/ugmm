@@ -1,0 +1,2 @@
+#!/bin/sh
+exec php /usr/share/plug-ugmm/lib/getActiveMembers.php
