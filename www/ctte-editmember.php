@@ -69,7 +69,9 @@ if (isset($_POST['payment_form']) && ! $error) {
 
     // Allow future dating here? TODO: Prevent future dating
     // Class will ensure date is "now" if empty, we need to ensure it's valid
-    if ($payment_date != '' && !strtotime($payment_date)) {
+    try {
+        $payment_date = new DateTimeImmutable($payment_date);
+    } catch (Exception) {
         $error[] = "Invalid payment date";
     }
     // TODO: validate

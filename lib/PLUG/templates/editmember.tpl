@@ -114,7 +114,7 @@
     "radio">Concession ({$CONCESSION_AMOUNT}/yr)</label> for <input name="years"
     value="1" size="2" type="text"> year(s).<br>
     Backdate this payment to <input name="payment_date" size="10"
-    type="text"> (YYYY-MM-DD) (leave blank for "now").<br>
+    type="date"> (leave blank for "now").<br>
     Receipt # (or comment) <input name="receipt_number" size="30"
     type="text"><br>
     <input name="go_go_button" value="Make Payment" type="submit">
