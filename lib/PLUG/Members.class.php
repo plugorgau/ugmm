@@ -320,8 +320,8 @@ class Payment
         get => intval($this->entry->getValue('x-plug-paymentAmount', 'single'));
     }
 
-    public string $date {
-        get => $this->entry->getValue('x-plug-paymentDate', 'single');
+    public DateTimeImmutable $date {
+        get => new DateTimeImmutable($this->entry->getValue('x-plug-paymentDate', 'single'));
     }
 
     public int $id {
@@ -344,7 +344,7 @@ class Payment
     }
 
     public string $formatteddate {
-        get => new DateTimeImmutable($this->date)->format('Y-m-d');
+        get => $this->date->format('Y-m-d');
     }
 
     public string $formattedamount {
@@ -1347,9 +1347,9 @@ PLUG Membership Scripts";
     }
 
     // OO Getters only enable those that are needed
-    public function uid(): int|string
+    public function uid(): int
     {
-        return $this->userldaparray['uidNumber'];
+        return intval($this->userldaparray['uidNumber']);
     }
 
     public function username(): string
