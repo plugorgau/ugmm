@@ -1,3 +1,26 @@
+plug-ugmm (0.7.3) unstable; urgency=medium
+
+  [ dependabot[bot] ]
+  * build(deps): bump actions/download-artifact from 5 to 6
+  * build(deps): bump actions/upload-artifact from 4 to 5
+
+  [ James Henstridge ]
+  * ci: switch test workflow to run in a Debian 13 container
+  * Add type annotations to functions/methods, and turn on strict_types.
+  * Set time zone to Australia/Perth (configurable via config.inc.php).
+  * Use the DateTimeImmutable and DateInterval classes to manage time,
+    rather than strings.
+  * When payments are received during the "overdue" grace period, start the
+    membership from the old expiry date rather than from the payment date.
+  * Fix the signup template that was adding a stray '}' to the name field
+    on validation failure.
+  * Add a ugmm-active-members script that prints the names and emails of
+    current and overdue members (i.e. those required to be notified of an
+    AGM). This is intended to be synchronised with a mailing list
+    membership list.
+
+ -- James Henstridge <james@jamesh.id.au>  Mon, 17 Nov 2025 21:11:23 +0800
+
 plug-ugmm (0.7.2) unstable; urgency=medium
 
   * www: move files that should not be web accessible out of the document root.
