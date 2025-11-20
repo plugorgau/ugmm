@@ -45,8 +45,7 @@ class Members
                 continue;
             }
 
-            $thismember = new Person($this->ldap);
-            $thismember->load_ldap($member);
+            $thismember = Person::load($this->ldap, $member);
             $memberdetails[] = $thismember->userarray();
 
         }
@@ -123,8 +122,7 @@ class Members
         $uidNumber = intval($uidNumber); // Sanitise
         $dn = "uidNumber=$uidNumber,ou=Users,".LDAP_BASE;
         if ($this->ldap->dnExists($dn)) {
-            $thismember = new Person($this->ldap);
-            $thismember->load_ldap($dn);
+            $thismember = Person::load($this->ldap, $dn);
             return $thismember;
         }
         return PEAR::raiseError(
@@ -167,8 +165,7 @@ class Members
           {
           $uidNumber = intval($uidNumber); // Sanitise
           $dn = "uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au";
-          $thismember = new Person($this->ldap);
-          $thismember->load_ldap($dn);
+          $thismember = Person::load($this->ldap, $dn);
           return $thismember->userarray();
           }*/
 
@@ -274,9 +271,8 @@ class Members
 
     public function new_member(string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $password, string $notes): Person
     {
-        $newmember = new Person($this->ldap);
         $pendingID = isset($_SESSION['pendingID']) ? $this->next_freeuidNumber($_SESSION['pendingID']) : $this->next_uidNumber();
-        $newmember->create_person($pendingID, $username, $firstname, $lastname, $address, $home, $work, $mobile, $email, '', $password, $notes);
+        $newmember = Person::create($this->ldap, $pendingID, $username, $firstname, $lastname, $address, $home, $work, $mobile, $email, '', $password, $notes);
         if ($newmember->is_error()) {
             $_SESSION['pendingID'] = $pendingID;
         } else {
@@ -535,14 +531,14 @@ class Person
         'modifyTimestamp' => '',
     );
 
-    public function __construct(Net_LDAP2 $ldap)
+    private function __construct(Net_LDAP2 $ldap)
     {
         $this->ldap = $ldap;
 
         $this->userldaparray = self::_DEFAULTS;
     }
 
-    public function load_ldap(string $dn): void
+    private function load_ldap(string $dn): void
     {
         $this->dn = $dn;
         $this->ldapentry = $this->ldap->getEntry($dn, array_keys(self::_DEFAULTS));
@@ -555,30 +551,37 @@ class Person
         //$this->explode_user_ldap_array();
     }
 
-    public function create_person(string $uid, string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $forward, string $password, string $notes): void
+    public static function load(Net_LDAP2 $ldap, string $dn): self
     {
-        $this->dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
-        $this->change_uid($uid, $uid);
-        $this->change_username($username);
-        $this->change_name($firstname, $lastname);
-        $this->change_address($address);
-        $this->change_phone($home, $work, $mobile);
-        $this->change_shell("/bin/bash");
-        $this->change_homedir("/home/$username");
-        $this->change_email($email);
-        $this->change_forward($forward);
-        $this->change_password($password);
-        $this->change_description($notes);
-        if (! $this->is_error()) {
-            $this->create_new_ldap_person();
-            $this->create_new_ldap_group();
+        $person = new self($ldap);
+        $person->load_ldap($dn);
+        return $person;
+    }
+
+    public static function create(Net_LDAP2 $ldap, string $uid, string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $forward, string $password, string $notes): self
+    {
+        $person = new self($ldap);
+        $person->dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
+        $person->change_uid($uid, $uid);
+        $person->change_username($username);
+        $person->change_name($firstname, $lastname);
+        $person->change_address($address);
+        $person->change_phone($home, $work, $mobile);
+        $person->change_shell("/bin/bash");
+        $person->change_homedir("/home/$username");
+        $person->change_email($email);
+        $person->change_forward($forward);
+        $person->change_password($password);
+        $person->change_description($notes);
+        if (! $person->is_error()) {
+            $person->create_new_ldap_person();
+            $person->create_new_ldap_group();
             // Extra call, but allows us to continue working with a new object.
-            $this->load_ldap($this->dn);
+            $person->load_ldap($person->dn);
 
-            $this->set_status_group();
-
+            $person->set_status_group();
         }
-
+        return $person;
     }
 
     public function is_error(): bool

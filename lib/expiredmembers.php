@@ -25,8 +25,7 @@ $filter = "(&(shadowExpire<=$overdue)(memberOf=cn=currentmembers,ou=Groups,".LDA
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
 foreach ($members as $dn) {
-    $member = new Person($ldap);
-    $member->load_ldap($dn);
+    $member = Person::load($ldap, $dn);
 
     $details = $member->userarray();
 
@@ -47,8 +46,7 @@ $filter = "(&(shadowExpire<=$expired)(memberOf=cn=overduemembers,ou=Groups,".LDA
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
 foreach ($members as $dn) {
-    $member = new Person($ldap);
-    $member->load_ldap($dn);
+    $member = Person::load($ldap, $dn);
 
     $details = $member->userarray();
 
@@ -71,8 +69,7 @@ $filter = "(&(shadowExpire=$future)(memberOf=cn=currentmembers,ou=Groups,".LDAP_
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
 foreach ($members as $dn) {
-    $member = new Person($ldap);
-    $member->load_ldap($dn);
+    $member = Person::load($ldap, $dn);
     $details = $member->userarray();
 
     echo "User ".$details['displayName']. " is expiring in 30 days\n";

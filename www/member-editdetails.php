@@ -7,9 +7,8 @@ $TOPLEVEL = 'home';
 
 require_once('../lib/PLUG/session.inc.php');
 
-$memberself = new Person($ldap);
 $memberauthdata = $Auth->getAuthData();
-$memberself->load_ldap($memberauthdata['dn']);
+$memberself = Person::load($ldap, $memberauthdata['dn']);
 
 if (isset($_POST['edit_selfmember']) && !verify_nonce($_POST['nonce'], 'editselfdetails')) {
     $error[] = "Attempt to double submit form? No changes made.";

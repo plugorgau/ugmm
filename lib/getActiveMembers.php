@@ -21,8 +21,7 @@ $filter = "(shadowExpire>=$expired)";
 $members = $OrgMembers->load_members_dn_from_filter($filter);
 
 foreach ($members as $dn) {
-    $member = new Person($ldap);
-    $member->load_ldap($dn);
+    $member = Person::load($ldap, $dn);
 
     $details = $member->userarray();
 
