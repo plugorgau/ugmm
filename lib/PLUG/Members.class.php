@@ -495,7 +495,7 @@ class Person
 
     private array $userldaparray;
     private array $userorigldaparray;
-    private Net_LDAP2_Entry|PEAR_Error $ldapentry;
+    private Net_LDAP2_Entry $ldapentry;
 
     private ?array $_payments = null;
 
@@ -531,21 +531,23 @@ class Person
         'modifyTimestamp' => '',
     );
 
-    private function __construct(Net_LDAP2 $ldap)
+    private function __construct(Net_LDAP2 $ldap, Net_LDAP2_Entry $ldapentry)
     {
         $this->ldap = $ldap;
-
-        $this->userldaparray = self::_DEFAULTS;
+        $this->dn = $ldapentry->dn();
+        $this->ldapentry = $ldapentry;
+        $this->userldaparray = array_merge(self::_DEFAULTS, $this->ldapentry->getValues());
+        $this->userorigldaparray = $this->userldaparray;
     }
 
-    private function load_ldap(string $dn): void
+    private function reload_ldap(): void
     {
-        $this->dn = $dn;
-        $this->ldapentry = $this->ldap->getEntry($dn, array_keys(self::_DEFAULTS));
-        if (PEAR::isError($this->ldapentry)) {
-            throw new Exception('LDAP Error: load_ldap: '.$this->ldapentry->getMessage());
+        $ldapentry = $this->ldap->getEntry($this->dn, array_keys(self::_DEFAULTS));
+        if (PEAR::isError($ldapentry)) {
+            throw new Exception('LDAP Error: reload_ldap: '.$ldapentry->getMessage());
         }
 
+        $this->ldapentry = $ldapentry;
         $this->userldaparray = array_merge(self::_DEFAULTS, $this->ldapentry->getValues());
         $this->userorigldaparray = $this->userldaparray;
         //$this->explode_user_ldap_array();
@@ -553,15 +555,19 @@ class Person
 
     public static function load(Net_LDAP2 $ldap, string $dn): self
     {
-        $person = new self($ldap);
-        $person->load_ldap($dn);
-        return $person;
+        $ldapentry = $ldap->getEntry($dn, array_keys(self::_DEFAULTS));
+        if (PEAR::isError($ldapentry)) {
+            throw new Exception('LDAP Error: Person::load: '.$ldapentry->getMessage());
+        }
+
+        return new self($ldap, $ldapentry);
     }
 
     public static function create(Net_LDAP2 $ldap, string $uid, string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $forward, string $password, string $notes): self
     {
-        $person = new self($ldap);
-        $person->dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
+        $dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
+        $entry = Net_LDAP2_Entry::createFresh($dn, array_keys(self::_DEFAULTS));
+        $person = new self($ldap, $entry);
         $person->change_uid($uid, $uid);
         $person->change_username($username);
         $person->change_name($firstname, $lastname);
@@ -577,7 +583,7 @@ class Person
             $person->create_new_ldap_person();
             $person->create_new_ldap_group();
             // Extra call, but allows us to continue working with a new object.
-            $person->load_ldap($person->dn);
+            $person->reload_ldap();
 
             $person->set_status_group();
         }
@@ -898,7 +904,7 @@ class Person
         }
 
         // Extra call, but allows us to continue working with a new object.
-        $this->load_ldap($this->dn);
+        $this->reload_ldap();
     }
 
     private function memberOf_filter(): array
