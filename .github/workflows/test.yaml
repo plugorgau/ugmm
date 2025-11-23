@@ -58,6 +58,9 @@ jobs:
       - name: Run tests
         run: phpunit --testdox tests
 
+      - name: Run expiredmembers cron job
+        run: php /usr/share/plug-ugmm/lib/expiredmembers.php
+
       - name: Show web server errors on failure
         if: failure()
         run: sudo cat /var/log/nginx/error.log
