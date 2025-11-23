@@ -1,3 +1,10 @@
+plug-ugmm (0.7.4) unstable; urgency=medium
+
+  * ci: run the expiredmembers script as part of the test workflow
+  * lib: fix LDAP filter expressions in expiredmembers.php
+
+ -- James Henstridge <james@jamesh.id.au>  Sun, 23 Nov 2025 12:09:15 +0800
+
 plug-ugmm (0.7.3) unstable; urgency=medium
 
   [ dependabot[bot] ]
