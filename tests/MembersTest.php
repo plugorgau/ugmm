@@ -26,11 +26,11 @@ final class MembersTest extends TestCase
     public function testNewMember(): void
     {
         $member = $this->newMember();
-        $this->assertSame($member->givenName(), "First");
+        $this->assertSame($member->givenName, "First");
 
         // We can load the newly created member from LDAP too
-        $member2 = $this->members->get_member_object($member->uid());
-        $this->assertSame($member->mail(), $member2->mail());
+        $member2 = $this->members->get_member_object($member->uidNumber);
+        $this->assertSame($member->mail, $member2->mail);
     }
 
     public function testMakePayment(): void

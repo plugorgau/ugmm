@@ -33,10 +33,10 @@ if (isset($_POST['resetpassword_form'])) {
         $reseturl .= $_SERVER['HTTP_HOST'];
         $parts = explode('?', $_SERVER['REQUEST_URI'], 2);
         $reseturl .= $parts[0];
-        $reseturl .= "?uid=".$member->uid();
+        $reseturl .= "?uid=".$member->uidNumber;
         $reseturl .= "&reset=".$member->create_hash();
 
-        $name = $member->givenName();
+        $name = $member->givenName;
 
         //TODO move this into class as well?
         $resetemail = "
@@ -51,7 +51,7 @@ Thanks,
 The PLUG Password Reset facility";
 
 
-        if (mail($member->mail(), 'PLUG Password Reset', $resetemail, "From: admin@plug.org.au")) {
+        if (mail($member->mail, 'PLUG Password Reset', $resetemail, "From: admin@plug.org.au")) {
             $success[] = _('An email has been sent to your address with a reset link');
         } else {
             $error[] = _('There was an error sending the reset email. Please report this to admin@plug.org.au');
@@ -71,7 +71,7 @@ The PLUG Password Reset facility";
         // Hash matches
 
         $smarty->assign('resetform', true);
-        $smarty->assign('username', $member->username());
+        $smarty->assign('username', $member->uid);
 
         if (isset($_POST['newpasswordreset_form'])) {
             if ($_POST['newpasswordconfirm'] != $_POST['newpassword']) {
