@@ -393,8 +393,6 @@ class Person
     private Net_LDAP2 $ldap;
     private Net_LDAP2_Entry $ldapentry;
 
-    private ?array $_payments = null;
-
     private array $errors = array();
     private array $messages = array();
     private bool $errorstate = false;
@@ -1012,26 +1010,13 @@ class Person
         return false;
     }
 
-    private function load_payments(): void
-    {
-        if ($this->_payments === null && !$this->is_error()) {
-            $this->_payments = Payment::load_for($this->ldap, $this->dn);
-        }
-    }
-
     public array $payments {
-        get {
-            $this->load_payments();
-            return $this->_payments ? $this->_payments : array();
-        }
+        get => Payment::load_for($this->ldap, $this->dn);
     }
 
     public function makePayment(int $type, int $years, DateTimeImmutable $date, string $description, bool $ack, int|bool $id = false): int
     {
-        $this->load_payments();
         $payment = Payment::create($this->ldap, $this->dn, $type, $years, $date, $description, $id);
-        $this->_payments[$payment->id] = $payment;
-        krsort($this->_payments);
 
         // If the payment date is before the expiry date, increase the expiry date.
         // If the payment date is after the expiry date, set the expiry date to the payment date + x years.
