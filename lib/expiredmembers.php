@@ -22,11 +22,9 @@ $expired = date_to_shadow_expire($today->sub(new DateInterval("P3M")));
 // Select all accounts where membership is set as current, but renewal is now overdue
 $filter = "(&(shadowExpire<=$overdue)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
-$members = $OrgMembers->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_from_filter($filter);
 
-foreach ($members as $dn) {
-    $member = Person::load($ldap, $dn);
-
+foreach ($members as $member) {
     $details = $member->userarray();
 
     echo "User ".$details['displayName']. " has expired\n";
@@ -43,11 +41,9 @@ foreach ($members as $dn) {
 // the 3 months allowed by the constitution
 $filter = "(&(shadowExpire<=$expired)(memberOf=cn=overduemembers,ou=Groups,".LDAP_BASE."))";
 
-$members = $OrgMembers->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_from_filter($filter);
 
-foreach ($members as $dn) {
-    $member = Person::load($ldap, $dn);
-
+foreach ($members as $member) {
     $details = $member->userarray();
 
     echo "User ".$details['displayName']. " has expired\n";
@@ -66,10 +62,9 @@ $future = date_to_shadow_expire($today->add(new DateInterval("P30D")));
 // Select all accounts which are set as current
 $filter = "(&(shadowExpire=$future)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
-$members = $OrgMembers->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_from_filter($filter);
 
-foreach ($members as $dn) {
-    $member = Person::load($ldap, $dn);
+foreach ($members as $member) {
     $details = $member->userarray();
 
     echo "User ".$details['displayName']. " is expiring in 30 days\n";

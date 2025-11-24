@@ -13,11 +13,6 @@ class Members
 {
     // Class for plug, contains members of type Member/Person
 
-    private ?array $currentmembers = null;
-    private ?array $overduemembers = null;
-    private ?array $expiredmembers = null;
-    private ?array $pendingmembers = null;
-
     private Net_LDAP2 $ldap;
 
     public function __construct(Net_LDAP2 $ldap)
@@ -29,92 +24,58 @@ class Members
     {
         // Fetch entry for group and all member attributes
         $dn = "cn=$group,ou=Groups,".LDAP_BASE;
-        $entry = $this->ldap->getEntry($dn, array('member'));
-
-        if (PEAR::isError($entry)) {
-            throw new Exception('LDAP Error: '.$entry->getMessage());
-        }
-
-        // Load all members
-        $members = $entry->getValue('member', 'all');
-        asort($members);
-
+        $filter = Net_LDAP2_Filter::create('memberOf', 'equals', $dn);
         $memberdetails = array();
-        foreach ($members as $member) {
-            if ($member == DEFAULT_MEMBER) {
-                continue;
-            }
-
-            $thismember = Person::load($this->ldap, $member);
-            $memberdetails[] = $thismember->userarray();
-
+        foreach ($this->load_members_from_filter($filter) as $member) {
+            $memberdetails[] = $member->userarray();
         }
-
-
         return $memberdetails;
     }
 
-    public function load_members_dn_from_filter(string $filter): array
+    public function load_members_from_filter(Net_LDAP2_Filter|string $filter): array
     {
-        $filter = Net_LDAP2_Filter::parse($filter);
+        if (is_string($filter)) {
+            $filter = Net_LDAP2_Filter::parse($filter);
+        }
         $searchbase = "ou=Users,".LDAP_BASE;
         $options = array(
             'scope' => 'sub',
-            'attributes' => array(
-                'dn')
+            'attributes' => array_keys(Person::_DEFAULTS),
         );
 
         $search = $this->ldap->search($searchbase, $filter, $options);
-
         if (PEAR::isError($search)) {
             throw new Exception('LDAP Error: '.$search->getMessage());
         }
 
-        $dns = array();
-
+        $members = array();
         while ($entry = $search->popEntry()) {
             if ($entry->dn() == DEFAULT_MEMBER) {
                 continue;
             }
-            $dns[] = $entry->dn();
-
+            $members[] = new Person($this->ldap, $entry);
         }
-
-
-        return $dns;
-
+        return $members;
     }
 
     public function get_current_members(): array
     {
-        if ($this->currentmembers === null) {
-            $this->currentmembers = $this->load_ldapmembers_from_group('currentmembers');
-        }
-        return $this->currentmembers;
+        return $this->load_ldapmembers_from_group('currentmembers');
     }
 
     public function get_overdue_members(): array
     {
-        if ($this->overduemembers === null) {
-            $this->overduemembers = $this->load_ldapmembers_from_group('overduemembers');
-        }
-        return $this->overduemembers;
+        return $this->load_ldapmembers_from_group('overduemembers');
     }
 
     public function get_expired_members(): array
     {
-        if ($this->expiredmembers === null) {
-            $this->expiredmembers = $this->load_ldapmembers_from_group('expiredmembers');
-        }
-        return $this->expiredmembers;
+        return $this->load_ldapmembers_from_group('expiredmembers');
     }
 
     public function get_pending_members(): array
     {
-        if ($this->pendingmembers === null) {
-            $this->pendingmembers = $this->load_ldapmembers_from_group('pendingmembers');
-        }
-        return $this->pendingmembers;
+        return $this->load_ldapmembers_from_group('pendingmembers');
     }
 
     public function get_member_object(int $uidNumber): Person
@@ -138,8 +99,7 @@ class Members
         $searchbase = "ou=Users,".LDAP_BASE;
         $options = array(
             'scope' => 'one',
-            'attributes' => array(
-                'uidNumber')
+            'attributes' => array_keys(Person::_DEFAULTS)
         );
 
         $search = $this->ldap->search($searchbase, $filter, $options);
@@ -155,20 +115,8 @@ class Members
         }
 
         $entry = $search->shiftEntry();
-
-        return $this->get_member_object(intval($entry->getValue('uidNumber', 'single')));
-
+        return new Person($this->ldap, $entry);
     }
-
-
-    /*    function get_member($uidNumber)
-          {
-          $uidNumber = intval($uidNumber); // Sanitise
-          $dn = "uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au";
-          $thismember = Person::load($this->ldap, $dn);
-          return $thismember->userarray();
-          }*/
-
 
     public function check_username_available(string $username): int
     {
@@ -241,33 +189,6 @@ class Members
         }
         return true;
     }
-
-    /*function next_paymentID()
-      {
-      $dn = "cn=maxUid,ou=Users,dc=plug,dc=org,dc=au";
-      // Get next paymentID from maxUid
-
-      $entry = $this->ldap->getEntry($dn, array('x-plug-paymentID'));
-
-      if (PEAR::isError($entry)) {
-      throw new Exception('LDAP Error: '.$entry->getMessage());
-      }
-
-      $paymentID = $entry->getValue('x-plug-paymentID');
-
-      // Increment maxUid
-      $entry->replace(array(
-      'x-plug-paymentID' => $paymentID + 1));
-
-      $result = $entry->update();
-
-      if (PEAR::isError($result)) {
-      throw new Exception('LDAP Error: '.$result->getMessage());
-      }
-
-      return $paymentID;
-
-      }*/
 
     public function new_member(string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $password, string $notes): Person
     {
@@ -483,7 +404,7 @@ class Person
     private bool $errorstate = false;
     private array $passworderrors = array();
 
-    private const _DEFAULTS = array(
+    public const _DEFAULTS = array(
         'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount'),
         'uid' => '',
         'displayName' => '',
@@ -508,7 +429,7 @@ class Person
         'modifyTimestamp' => '',
     );
 
-    private function __construct(Net_LDAP2 $ldap, Net_LDAP2_Entry $ldapentry)
+    public function __construct(Net_LDAP2 $ldap, Net_LDAP2_Entry $ldapentry)
     {
         $this->ldap = $ldap;
         $this->ldapentry = $ldapentry;
@@ -591,7 +512,7 @@ class Person
         return $this->messages;
     }
 
-    private string $dn {
+    public string $dn {
         get => $this->ldapentry->dn();
     }
 
