@@ -4,7 +4,7 @@
 {block name=body}
 
 <p>
-Thank you {$newmember.displayName}.<br/>
+Thank you {$newmember->displayName}.<br/>
 <br/>
 You can now login to the <a href="memberself">members area</a>. However, your account will not be activated until you have paid your membership.</br>
 <br/>

@@ -19,15 +19,13 @@ if (isset($_POST['edit_selfpassword']) && isset($_POST['oops_button']) && ! $err
     redirect_with_messages($toplevelmenu['home']['link']);
 }
 
-$memberdetails = $memberself->userarray();
-$oldpasswordhash = $memberdetails['userPassword'];
+$oldpasswordhash = $memberself->userPassword;
 if (isset($_POST['edit_selfpassword']) && ! validatePassword($_POST['current_password'], $oldpasswordhash)) {
     $error[] = "Old password does not match";
 }
 
 
 if (isset($_POST['edit_selfpassword']) && isset($_POST['go_go_button']) && ! $error) {
-
     // Class validates objects and maintains errors/successs messages
     if ($_POST['newpasswordconfirm'] != $_POST['newpassword']) {
         $error[] = _("Passwords don't match");
@@ -48,23 +46,8 @@ if (isset($_POST['edit_selfpassword']) && isset($_POST['go_go_button']) && ! $er
         }
     } else {
         $error = array_merge($error, $memberself->get_password_errors());
-
     }
-
-    $memberdetails = $memberself->userarray();
-
 }
 
-
-
-
-
-// Finished processing all the forms
-if (!isset($memberdetails)) {
-    // Validate $_GET better? intval should clean it to just a number
-    $memberdetails = $memberself->userarray();
-}
-
-
-$smarty->assign('member', $memberdetails);
+$smarty->assign('member', $memberself);
 display_page('editselfpassword.tpl');

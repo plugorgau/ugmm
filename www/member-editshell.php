@@ -15,7 +15,6 @@ if (isset($_POST['edit_selfshell']) && !verify_nonce($_POST['nonce'], 'editselfs
 }
 
 if (isset($_POST['edit_selfshell']) && isset($_POST['go_go_button']) && ! $error) {
-
     // TODO: Class validates objects and maintains errors/successs messages
     if (!isset($shells[$_POST['account_shell']])) {
         $error[] = "Invalid shell";
@@ -35,9 +34,6 @@ if (isset($_POST['edit_selfshell']) && isset($_POST['go_go_button']) && ! $error
             redirect_with_messages($toplevelmenu['home']['link']);
         }
     }
-
-    $memberdetails = $memberself->userarray();
-
 }
 
 if (isset($_POST['edit_selfshell']) && isset($_POST['oops_button']) && ! $error) {
@@ -63,14 +59,6 @@ if (isset($_POST['edit_selfshell']) && isset($_POST['enable_shell']) && ! $error
     }
 }
 
-
-// Finished processing all the forms
-if (!isset($memberdetails)) {
-    // Validate $_GET better? intval should clean it to just a number
-    $memberdetails = $memberself->userarray();
-}
-
-
 $smarty->assign('shells', $shells);
-$smarty->assign('member', $memberdetails);
+$smarty->assign('member', $memberself);
 display_page('editselfshell.tpl');

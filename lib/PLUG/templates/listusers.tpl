@@ -23,15 +23,15 @@
   </thead>
   <tbody>
 {foreach from=$users item=user}
-    <tr{if isset($user.description)} title="{$user.description}"{/if}{if $user.groups} class="elevated_user"{/if}>
-      <td>{$user.uidNumber}{if isset($user.description)}{if $user.description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}{/if}</td>
-      <td>{$user.uid}</td>
-      <td>{$user.displayName}</td>
-      <td>{$user.mail}{if isset($user.mailForward) and $user.mailForward}<br/><strong>Fwd: {$user.mailForward}</strong>{/if}</td>
-      <td>{foreach from=$user.groups item=group}{$group}<br/>{/foreach}</td>
-      <td data-sort="{$user.expiry_raw}">{if $user.expiry_raw > 1}{$user.expiry}{/if}</td>
-      <td>{if $user.shellEnabled}T{/if}</td>
-      <td><a href="{$submenuitems.ctte.editmember.link}{$user.uidNumber}">Edit</a></td>
+    <tr{if isset($user->description)} title="{$user->description}"{/if}{if $user->groups} class="elevated_user"{/if}>
+      <td>{$user->uidNumber}{if isset($user->description)}{if $user->description}<sup style="color: rgb(136, 136, 170);">N</sup>{/if}{/if}</td>
+      <td>{$user->uid}</td>
+      <td>{$user->displayName}</td>
+      <td>{$user->mail}{if isset($user->mailForward) and $user->mailForward}<br/><strong>Fwd: {$user->mailForward}</strong>{/if}</td>
+      <td>{foreach from=$user->groups item=group}{$group}<br/>{/foreach}</td>
+      <td data-sort="{$user->shadowExpire}">{if $user->shadowExpire > 1}{$user->expiry}{/if}</td>
+      <td>{if $user->shellEnabled}T{/if}</td>
+      <td><a href="{$submenuitems.ctte.editmember.link}{$user->uidNumber}">Edit</a></td>
     </tr>
 {/foreach}
   </tbody>

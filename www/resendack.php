@@ -16,7 +16,6 @@ if (intval($_GET['member_id']) < 10000) {
 
 $memberid = intval($_GET['member_id']);
 $member = $OrgMembers->get_member_object($memberid);
-$memberdetails = $member->userarray();
 $memberpayments = $member->payments;
 
 $paymentid = intval($_GET['payment_id']);
@@ -55,7 +54,7 @@ if (isset($_POST['resend_ack_form']) && ! $error) {
 //print_r($memberpayments);
 $smarty->assign('errors', $error);
 $smarty->assign('success', $success);
-$smarty->assign('member', $memberdetails);
+$smarty->assign('member', $member);
 $smarty->assign('payment', $memberpayments[intval($_GET['payment_id'])]);
 
 

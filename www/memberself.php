@@ -10,6 +10,6 @@ require_once('../lib/PLUG/session.inc.php');
 $memberauthdata = $Auth->getAuthData();
 $memberself = Person::load($ldap, $memberauthdata['dn']);
 
-$smarty->assign('memberself', $memberself->userarray());
+$smarty->assign('memberself', $memberself);
 
 display_page('memberself.tpl');

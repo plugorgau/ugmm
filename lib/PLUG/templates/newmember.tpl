@@ -5,7 +5,7 @@
 
 {if $usercreated}
 
-<p>New member created. <a href="{$submenuitems.ctte.editmember.link}{$newmember.uidNumber}">Edit member {$newmember.uidNumber} to make payment</a>
+<p>New member created. <a href="{$submenuitems.ctte.editmember.link}{$newmember->uidNumber}">Edit member {$newmember->uidNumber} to make payment</a>
 </p>
 
 {/if}

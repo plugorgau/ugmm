@@ -3,7 +3,7 @@
 {block name=title}Edit Member Details{/block}
 {block name=body}
 
-  <h2>Editing member details for {$member.displayName}</h2>
+  <h2>Editing member details for {$member->displayName}</h2>
 
   <h3>Personal Details</h3>
 
@@ -22,34 +22,34 @@
         <th>E-mail Address<sup>*</sup></th>
 
         <td><input type="text" name="email_address" value=
-        "{$member.mail}" size="30"></td>
+        "{$member->mail}" size="30"></td>
       </tr>
 
       <tr>
         <th>Postal Address<sup>*</sup></th>
 
         <td><input type="text" name="street_address" value=
-        "{$member.street|default}" size="50"></td>
+        "{$member->street|default}" size="50"></td>
       </tr>
 
       <tr>
         <th>Home Phone</th>
 
-        <td><input type="text" name="home_phone" size="20" value="{$member.homePhone|default}"></td>
+        <td><input type="text" name="home_phone" size="20" value="{$member->homePhone|default}"></td>
       </tr>
 
       <tr>
         <th>Work Phone</th>
 
         <td><input type="text" name="work_phone" value=
-        "{$member.pager|default}" size="20"></td>
+        "{$member->pager|default}" size="20"></td>
       </tr>
 
       <tr>
         <th>Mobile Phone</th>
 
         <td><input type="text" name="mobile_phone" value=
-        "{$member.mobile|default}" size="20"></td>
+        "{$member->mobile|default}" size="20"></td>
       </tr>
     </table><input type="submit" name="go_go_button" value=
     "Update"> <input type="submit" name="oops_button" value=

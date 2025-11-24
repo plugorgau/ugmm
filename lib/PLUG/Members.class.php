@@ -25,11 +25,7 @@ class Members
         // Fetch entry for group and all member attributes
         $dn = "cn=$group,ou=Groups,".LDAP_BASE;
         $filter = Net_LDAP2_Filter::create('memberOf', 'equals', $dn);
-        $memberdetails = array();
-        foreach ($this->load_members_from_filter($filter) as $member) {
-            $memberdetails[] = $member->userarray();
-        }
-        return $memberdetails;
+        return $this->load_members_from_filter($filter);
     }
 
     public function load_members_from_filter(Net_LDAP2_Filter|string $filter): array
@@ -532,6 +528,10 @@ class Person
         get => (int)$this->ldapentry->getValue('gidNumber', 'single');
     }
 
+    public array $memberOf {
+        get => $this->ldapentry->getValue('memberOf', 'all');
+    }
+
     public string $homeDirectory {
         get => (string)$this->ldapentry->getValue('homeDirectory', 'single');
     }
@@ -586,6 +586,20 @@ class Person
 
     public int $shadowExpire {
         get => (int)$this->ldapentry->getValue('shadowExpire', 'single');
+    }
+
+    public string $expiry {
+        get {
+            $expiry = shadow_expire_to_date($this->shadowExpire);
+            return $expiry->format("d M y");
+        }
+    }
+
+    public string $formattedexpiry {
+        get {
+            $expiry = shadow_expire_to_date($this->shadowExpire);
+            return $expiry->format("l, d F Y");
+        }
     }
 
     public function change_expiry(DateTimeImmutable $date): void
@@ -709,8 +723,6 @@ class Person
                 $this->errors[] = "Invalid email address for forwarding '$forward'";
             }
         }
-
-
     }
 
     public function change_password(string $password): void
@@ -829,64 +841,39 @@ class Person
         $this->reload_ldap();
     }
 
-    private function memberOf_filter(): array
-    {
-        $filtergroups = array('expiredmembers', 'currentmembers', 'overduemembers', 'pendingmembers', 'shell');
-        // Filters memberOf to just give system group names
-        $groups = $this->ldapentry->getValue('memberOf', 'all');
-        $validgroups = array();
-        $allgroups = array();
-        foreach ($groups as $group) {
-            if (strpos($group, 'cn=') !== false) {
-                // This is a group with name, process it
-                $dnparts = explode(',', $group);
-                $cn = explode('=', $dnparts[0]);
-                if (! in_array($cn[1], $filtergroups)) {
-                    $validgroups[] = $cn[1];
+    public array $allgroups {
+        get {
+            $allgroups = array();
+            foreach ($this->memberOf as $group) {
+                if (strpos($group, 'cn=') !== false) {
+                    // This is a group with name, process it
+                    $dnparts = explode(',', $group);
+                    $cn = explode('=', $dnparts[0]);
+                    $allgroups[] = $cn[1];
                 }
-                $allgroups[] = $cn[1];
             }
+            return $allgroups;
         }
-        // Don't store this is userldaparray as it's not a valid attribute
-        return array($validgroups, $allgroups);
     }
 
-    private function is_shell_enabled(): bool
-    {
-        list($validgroups, $allgroups) = $this->memberOf_filter();
-        if (in_array('shell', $allgroups)) {
-            return true;
+    public array $groups {
+        get {
+            $filtergroups = array('expiredmembers', 'currentmembers', 'overduemembers', 'pendingmembers', 'shell');
+            return array_diff($this->allgroups, $filtergroups);
         }
-        return false;
     }
 
-    private function is_membership_current(): bool
-    {
-        list($validgroups, $allgroups) = $this->memberOf_filter();
-        if (in_array('currentmembers', $allgroups)) {
-            return true;
-        }
-        return false;
+    public bool $shellEnabled {
+        get => in_array('shell', $this->allgroups);
+    }
+
+    public bool $membershipCurrent {
+        get => in_array('currentmembers', $this->allgroups);
     }
 
     private function is_membership_overdue(): bool
     {
-        list($validgroups, $allgroups) = $this->memberOf_filter();
-        if (in_array('overduemembers', $allgroups)) {
-            return true;
-        }
-        return false;
-    }
-
-    public function expiry(): array
-    {
-        $expiry_raw = $this->shadowExpire;
-        $expiry = shadow_expire_to_date($expiry_raw);
-        return array(
-            'expiry_raw' => $expiry_raw,
-            'expiry' => $expiry->format("d M y"),
-            'formattedexpiry' => $expiry->format("l, d F Y"),
-        );
+        return in_array('overduemembers', $this->allgroups);
     }
 
     public function set_status_group(): void
@@ -1008,41 +995,6 @@ class Person
     }
 
     /* Display and Get functions */
-
-    public function userarray(): array
-    {
-        list($sysgroups, $allgroups) = $this->memberOf_filter();
-        $userldaparray = array(
-            'uid' => $this->uid,
-            'displayName' => $this->displayName,
-            'uidNumber' => $this->uidNumber,
-            'gidNumber' => $this->gidNumber,
-            'homeDirectory' => $this->homeDirectory,
-            'userPassword' => $this->userPassword,
-            'loginShell' => $this->loginShell,
-            'mail' => $this->mail,
-            'mailForward' => $this->mailForward,
-            'givenName' => $this->givenName,
-            'sn' => $this->sn,
-            'cn' => $this->cn,
-            'street' => $this->street,
-            'homePhone' => $this->homePhone,
-            'mobile' => $this->mobile,
-            'pager' => $this->pager,
-            'description' => $this->description,
-            'shadowExpire' => $this->shadowExpire,
-        );
-        return array_merge(
-            $userldaparray,
-            array( 'groups' => $sysgroups ),
-            array( 'allgroups' => $allgroups ),
-            array( 'shellEnabled' => $this->is_shell_enabled()),
-            array( 'membershipCurrent' => $this->is_membership_current()),
-            $this->expiry(),
-            array( 'payments' => $this->payments)
-        );
-    }
-
     public function send_user_email(string $body, string $subject): bool
     {
         $headers = "Reply-To: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
@@ -1129,7 +1081,6 @@ PLUG Membership Scripts";
 
 
         $payment = $this->payments[$paymentid];
-        $expiry = $this->expiry();
 
         $body = sprintf(
             $body,
@@ -1139,7 +1090,7 @@ PLUG Membership Scripts";
             $payment->years > 1 ? 's' : '',
             $payment->formattedtype,
             $payment->formatteddate,
-            $expiry['formattedexpiry'],
+            $this->formattedexpiry,
             COMMITTEE_EMAIL
         );
 

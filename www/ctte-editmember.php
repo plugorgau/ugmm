@@ -9,7 +9,9 @@ require_once('../lib/PLUG/session.inc.php');
 
 $OrgMembers = new Members($ldap);
 
-if (intval($_GET['id']) < 10000) {
+// Validate $_GET better? intval should clean it to just a number
+$memberid = intval($_GET['id']);
+if ($memberid < 10000) {
     header("Location: ctte-members");
 }
 
@@ -21,7 +23,6 @@ if (isset($_POST['personals_form']) && ! $error) {
     // process form
     // Ignore GET value and use POST value from form
     $memberid = intval($_POST['id']);
-
 
     $member = $OrgMembers->get_member_object($memberid);
     // Validate each item and update memberdetails object
@@ -44,9 +45,6 @@ if (isset($_POST['personals_form']) && ! $error) {
         $success[] = "Member details updated";
         $success = array_merge($success, $member->get_messages());
     }
-
-    $memberdetails = $member->userarray();
-
 }
 
 // Process payment form
@@ -85,8 +83,6 @@ if (isset($_POST['payment_form']) && ! $error) {
             $success = $member->get_messages();
         }
     }
-
-    $memberdetails = $member->userarray();
 }
 
 // Process email forwarding format_ph
@@ -111,9 +107,6 @@ if (isset($_POST['email_form']) && isset($_POST['go_go_button']) && ! $error) {
         $member->update_ldap();
         $success = array_merge($success, $member->get_messages());
     }
-
-    $memberdetails = $member->userarray();
-
 }
 
 // Process shell lock/unlock_form
@@ -209,15 +202,12 @@ if (isset($_POST['password_form']) && isset($_POST['go_go_button']) && ! $error)
 // Delete member
 
 // Finished processing all the forms
-if (!isset($memberdetails)) {
-    // Validate $_GET better? intval should clean it to just a number
-    $memberid = intval($_GET['id']);
+if (!isset($member)) {
     $member = $OrgMembers->get_member_object($memberid);
-    $memberdetails = $member->userarray();
 }
 
 
-$smarty->assign('member', $memberdetails);
+$smarty->assign('member', $member);
 //print_r($memberdetails);
 //print_r($error);
 //print_r($success);
