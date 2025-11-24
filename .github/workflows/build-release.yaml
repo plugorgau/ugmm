@@ -14,7 +14,7 @@ jobs:
         run: |
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y git
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           path: plug-ugmm
           submodules: true
