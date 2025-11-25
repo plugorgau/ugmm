@@ -13,11 +13,6 @@ class Members
 {
     // Class for plug, contains members of type Member/Person
 
-    private ?array $currentmembers = null;
-    private ?array $overduemembers = null;
-    private ?array $expiredmembers = null;
-    private ?array $pendingmembers = null;
-
     private Net_LDAP2 $ldap;
 
     public function __construct(Net_LDAP2 $ldap)
@@ -29,93 +24,54 @@ class Members
     {
         // Fetch entry for group and all member attributes
         $dn = "cn=$group,ou=Groups,".LDAP_BASE;
-        $entry = $this->ldap->getEntry($dn, array('member'));
-
-        if (PEAR::isError($entry)) {
-            throw new Exception('LDAP Error: '.$entry->getMessage());
-        }
-
-        // Load all members
-        $members = $entry->getValue('member', 'all');
-        asort($members);
-
-        $memberdetails = array();
-        foreach ($members as $member) {
-            if ($member == DEFAULT_MEMBER) {
-                continue;
-            }
-
-            $thismember = new Person($this->ldap);
-            $thismember->load_ldap($member);
-            $memberdetails[] = $thismember->userarray();
-
-        }
-
-
-        return $memberdetails;
+        $filter = Net_LDAP2_Filter::create('memberOf', 'equals', $dn);
+        return $this->load_members_from_filter($filter);
     }
 
-    public function load_members_dn_from_filter(string $filter): array
+    public function load_members_from_filter(Net_LDAP2_Filter|string $filter): array
     {
-        $filter = Net_LDAP2_Filter::parse($filter);
+        if (is_string($filter)) {
+            $filter = Net_LDAP2_Filter::parse($filter);
+        }
         $searchbase = "ou=Users,".LDAP_BASE;
         $options = array(
             'scope' => 'sub',
-            'attributes' => array(
-                'dn')
+            'attributes' => Person::_ATTRS,
         );
 
         $search = $this->ldap->search($searchbase, $filter, $options);
-
         if (PEAR::isError($search)) {
             throw new Exception('LDAP Error: '.$search->getMessage());
         }
 
-        $dns = array();
-
+        $members = array();
         while ($entry = $search->popEntry()) {
             if ($entry->dn() == DEFAULT_MEMBER) {
                 continue;
             }
-            $dns[] = $entry->dn();
-
+            $members[] = new Person($this->ldap, $entry);
         }
-
-
-        return $dns;
-
+        return $members;
     }
 
     public function get_current_members(): array
     {
-        if ($this->currentmembers === null) {
-            $this->currentmembers = $this->load_ldapmembers_from_group('currentmembers');
-        }
-        return $this->currentmembers;
+        return $this->load_ldapmembers_from_group('currentmembers');
     }
 
     public function get_overdue_members(): array
     {
-        if ($this->overduemembers === null) {
-            $this->overduemembers = $this->load_ldapmembers_from_group('overduemembers');
-        }
-        return $this->overduemembers;
+        return $this->load_ldapmembers_from_group('overduemembers');
     }
 
     public function get_expired_members(): array
     {
-        if ($this->expiredmembers === null) {
-            $this->expiredmembers = $this->load_ldapmembers_from_group('expiredmembers');
-        }
-        return $this->expiredmembers;
+        return $this->load_ldapmembers_from_group('expiredmembers');
     }
 
     public function get_pending_members(): array
     {
-        if ($this->pendingmembers === null) {
-            $this->pendingmembers = $this->load_ldapmembers_from_group('pendingmembers');
-        }
-        return $this->pendingmembers;
+        return $this->load_ldapmembers_from_group('pendingmembers');
     }
 
     public function get_member_object(int $uidNumber): Person
@@ -123,8 +79,7 @@ class Members
         $uidNumber = intval($uidNumber); // Sanitise
         $dn = "uidNumber=$uidNumber,ou=Users,".LDAP_BASE;
         if ($this->ldap->dnExists($dn)) {
-            $thismember = new Person($this->ldap);
-            $thismember->load_ldap($dn);
+            $thismember = Person::load($this->ldap, $dn);
             return $thismember;
         }
         return PEAR::raiseError(
@@ -140,8 +95,7 @@ class Members
         $searchbase = "ou=Users,".LDAP_BASE;
         $options = array(
             'scope' => 'one',
-            'attributes' => array(
-                'uidNumber')
+            'attributes' => Person::_ATTRS
         );
 
         $search = $this->ldap->search($searchbase, $filter, $options);
@@ -157,21 +111,8 @@ class Members
         }
 
         $entry = $search->shiftEntry();
-
-        return $this->get_member_object(intval($entry->getValue('uidNumber', 'single')));
-
+        return new Person($this->ldap, $entry);
     }
-
-
-    /*    function get_member($uidNumber)
-          {
-          $uidNumber = intval($uidNumber); // Sanitise
-          $dn = "uidNumber=$uidNumber,ou=Users,dc=plug,dc=org,dc=au";
-          $thismember = new Person($this->ldap);
-          $thismember->load_ldap($dn);
-          return $thismember->userarray();
-          }*/
-
 
     public function check_username_available(string $username): int
     {
@@ -245,38 +186,10 @@ class Members
         return true;
     }
 
-    /*function next_paymentID()
-      {
-      $dn = "cn=maxUid,ou=Users,dc=plug,dc=org,dc=au";
-      // Get next paymentID from maxUid
-
-      $entry = $this->ldap->getEntry($dn, array('x-plug-paymentID'));
-
-      if (PEAR::isError($entry)) {
-      throw new Exception('LDAP Error: '.$entry->getMessage());
-      }
-
-      $paymentID = $entry->getValue('x-plug-paymentID');
-
-      // Increment maxUid
-      $entry->replace(array(
-      'x-plug-paymentID' => $paymentID + 1));
-
-      $result = $entry->update();
-
-      if (PEAR::isError($result)) {
-      throw new Exception('LDAP Error: '.$result->getMessage());
-      }
-
-      return $paymentID;
-
-      }*/
-
     public function new_member(string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $password, string $notes): Person
     {
-        $newmember = new Person($this->ldap);
         $pendingID = isset($_SESSION['pendingID']) ? $this->next_freeuidNumber($_SESSION['pendingID']) : $this->next_uidNumber();
-        $newmember->create_person($pendingID, $username, $firstname, $lastname, $address, $home, $work, $mobile, $email, '', $password, $notes);
+        $newmember = Person::create($this->ldap, $pendingID, $username, $firstname, $lastname, $address, $home, $work, $mobile, $email, '', $password, $notes);
         if ($newmember->is_error()) {
             $_SESSION['pendingID'] = $pendingID;
         } else {
@@ -298,14 +211,20 @@ class Payment
 {
     private readonly Net_LDAP2_Entry $entry;
 
-    private const _DEFAULTS = array(
-        'objectClass' => array('top', 'x-plug-payment'),
-        'x-plug-paymentAmount' => 0,
-        'x-plug-paymentDate' => '',
-        'x-plug-paymentID' => '',
-        'x-plug-paymentType' => FULL_TYPE,
-        'x-plug-paymentDescription' => '',
-        'x-plug-paymentYears' => 0);
+    private const attrPaymentAmount = 'x-plug-paymentAmount';
+    private const attrPaymentDate = 'x-plug-paymentDate';
+    private const attrPaymentID = 'x-plug-paymentID';
+    private const attrPaymentType = 'x-plug-paymentType';
+    private const attrPaymentDescription = 'x-plug-paymentDescription';
+    private const attrPaymentYears = 'x-plug-paymentYears';
+    private const _ATTRS = array(
+        self::attrPaymentAmount,
+        self::attrPaymentDate,
+        self::attrPaymentID,
+        self::attrPaymentType,
+        self::attrPaymentDescription,
+        self::attrPaymentYears,
+    );
 
     public function __construct(Net_LDAP2_Entry $entry)
     {
@@ -357,7 +276,7 @@ class Payment
 
     public static function load_ldap(Net_LDAP2 $ldap, string $dn): Payment
     {
-        $ldapentry = $ldap->getEntry($dn, array_keys(self::_DEFAULTS));
+        $ldapentry = $ldap->getEntry($dn, self::_ATTRS);
         if (PEAR::isError($ldapentry)) {
             throw new Exception('LDAP Error: '.$ldapentry->getMessage());
         }
@@ -370,7 +289,7 @@ class Payment
         $filter = Net_LDAP2_Filter::create('objectClass', 'equals', 'x-plug-payment');
         $options = array(
             'scope' => 'sub',
-            'attributes' => array_keys(self::_DEFAULTS),
+            'attributes' => self::_ATTRS,
         );
 
         $search = $ldap->search($parentdn, $filter, $options);
@@ -397,24 +316,26 @@ class Payment
         if (! $id) {
             $id = self::next_paymentID($ldap);
         }
-
-        $dn = "x-plug-paymentID=$id,$parentdn";
-        $attrs = self::_DEFAULTS;
-        $attrs['x-plug-paymentYears'] = $years;
-        $attrs['x-plug-paymentDate'] = $date->format('YmdHisO');
-        $attrs['x-plug-paymentID'] = $id;
-        $attrs['x-plug-paymentType'] = $type;
-        $attrs['x-plug-paymentDescription'] = $description;
         if ($type == CONCESSION_TYPE) {
             // Concession
-            $attrs['x-plug-paymentAmount'] = $years * CONCESSION_AMOUNT * $payment_modifier_amount;
+            $amount = $years * CONCESSION_AMOUNT * $payment_modifier_amount;
         } else {
             // Assume full
-            $attrs['x-plug-paymentAmount'] = $years * FULL_AMOUNT * $payment_modifier_amount;
+            $amount = $years * FULL_AMOUNT * $payment_modifier_amount;
         }
 
-        // TODO: Check if exists first
-        $entry = Net_LDAP2_Entry::createFresh($dn, array_filter($attrs));
+        $dn = self::attrPaymentID."=$id,$parentdn";
+        $entry = Net_LDAP2_Entry::createFresh($dn, array(
+            'objectClass' => array('top', 'x-plug-payment'),
+        ));
+        $entry->replace(array(
+            self::attrPaymentID => $id,
+            self::attrPaymentType => $type,
+            self::attrPaymentYears => $years,
+            self::attrPaymentDate => $date->format('YmdHisO'),
+            self::attrPaymentAmount => $amount,
+            self::attrPaymentDescription => $description,
+        ));
         $ldapres = $ldap->add($entry);
         if (PEAR::isError($ldapres)) {
             throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
@@ -428,18 +349,18 @@ class Payment
         $dn = "cn=maxUid,ou=Users,".LDAP_BASE;
         // Get next paymentID from maxUid
 
-        $entry = $ldap->getEntry($dn, array('x-plug-paymentID'));
+        $entry = $ldap->getEntry($dn, array(self::attrPaymentID));
 
         if (PEAR::isError($entry)) {
             throw new Exception('LDAP Error: '.$entry->getMessage());
         }
 
-        $paymentID = $entry->getValue('x-plug-paymentID');
+        $paymentID = $entry->getValue(self::attrPaymentID);
 
         // Search and ensure not already exists
         $filter2 = Net_LDAP2_Filter::combine('not', Net_LDAP2_Filter::create('cn', 'equals', 'maxUid'));
         do {
-            $filter1 = Net_LDAP2_Filter::create('x-plug-paymentID', 'equals', $paymentID);
+            $filter1 = Net_LDAP2_Filter::create(self::attrPaymentID, 'equals', $paymentID);
             $filter = Net_LDAP2_Filter::combine('and', array($filter1, $filter2));
             $searchbase = "ou=Users,".LDAP_BASE;
             $options = array(
@@ -461,7 +382,7 @@ class Payment
 
         // Increment maxUid
         $entry->replace(array(
-            'x-plug-paymentID' => $paymentID));
+            self::attrPaymentID => $paymentID));
 
         $result = $entry->update();
 
@@ -477,108 +398,120 @@ class Payment
 
 class Person
 {
-    private string $dn;
-    /*    private $uid;
-          private $displayName;
-          private $uidNumber;
-          private $gidNumber;
-          private $homeDirectory;
-          private $userPassword;
-          private $loginShell;
-          private $mail = array();
-          private $givenName;
-          private $sn;
-          private $cn;
-          private $street;
-          private $homeTelephoneNumber;
-          private $mobileTelephoneNumber;
-          private $pagerTelephoneNumber;
-          private $description;
-
-          private $objectClass = array('top',  'person', 'posixAccount', 'inetOrgPerson');*/
-
-    private array $userldaparray;
-    private array $userorigldaparray;
-    private Net_LDAP2_Entry|PEAR_Error $ldapentry;
-
-    private ?array $_payments = null;
-
     private Net_LDAP2 $ldap;
+    private Net_LDAP2_Entry $ldapentry;
 
     private array $errors = array();
     private array $messages = array();
     private bool $errorstate = false;
     private array $passworderrors = array();
 
-    private const _DEFAULTS = array(
-        'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount'),
-        'uid' => '',
-        'displayName' => '',
-        'uidNumber' => '',
-        'gidNumber' => '',
-        'homeDirectory' => '',
-        'userPassword' => '',
-        'loginShell' => '',
-        'mail' => '',
-        'mailForward' => '',
-        'givenName' => '',
-        'sn' => '',
-        'cn' => '',
-        'street' => '',
-        'homePhone' => '',
-        'mobile' => '',
-        'pager' => '',
-        'description' => '',
-        'shadowExpire' => '1', // Start all users off as expired
-        'memberOf' => array(),
-        'createTimestamp' => '',
-        'modifyTimestamp' => '',
+    private const attrUid = 'uid';
+    private const attrDisplayName = 'displayName';
+    private const attrUidNumber = 'uidNumber';
+    private const attrGidNumber = 'gidNumber';
+    private const attrHomeDirectory = 'homeDirectory';
+    private const attrUserPassword = 'userPassword';
+    private const attrLoginShell = 'loginShell';
+    private const attrMail = 'mail';
+    private const attrMailForward = 'mailForward';
+    private const attrGivenName = 'givenName';
+    private const attrSn = 'sn';
+    private const attrCn = 'cn';
+    private const attrStreet = 'street';
+    private const attrHomePhone = 'homePhone';
+    private const attrMobile = 'mobile';
+    private const attrPager = 'pager';
+    private const attrDescription = 'description';
+    private const attrShadowExpire = 'shadowExpire';
+    private const attrMemberOf = 'memberOf';
+    private const attrCreateTimestamp = 'createTimestamp';
+    private const attrModifyTimestamp = 'modifyTimestamp';
+
+    public const _ATTRS = array(
+        self::attrUid,
+        self::attrDisplayName,
+        self::attrUidNumber,
+        self::attrGidNumber,
+        self::attrHomeDirectory,
+        self::attrUserPassword,
+        self::attrLoginShell,
+        self::attrMail,
+        self::attrMailForward,
+        self::attrGivenName,
+        self::attrSn,
+        self::attrCn,
+        self::attrStreet,
+        self::attrHomePhone,
+        self::attrMobile,
+        self::attrPager,
+        self::attrDescription,
+        self::attrShadowExpire,
+        self::attrMemberOf,
+        self::attrCreateTimestamp,
+        self::attrModifyTimestamp,
     );
 
-    public function __construct(Net_LDAP2 $ldap)
+    public function __construct(Net_LDAP2 $ldap, Net_LDAP2_Entry $ldapentry)
     {
         $this->ldap = $ldap;
-
-        $this->userldaparray = self::_DEFAULTS;
+        $this->ldapentry = $ldapentry;
     }
 
-    public function load_ldap(string $dn): void
+    private function reload_ldap(): void
     {
-        $this->dn = $dn;
-        $this->ldapentry = $this->ldap->getEntry($dn, array_keys(self::_DEFAULTS));
-        if (PEAR::isError($this->ldapentry)) {
-            throw new Exception('LDAP Error: load_ldap: '.$this->ldapentry->getMessage());
+        $ldapentry = $this->ldap->getEntry($this->dn, self::_ATTRS);
+        if (PEAR::isError($ldapentry)) {
+            throw new Exception('LDAP Error: reload_ldap: '.$ldapentry->getMessage());
         }
 
-        $this->userldaparray = array_merge(self::_DEFAULTS, $this->ldapentry->getValues());
-        $this->userorigldaparray = $this->userldaparray;
-        //$this->explode_user_ldap_array();
+        $this->ldapentry = $ldapentry;
     }
 
-    public function create_person(string $uid, string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $forward, string $password, string $notes): void
+    public static function load(Net_LDAP2 $ldap, string $dn): self
     {
-        $this->dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
-        $this->change_uid($uid, $uid);
-        $this->change_username($username);
-        $this->change_name($firstname, $lastname);
-        $this->change_address($address);
-        $this->change_phone($home, $work, $mobile);
-        $this->change_shell("/bin/bash");
-        $this->change_homedir("/home/$username");
-        $this->change_email($email);
-        $this->change_forward($forward);
-        $this->change_password($password);
-        $this->change_description($notes);
-        if (! $this->is_error()) {
-            $this->create_new_ldap_person();
-            $this->create_new_ldap_group();
+        $ldapentry = $ldap->getEntry($dn, self::_ATTRS);
+        if (PEAR::isError($ldapentry)) {
+            throw new Exception('LDAP Error: Person::load: '.$ldapentry->getMessage());
+        }
+
+        return new self($ldap, $ldapentry);
+    }
+
+    public static function create(Net_LDAP2 $ldap, string $uid, string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $forward, string $password, string $notes): self
+    {
+        $dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
+        $entry = Net_LDAP2_Entry::createFresh($dn, array(
+            'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount'),
+            self::attrShadowExpire => '1', // Start all users off as expired
+        ));
+        $person = new self($ldap, $entry);
+        $person->change_uid($uid, $uid);
+        $person->change_username($username);
+        $person->change_name($firstname, $lastname);
+        $person->change_address($address);
+        $person->change_phone($home, $work, $mobile);
+        $person->change_shell("/bin/bash");
+        $person->change_homedir("/home/$username");
+        $person->change_email($email);
+        $person->change_forward($forward);
+        $person->change_password($password);
+        $person->change_description($notes);
+        if (! $person->is_error()) {
+            $ldapres = $person->ldap->add($person->ldapentry);
+            if (PEAR::isError($ldapres)) {
+                throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
+            }
+            // Overwrite other messages in messages array
+            $person->messages = array("New member created with id " . $person->uidNumber);
+
+            $person->create_new_ldap_group();
             // Extra call, but allows us to continue working with a new object.
-            $this->load_ldap($this->dn);
+            $person->reload_ldap();
 
-            $this->set_status_group();
-
+            $person->set_status_group();
         }
-
+        return $person;
     }
 
     public function is_error(): bool
@@ -602,9 +535,105 @@ class Person
         return $this->messages;
     }
 
+    public string $dn {
+        get => $this->ldapentry->dn();
+    }
+
+    public string $uid {
+        get => (string)$this->ldapentry->getValue(self::attrUid, 'single');
+    }
+
+    public string $displayName {
+        get => (string)$this->ldapentry->getValue(self::attrDisplayName, 'single');
+    }
+
+    public int $uidNumber {
+        get => (int)$this->ldapentry->getValue(self::attrUidNumber, 'single');
+    }
+
+    public int $gidNumber {
+        get => (int)$this->ldapentry->getValue(self::attrGidNumber, 'single');
+    }
+
+    public array $memberOf {
+        get => $this->ldapentry->getValue(self::attrMemberOf, 'all');
+    }
+
+    public string $homeDirectory {
+        get => (string)$this->ldapentry->getValue(self::attrHomeDirectory, 'single');
+    }
+
+    public string $userPassword {
+        get => (string)$this->ldapentry->getValue(self::attrUserPassword, 'single');
+    }
+
+    public string $loginShell {
+        get => (string)$this->ldapentry->getValue(self::attrLoginShell, 'single');
+    }
+
+    public string $mail {
+        get => (string)$this->ldapentry->getValue(self::attrMail, 'single');
+    }
+
+    public string $mailForward {
+        get => (string)$this->ldapentry->getValue(self::attrMailForward, 'single');
+    }
+
+    public string $givenName {
+        get => (string)$this->ldapentry->getValue(self::attrGivenName, 'single');
+    }
+
+    public string $sn {
+        get => (string)$this->ldapentry->getValue(self::attrSn, 'single');
+    }
+
+    public string $cn {
+        get => (string)$this->ldapentry->getValue(self::attrCn, 'single');
+    }
+
+    public string $street {
+        get => (string)$this->ldapentry->getValue(self::attrStreet, 'single');
+    }
+
+    public string $homePhone {
+        get => (string)$this->ldapentry->getValue(self::attrHomePhone, 'single');
+    }
+
+    public string $mobile {
+        get => (string)$this->ldapentry->getValue(self::attrMobile, 'single');
+    }
+
+    public string $pager {
+        get => (string)$this->ldapentry->getValue(self::attrPager, 'single');
+    }
+
+    public string $description {
+        get => (string)$this->ldapentry->getValue(self::attrDescription, 'single');
+    }
+
+    public int $shadowExpire {
+        get => (int)$this->ldapentry->getValue(self::attrShadowExpire, 'single');
+    }
+
+    public string $expiry {
+        get {
+            $expiry = shadow_expire_to_date($this->shadowExpire);
+            return $expiry->format("d M y");
+        }
+    }
+
+    public string $formattedexpiry {
+        get {
+            $expiry = shadow_expire_to_date($this->shadowExpire);
+            return $expiry->format("l, d F Y");
+        }
+    }
+
     public function change_expiry(DateTimeImmutable $date): void
     {
-        $this->userldaparray['shadowExpire'] = date_to_shadow_expire($date);
+        $this->ldapentry->replace(array(
+            self::attrShadowExpire => date_to_shadow_expire($date),
+        ));
     }
 
     public function change_name(string $firstname, string $lastname): void
@@ -613,13 +642,13 @@ class Person
             $this->errors[] = "Firstname is required";
         }
         $lastname = $lastname ? $lastname : "_";
-        if ($firstname != $this->userldaparray['givenName'] ||
-           $lastname != $this->userldaparray['sn']) {
-            $this->userldaparray['sn'] = $lastname;
-            $this->userldaparray['givenName'] = $firstname;
-            $this->userldaparray['displayName'] = "$firstname $lastname";
-            $this->userldaparray['cn'] = "$firstname $lastname";
-
+        if ($firstname != $this->givenName || $lastname != $this->sn) {
+            $this->ldapentry->replace(array(
+                self::attrSn => $lastname,
+                self::attrGivenName => $firstname,
+                self::attrDisplayName => "$firstname $lastname",
+                self::attrCn => "$firstname $lastname",
+            ));
             $this->messages[] = "Name changed";
         }
 
@@ -630,22 +659,25 @@ class Person
         if ($address == '') {
             $this->errors[] = "Address is required";
         }
-        if ($address != $this->userldaparray['street']) {
-            $this->userldaparray['street'] = $address;
-
+        if ($address != $this->street) {
+            $this->ldapentry->replace(array(
+                self::attrStreet => $address,
+            ));
             $this->messages[] = "Address changed";
         }
     }
 
     public function change_username(string $username): void
     {
-        if ($this->userldaparray['uid'] == '' || $username != $this->userldaparray['uid']) {
+        if ($this->uid == '' || $username != $this->uid) {
             if ($username == '') {
                 $this->errors[] = "Username required";
             } elseif (strlen($username) < 3 && ! FORCE) {
                 $this->errors[] = "Username must be at least 3 characters long";
             } elseif ($this->check_username_available($username)) {
-                $this->userldaparray['uid'] = $username;
+                $this->ldapentry->replace(array(
+                    self::attrUid => $username,
+                ));
                 $this->messages[] = "Username changed";
             } else {
                 $this->errors[] = "Username not available";
@@ -658,23 +690,29 @@ class Person
         if ($uid < 10000 || $gid < 10000 || $uid == '' || $gid == '') {
             $this->errors[] = "UID or GID out of Range";
         } else {
-            $this->userldaparray['uidNumber'] = $uid;
-            $this->userldaparray['gidNumber'] = $gid;
+            $this->ldapentry->replace(array(
+                self::attrUidNumber => $uid,
+                self::attrGidNumber => $gid,
+            ));
         }
     }
 
     public function change_shell(string $loginShell): void
     {
-        if ($loginShell != $this->userldaparray['loginShell']) {
-            $this->userldaparray['loginShell'] = $loginShell;
+        if ($loginShell != $this->loginShell) {
+            $this->ldapentry->replace(array(
+                self::attrLoginShell => $loginShell,
+            ));
             $this->messages[] = "Shell details changed";
         }
     }
 
     private function change_homedir(string $homedir): void
     {
-        if ($homedir != $this->userldaparray['homeDirectory']) {
-            $this->userldaparray['homeDirectory'] = $homedir;
+        if ($homedir != $this->homeDirectory) {
+            $this->ldapentry->replace(array(
+                self::attrHomeDirectory => $homedir,
+            ));
             $this->messages[] = "Home directory changed";
         }
 
@@ -685,12 +723,14 @@ class Person
         if ($email == '' && ! FORCE) {
             $this->errors[] = 'Email address required';
         }
-        if ($email != $this->userldaparray['mail']) {
+        if ($email != $this->mail) {
             if ($this->check_email_available($email) != 0 && ! FORCE) {
                 // Check that email isn't already registered
                 $this->errors[] = "Email address($email) is already registered. Please use another email address for password recovery purposes";
             } elseif (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-                $this->userldaparray['mail'] = $email;
+                $this->ldapentry->replace(array(
+                    self::attrMail => $email,
+                ));
                 $this->messages[] = "Email changed";
             } else {
                 $this->errors[] = "Invalid email address '$email'";
@@ -700,21 +740,16 @@ class Person
 
     public function change_forward(string $forward): void
     {
-        if (isset($this->userldaparray['mailForward'])) {
-            $existing_mailForward = $this->userldaparray['mailForward'];
-        } else {
-            $existing_mailForward = "";
-        }
-        if ($forward != $existing_mailForward) {
+        if ($forward != $this->mailForward) {
             if ($forward == "" || filter_var($forward, FILTER_VALIDATE_EMAIL)) {
-                $this->userldaparray['mailForward'] = $forward;
+                $this->ldapentry->replace(array(
+                    self::attrMailForward => $forward,
+                ));
                 $this->messages[] = "Email forwarding changed";
             } else {
                 $this->errors[] = "Invalid email address for forwarding '$forward'";
             }
         }
-
-
     }
 
     public function change_password(string $password): void
@@ -722,9 +757,13 @@ class Person
         // Can't check if password hasn't changed, so always do this
         // Check if we are passing an already crypted password
         if (substr($password, 0, 7) == '{crypt}') {
-            $this->userldaparray['userPassword'] = $password;
+            $this->ldapentry->replace(array(
+                self::attrUserPassword => $password,
+            ));
         } else {
-            $this->userldaparray['userPassword'] = '{crypt}'.createPasswordHash($password);
+            $this->ldapentry->replace(array(
+                self::attrUserPassword => '{crypt}'.createPasswordHash($password),
+            ));
         }
         $this->messages[] = "Password changed";
 
@@ -734,14 +773,18 @@ class Person
 
     public function change_phone(string $home, string $work, string $mobile): void
     {
-        $this->userldaparray['homePhone'] = $home;
-        $this->userldaparray['mobile'] = $mobile;
-        $this->userldaparray['pager'] = $work;
+        $this->ldapentry->replace(array(
+            self::attrHomePhone => $home,
+            self::attrMobile => $mobile,
+            self::attrPager => $work,
+        ));
     }
 
     public function change_description(string $description): void
     {
-        $this->userldaparray['description'] = $description;
+        $this->ldapentry->replace(array(
+            self::attrDescription => $description,
+        ));
     }
 
     public function disable_shell(): bool
@@ -754,70 +797,12 @@ class Person
         return $this->add_to_group('shell');
     }
 
-    private function create_user_ldap_array()
-    {
-        /*        $this->userldaparray['objectClass'] = $this->objectClass;
-                  $this->userldaparray['uid'] = $this->uid;
-                  $this->userldaparray['displayName'] = $this->displayName;
-                  $this->userldaparray['uidNumber'] = $this->uidNumber;
-                  $this->userldaparray['gidNumber'] = $this->gidNumber;
-                  $this->userldaparray['homeDirectory'] = $this->homeDirectory;
-                  $this->userldaparray['userPassword'] = $this->userPassword;
-                  $this->userldaparray['loginShell'] = $this->loginShell;
-                  $this->userldaparray['mail'] = $this->mail;
-                  $this->userldaparray['givenName'] = $this->givenName;
-                  $this->userldaparray['sn'] = $this->sn;
-                  $this->userldaparray['cn'] = $this->cn;
-                  $this->userldaparray['street'] = $this->street;
-                  $this->userldaparray['homeTelephoneNumber'] = $this->homeTelephoneNumber;
-                  $this->userldaparray['mobileTelephoneNumber'] = $this->mobileTelephoneNumber;
-                  $this->userldaparray['pagerTelephoneNumber'] = $this->pagerTelephoneNumber;
-                  $this->userldaparray['description'] = $this->description;*/
-
-        //$this->userldaparray = array_filter($this->userldaparray);
-    }
-
-    private function explode_user_ldap_array()
-    {
-        /*        $this->objectClass = $this->userldaparray['objectClass'];
-                  $this->uid = $this->userldaparray['uid'];
-                  $this->displayName = $this->userldaparray['displayName'];
-                  $this->uidNumber = $this->userldaparray['uidNumber'];
-                  $this->gidNumber = $this->userldaparray['gidNumber'];
-                  $this->homeDirectory = $this->userldaparray['homeDirectory'];
-                  $this->userPassword = $this->userldaparray['userPassword'];
-                  $this->loginShell = $this->userldaparray['loginShell'];
-                  $this->mail = $this->userldaparray['mail'];
-                  $this->givenName = $this->userldaparray['givenName'];
-                  $this->sn = $this->userldaparray['sn'];
-                  $this->cn = $this->userldaparray['cn'];
-                  $this->street = $this->userldaparray['street'];
-                  $this->homeTelephoneNumber = $this->userldaparray['homeTelephoneNumber'];
-                  $this->mobileTelephoneNumber = $this->userldaparray['mobileTelephoneNumber'];
-                  $this->pagerTelephoneNumber = $this->userldaparray['pagerTelephoneNumber'];
-                  $this->description = $this->userldaparray['description'];*/
-    }
-
-    private function create_new_ldap_person(): bool
-    {
-        // TODO: Check if exists first
-        $entry = Net_LDAP2_Entry::createFresh($this->dn, array_filter($this->userldaparray));
-        $ldapres = $this->ldap->add($entry);
-        if (PEAR::isError($ldapres)) {
-            throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
-        }
-        // Overwrite other messages in messages array
-        $this->messages = array("New member created with id " . $this->userldaparray['uidNumber']);
-        // Also create group
-        return true;
-    }
-
     private function create_new_ldap_group(): void
     {
-        $gid = $this->userldaparray['gidNumber'];
+        $gid = $this->gidNumber;
         $group = array(
             'gidNumber' => $gid,
-            'cn' => $this->userldaparray['uid'],
+            'cn' => $this->uid,
             'member' => $this->dn,
             'objectClass' => array('groupOfNames', 'posixGroup')
         );
@@ -873,21 +858,6 @@ class Person
 
     public function update_ldap(): void
     {
-        //$this->create_user_ldap_array();
-        /*print_r(@array_diff_assoc(
-          $this->userldaparray,
-          $this->userorigldaparray
-          ));*/
-
-        // Nested arrays aren't supported by array_diff_assoc(), so ignore
-        // warnings that arise from array members such as 'objectClass', 'memberOf', etc.
-        //# $userldap = prune_array($this->userldaparray);
-        $this->ldapentry->replace(
-            @array_diff_assoc(
-                $this->userldaparray,
-                $this->userorigldaparray
-            )
-        );
         $result = $this->ldapentry->update();
 
         if (PEAR::isError($result)) {
@@ -895,70 +865,42 @@ class Person
         }
 
         // Extra call, but allows us to continue working with a new object.
-        $this->load_ldap($this->dn);
+        $this->reload_ldap();
     }
 
-    private function memberOf_filter(): array
-    {
-        $filtergroups = array('expiredmembers', 'currentmembers', 'overduemembers', 'pendingmembers', 'shell');
-        // Filters memberOf to just give system group names
-        $groups = $this->userldaparray['memberOf'];
-        if (!is_array($groups)) {
-            $groups = array($groups);
-        }
-        $validgroups = array();
-        $allgroups = array();
-        foreach ($groups as $group) {
-            if (strpos($group, 'cn=') !== false) {
-                // This is a group with name, process it
-                $dnparts = explode(',', $group);
-                $cn = explode('=', $dnparts[0]);
-                if (! in_array($cn[1], $filtergroups)) {
-                    $validgroups[] = $cn[1];
+    public array $allgroups {
+        get {
+            $allgroups = array();
+            foreach ($this->memberOf as $group) {
+                if (strpos($group, 'cn=') !== false) {
+                    // This is a group with name, process it
+                    $dnparts = explode(',', $group);
+                    $cn = explode('=', $dnparts[0]);
+                    $allgroups[] = $cn[1];
                 }
-                $allgroups[] = $cn[1];
             }
+            return $allgroups;
         }
-        // Don't store this is userldaparray as it's not a valid attribute
-        return array($validgroups, $allgroups);
     }
 
-    private function is_shell_enabled(): bool
-    {
-        list($validgroups, $allgroups) = $this->memberOf_filter();
-        if (in_array('shell', $allgroups)) {
-            return true;
+    public array $groups {
+        get {
+            $filtergroups = array('expiredmembers', 'currentmembers', 'overduemembers', 'pendingmembers', 'shell');
+            return array_diff($this->allgroups, $filtergroups);
         }
-        return false;
     }
 
-    private function is_membership_current(): bool
-    {
-        list($validgroups, $allgroups) = $this->memberOf_filter();
-        if (in_array('currentmembers', $allgroups)) {
-            return true;
-        }
-        return false;
+    public bool $shellEnabled {
+        get => in_array('shell', $this->allgroups);
+    }
+
+    public bool $membershipCurrent {
+        get => in_array('currentmembers', $this->allgroups);
     }
 
     private function is_membership_overdue(): bool
     {
-        list($validgroups, $allgroups) = $this->memberOf_filter();
-        if (in_array('overduemembers', $allgroups)) {
-            return true;
-        }
-        return false;
-    }
-
-    public function expiry(): array
-    {
-        $expiry_raw = (int)$this->userldaparray['shadowExpire'];
-        $expiry = shadow_expire_to_date($expiry_raw);
-        return array(
-            'expiry_raw' => $expiry_raw,
-            'expiry' => $expiry->format("d M y"),
-            'formattedexpiry' => $expiry->format("l, d F Y"),
-        );
+        return in_array('overduemembers', $this->allgroups);
     }
 
     public function set_status_group(): void
@@ -969,7 +911,7 @@ class Person
         $groups = array('pendingmembers', 'expiredmembers', 'overduemembers', 'currentmembers');
 
         // Grace period of 3 months
-        $expiry_raw = (int)$this->userldaparray['shadowExpire'];
+        $expiry_raw = $this->shadowExpire;
         $expiry = shadow_expire_to_date($expiry_raw);
         $today = new DateTimeImmutable();
         $grace = $today->sub(new DateInterval(GRACE_PERIOD));
@@ -1000,8 +942,7 @@ class Person
     public function add_to_group(string $group): bool
     {
         $groupdn = "cn=$group,ou=Groups,".LDAP_BASE;
-        $groups = is_array(@$this->userldaparray['memberOf']) ? @$this->userldaparray['memberOf'] : array(@$this->userldaparray['memberOf']);
-        if (!in_array($groupdn, $groups)) {
+        if (!in_array($groupdn, $this->memberOf)) {
             //echo "Adding to group $groupdn";
             //print_r($this->userldaparray['memberOf']);
             // Fetch entry for group and all member attributes
@@ -1044,9 +985,7 @@ class Person
     public function remove_from_group(string $group): bool
     {
         $groupdn = "cn=$group,ou=Groups,".LDAP_BASE;
-        $groups = is_array(@$this->userldaparray['memberOf']) ? @$this->userldaparray['memberOf'] : array(@$this->userldaparray['memberOf']);
-
-        if (in_array($groupdn, $groups)) {
+        if (in_array($groupdn, $this->memberOf)) {
             // Fetch entry for group and all member attributes
             $entry = $this->ldap->getEntry($groupdn, array('member'));
 
@@ -1080,39 +1019,6 @@ class Person
     }
 
     /* Display and Get functions */
-
-    public function print_ldif(): void
-    {
-        echo "<p><h3>".$this->dn."</h3>\n";
-
-        foreach ($this->userldaparray as $attribute => $value) {
-
-            if (is_array($value)) {
-                foreach ($value as $val) {
-                    echo "$attribute: $val<br/>\n";
-                }
-            } else {
-                echo "$attribute: $value<br/>\n";
-            }
-        }
-
-        echo "</p>\n";
-    }
-
-    public function userarray(): array
-    {
-        list($sysgroups, $allgroups) = $this->memberOf_filter();
-        return array_merge(
-            $this->userldaparray,
-            array( 'groups' => $sysgroups ),
-            array( 'allgroups' => $allgroups ),
-            array( 'shellEnabled' => $this->is_shell_enabled()),
-            array( 'membershipCurrent' => $this->is_membership_current()),
-            $this->expiry(),
-            array( 'payments' => $this->payments)
-        );
-    }
-
     public function send_user_email(string $body, string $subject): bool
     {
         $headers = "Reply-To: ".SCRIPTS_REPLYTO_EMAIL."\r\n";
@@ -1121,7 +1027,7 @@ class Person
         $headers .= "Bcc: ".ADMIN_EMAIL."\r\n";
         $headers .= "Content-type: text/plain; charset=iso-8859-1\r\n";
 
-        if (mail($this->userldaparray['mail'], $subject, $body, $headers)) {
+        if (mail($this->mail, $subject, $body, $headers)) {
             $this->messages[] = "Email sent ($subject)";
             return true;
         }
@@ -1130,31 +1036,18 @@ class Person
         return false;
     }
 
-    private function load_payments(): void
-    {
-        if ($this->_payments === null && !$this->is_error()) {
-            $this->_payments = Payment::load_for($this->ldap, $this->dn);
-        }
-    }
-
     public array $payments {
-        get {
-            $this->load_payments();
-            return $this->_payments ? $this->_payments : array();
-        }
+        get => Payment::load_for($this->ldap, $this->dn);
     }
 
     public function makePayment(int $type, int $years, DateTimeImmutable $date, string $description, bool $ack, int|bool $id = false): int
     {
-        $this->load_payments();
         $payment = Payment::create($this->ldap, $this->dn, $type, $years, $date, $description, $id);
-        $this->_payments[$payment->id] = $payment;
-        krsort($this->_payments);
 
         // If the payment date is before the expiry date, increase the expiry date.
         // If the payment date is after the expiry date, set the expiry date to the payment date + x years.
 
-        $expiry = shadow_expire_to_date((int)$this->userldaparray['shadowExpire']);
+        $expiry = shadow_expire_to_date($this->shadowExpire);
         $period = new DateInterval('P'.$years.'Y');
         if ($expiry->add(new DateInterval(GRACE_PERIOD)) > $date) {
             // Account is current, or within the overdue grace period:
@@ -1199,17 +1092,16 @@ PLUG Membership Scripts";
 
 
         $payment = $this->payments[$paymentid];
-        $expiry = $this->expiry();
 
         $body = sprintf(
             $body,
-            $this->userldaparray['displayName'],
+            $this->displayName,
             $payment->formattedamount,
             $payment->years,
             $payment->years > 1 ? 's' : '',
             $payment->formattedtype,
             $payment->formatteddate,
-            $expiry['formattedexpiry'],
+            $this->formattedexpiry,
             COMMITTEE_EMAIL
         );
 
@@ -1222,7 +1114,7 @@ PLUG Membership Scripts";
 
         $subject = "PLUG Payment confirmation ".$paymentid;
 
-        if (mail($this->userldaparray['mail'], $subject, $body, $headers)) {
+        if (mail($this->mail, $subject, $body, $headers)) {
             $this->messages[] = "Payment confirmation sent";
             return true;
         }
@@ -1238,7 +1130,7 @@ PLUG Membership Scripts";
     {
         // Derived from WP nonce code
         $tick = ceil(time() / 21600) - $tick; // To check we check current and previous tick
-        $hash = sha1(sha1($tick . $this->userldaparray['userPassword']));
+        $hash = sha1(sha1($tick . $this->userPassword));
 
         $lasttickval = $tick - intval($tick / 10) * 10;
         for ($i = 0; $i < $lasttickval ; $i++) {
@@ -1345,44 +1237,6 @@ PLUG Membership Scripts";
 
         return $search->count();
     }
-
-    // OO Getters only enable those that are needed
-    public function uid(): int
-    {
-        return intval($this->userldaparray['uidNumber']);
-    }
-
-    public function username(): string
-    {
-        return $this->userldaparray['uid'];
-    }
-
-    public function givenName(): string
-    {
-        return $this->userldaparray['givenName'];
-    }
-
-    public function mail(): string
-    {
-        return $this->userldaparray['mail'];
-    }
-    /*    function dn() { return  $dn;}
-          function username() { return $uid;}
-          function displayname() { return $displayName;}
-
-          function gid() { return $gidNumber;}
-          function homedir () { return  $homeDirectory;}*/
-    /*    private $userPassword;
-          private $loginShell;
-          private $mail = array();
-          private $givenName;
-          private $sn;
-          private $cn;
-          private $street;
-          private $homeTelephoneNumber;
-          private $mobileTelephoneNumber;
-          private $pagerTelephoneNumber;
-          private $description;*/
 }
 
 class PLUGFunction

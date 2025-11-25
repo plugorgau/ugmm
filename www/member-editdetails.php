@@ -7,16 +7,14 @@ $TOPLEVEL = 'home';
 
 require_once('../lib/PLUG/session.inc.php');
 
-$memberself = new Person($ldap);
 $memberauthdata = $Auth->getAuthData();
-$memberself->load_ldap($memberauthdata['dn']);
+$memberself = Person::load($ldap, $memberauthdata['dn']);
 
 if (isset($_POST['edit_selfmember']) && !verify_nonce($_POST['nonce'], 'editselfdetails')) {
     $error[] = "Attempt to double submit form? No changes made.";
 }
 
 if (isset($_POST['edit_selfmember']) && isset($_POST['go_go_button']) && ! $error) {
-
     // TODO: Class validates objects and maintains errors/successs messages
     $memberself->change_email($_POST['email_address']);
     $memberself->change_address($_POST['street_address']);
@@ -32,9 +30,6 @@ if (isset($_POST['edit_selfmember']) && isset($_POST['go_go_button']) && ! $erro
 
         redirect_with_messages($toplevelmenu['home']['link']);
     }
-
-    $memberdetails = $memberself->userarray();
-
 }
 
 if (isset($_POST['edit_selfmember']) && isset($_POST['oops_button']) && ! $error) {
@@ -43,13 +38,5 @@ if (isset($_POST['edit_selfmember']) && isset($_POST['oops_button']) && ! $error
 }
 
 
-
-// Finished processing all the forms
-if (!isset($memberdetails)) {
-    // Validate $_GET better? intval should clean it to just a number
-    $memberdetails = $memberself->userarray();
-}
-
-
-$smarty->assign('member', $memberdetails);
+$smarty->assign('member', $memberself);
 display_page('editselfdetails.tpl');

@@ -62,34 +62,34 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
         <ol>
             <li>
                 <label for="givenName">First name</label>
-                <input id="givenName" name="givenName" type="text" placeholder="First Name" required autofocus value="{if isset($newmember)}{$newmember.givenName}{/if}"/>
+                <input id="givenName" name="givenName" type="text" placeholder="First Name" required autofocus value="{$newmember.givenName|default}"/>
             </li>
             <li>
                 <label for="sn">Last name</label>
-                <input id="sn" name="sn" type="text" placeholder="Surname" value="{if isset($newmember)}{$newmember.sn}{/if}"/>
+                <input id="sn" name="sn" type="text" placeholder="Surname" value="{$newmember.sn|default}"/>
             </li>
 
             <li>
                 <label for="mail">Email</label>
-                <input id="mail" name="mail" type="email" placeholder="name@example.com" required value="{if isset($newmember)}{$newmember.mail}{/if}"/>
+                <input id="mail" name="mail" type="email" placeholder="name@example.com" required value="{$newmember.mail|default}"/>
             </li>
 
             <li>
                 <label for="street">Postal Address</label>
-                <input id="street" name="street" type="text" required value="{if isset($newmember)}{$newmember.street}{/if}"/>
+                <input id="street" name="street" type="text" required value="{$newmember.street|default}"/>
             </li>
 
             <li>
                 <label for="homePhone">Home Phone</label>
-                <input id="homePhone" name="homePhone" type="tel" value="{if isset($newmember)}{$newmember.homePhone}{/if}"/>
+                <input id="homePhone" name="homePhone" type="tel" value="{$newmember.homePhone|default}"/>
             </li>
             <li>
                 <label for="pager">Work Phone</label>
-                <input id="pager" name="pager" type="tel" value="{if isset($newmember)}{$newmember.pager}{/if}"/>
+                <input id="pager" name="pager" type="tel" value="{$newmember.pager|default}"/>
             </li>
             <li>
                 <label for="mobile">Mobile Phone</label>
-                <input id="mobile" name="mobile" type="tel" value="{if isset($newmember)}{$newmember.mobile}{/if}"/>
+                <input id="mobile" name="mobile" type="tel" value="{$newmember.mobile|default}"/>
             </li>
         </ol>
     </fieldset>
@@ -100,7 +100,7 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
         <ol>
             <li>
                 <label for="uid">Username</label>
-                <input id="uid" name="uid" type="text" required value="{if isset($newmember)}{$newmember.uid}{/if}" placeholder="Choose a username"/><div id="uidcheckLoading"></div>
+                <input id="uid" name="uid" type="text" required value="{$newmember.uid|default}" placeholder="Choose a username"/><div id="uidcheckLoading"></div>
                 <div id="uidcheck"></div>
                 <p>Your username becomes the start of your @members.plug.org.au email address</p>
             </li>
@@ -120,7 +120,7 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
         <ol>
             <li>
                 <label for="notes">Other notes?</label>
-                <textarea id="notes" name="notes" rows="4" placeholder="Any other details we may need to know?">{if isset($newmember)}{$newmembernotes}{/if}</textarea>
+                <textarea id="notes" name="notes" rows="4" placeholder="Any other details we may need to know?">{$newmembernotes|default}</textarea>
             </li>
         </ol>
     </fieldset>

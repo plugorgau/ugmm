@@ -3,14 +3,14 @@
 {block name=title}Edit Member Shell{/block}
 {block name=body}
 
-  <h2>Shell Account Settings for {$member.uid}</h2>
+  <h2>Shell Account Settings for {$member->uid}</h2>
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
     <input name="nonce" value="{'editselfshell'|nonce}" type="hidden">
     <input type="hidden" name="edit_selfshell" value="1">
 
-    {if $member.shellEnabled}
+    {if $member->shellEnabled}
     <p>Your shell account is enabled</p>
     <p><input type="submit" name="disable_shell" value=
     "Disable Shell Account"></p>
@@ -28,19 +28,19 @@
       <tr>
         <th>Username</th>
 
-        <td>{$member.uid}</td>
+        <td>{$member->uid}</td>
       </tr>
 
       <tr>
         <th>Unix User ID</th>
 
-        <td>{$member.uidNumber}</td>
+        <td>{$member->uidNumber}</td>
       </tr>
 
       <tr>
         <th>Account expires</th>
 
-        <td>{$member.formattedexpiry}</td>
+        <td>{$member->formattedexpiry}</td>
       </tr>
 
       <tr>
@@ -48,7 +48,7 @@
 
         <td><select name="account_shell">
         {foreach from=$shells item=shell key=name}
-          <option {if $shell==$member.loginShell}selected="selected"{/if} value="{$name}" >{$name}</option>
+          <option {if $shell==$member->loginShell}selected="selected"{/if} value="{$name}" >{$name}</option>
         {/foreach}
         </select></td>
       </tr>

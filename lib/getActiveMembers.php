@@ -18,13 +18,8 @@ $today = new DateTimeImmutable();
 $expired = date_to_shadow_expire($today->sub(new DateInterval(GRACE_PERIOD)));
 
 $filter = "(shadowExpire>=$expired)";
-$members = $OrgMembers->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_from_filter($filter);
 
-foreach ($members as $dn) {
-    $member = new Person($ldap);
-    $member->load_ldap($dn);
-
-    $details = $member->userarray();
-
-    echo $details['cn']." <".$details['mail'].">\n";
+foreach ($members as $member) {
+    echo $member->cn." <".$member->mail.">\n";
 }

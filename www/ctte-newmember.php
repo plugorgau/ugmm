@@ -24,34 +24,40 @@ if (isset($_POST['newmember_form']) && $_POST['password'] != $_POST['verifypassw
 
 // TODO check for email address already used
 
+$memberdetails = array(
+    'uid' => isset($_POST['uid']) ? trim($_POST['uid']) : '',
+    'givenName' => isset($_POST['first_name']) ? trim($_POST['first_name']) : '',
+    'sn' => isset($_POST['last_name']) ? trim($_POST['last_name']) : '',
+    'mail' => isset($_POST['email_address']) ? trim($_POST['email_address']) : '',
+    'street' => isset($_POST['street_address']) ? trim($_POST['street_address']) : '',
+    'homePhone' => isset($_POST['home_phone']) ? trim($_POST['home_phone']) : '',
+    'pager' => isset($_POST['work_phone']) ? trim($_POST['work_phone']) : '',
+    'mobile' => isset($_POST['mobile_phone']) ? trim($_POST['mobile_phone']) : '',
+);
+
 if (isset($_POST['newmember_form']) && ! $error) {
 
     $member = $OrgMembers->new_member(
-        trim($_POST['uid']),
-        trim($_POST['first_name']),
-        trim($_POST['last_name']),
-        trim($_POST['street_address']),
-        trim($_POST['home_phone']),
-        trim($_POST['work_phone']),
-        trim($_POST['mobile_phone']),
-        trim($_POST['email_address']),
+        $memberdetails['uid'],
+        $memberdetails['givenName'],
+        $memberdetails['sn'],
+        $memberdetails['street'],
+        $memberdetails['homePhone'],
+        $memberdetails['pager'],
+        $memberdetails['mobile'],
+        $memberdetails['mail'],
         $_POST['password'],
         trim($_POST['notes'])
     );
 
     if ($member->is_error()) {
         $error = array_merge($error, $member->get_errors());
-
-        // Member details so can edit and correct
-        $memberdetails = $member->userarray();
     } else {
         $success = array_merge($success, $member->get_messages());
         $smarty->assign("usercreated", true);
-        $smarty->assign("newmember", $member->userarray());
+        $smarty->assign("newmember", $member);
     }
-
 }
 
-
-$smarty->assign('member', @$memberdetails);
+$smarty->assign('member', $memberdetails);
 display_page('newmember.tpl');

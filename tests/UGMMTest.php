@@ -223,8 +223,8 @@ final class UGMMTest extends TestCase
 
         // Try signing up with an existing user's details
         $page = $client->submitForm('Signup', [
-            'givenName' => 'Test',
-            'sn' => 'Last-name',
+            'givenName' => ' Test',
+            'sn' => 'Last-name ',
             'mail' => 'bob@example.com',
             'street' => '123 Fake St',
             'homePhone' => '08 5550 1111',
@@ -246,7 +246,7 @@ final class UGMMTest extends TestCase
         $this->assertSame($form['homePhone']->getValue(), '08 5550 1111');
         $this->assertSame($form['pager']->getValue(), '08 5550 2222');
         $this->assertSame($form['mobile']->getValue(), '08 5550 3333');
-        $this->assertSame($form['uid']->getValue(), '');
+        $this->assertSame($form['uid']->getValue(), 'bobtest');
         $this->assertSame($form['notes']->getValue(), 'Sign up for testing');
     }
 

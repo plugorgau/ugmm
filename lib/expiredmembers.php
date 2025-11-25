@@ -22,20 +22,14 @@ $expired = date_to_shadow_expire($today->sub(new DateInterval("P3M")));
 // Select all accounts where membership is set as current, but renewal is now overdue
 $filter = "(&(shadowExpire<=$overdue)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
-$members = $OrgMembers->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_from_filter($filter);
 
-foreach ($members as $dn) {
-    $member = new Person($ldap);
-    $member->load_ldap($dn);
-
-    $details = $member->userarray();
-
-    echo "User ".$details['displayName']. " has expired\n";
+foreach ($members as $member) {
+    echo "User ".$member->displayName. " has expired\n";
     // Email that their payment is overdue?
-    send_overdue_email($member, $details);
+    send_overdue_email($member);
     // Remove from group current. Add to group overdue
     $member->set_status_group();
-
 }
 
 // ********* Expired members
@@ -44,20 +38,14 @@ foreach ($members as $dn) {
 // the 3 months allowed by the constitution
 $filter = "(&(shadowExpire<=$expired)(memberOf=cn=overduemembers,ou=Groups,".LDAP_BASE."))";
 
-$members = $OrgMembers->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_from_filter($filter);
 
-foreach ($members as $dn) {
-    $member = new Person($ldap);
-    $member->load_ldap($dn);
-
-    $details = $member->userarray();
-
-    echo "User ".$details['displayName']. " has expired\n";
+foreach ($members as $member) {
+    echo "User ".$member->displayName. " has expired\n";
     // Email that their account has expired?
-    send_expired_email($member, $details);
+    send_expired_email($member);
     // Remove from group overdue. Add to group expired
     $member->set_status_group();
-
 }
 
 // ********* Expiring members
@@ -68,23 +56,18 @@ $future = date_to_shadow_expire($today->add(new DateInterval("P30D")));
 // Select all accounts which are set as current
 $filter = "(&(shadowExpire=$future)(memberOf=cn=currentmembers,ou=Groups,".LDAP_BASE."))";
 
-$members = $OrgMembers->load_members_dn_from_filter($filter);
+$members = $OrgMembers->load_members_from_filter($filter);
 
-foreach ($members as $dn) {
-    $member = new Person($ldap);
-    $member->load_ldap($dn);
-    $details = $member->userarray();
-
-    echo "User ".$details['displayName']. " is expiring in 30 days\n";
-    send_expiring_email($member, $details);
-
+foreach ($members as $member) {
+    echo "User ".$member->displayName. " is expiring in 30 days\n";
+    send_expiring_email($member);
 }
 
 // TODO filter for members who are not yet paid, need to make sure we don't send out an email daily!
 
 // TODO? Move the following into the class as well?
 
-function send_expired_email($member, $details)
+function send_expired_email($member)
 {
     $body = "Dear %s,
     
@@ -110,8 +93,8 @@ PLUG Membership Scripts";
 
     $body = sprintf(
         $body,
-        $details['displayName'],
-        $details['formattedexpiry'],
+        $member->displayName,
+        $member->formattedexpiry,
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );
@@ -128,7 +111,7 @@ PLUG Membership Scripts";
         }
     }
 }
-function send_overdue_email($member, $details)
+function send_overdue_email($member)
 {
     $body = "Dear %s,
     
@@ -154,8 +137,8 @@ PLUG Membership Scripts";
 
     $body = sprintf(
         $body,
-        $details['displayName'],
-        $details['formattedexpiry'],
+        $member->displayName,
+        $member->formattedexpiry,
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );
@@ -173,7 +156,7 @@ PLUG Membership Scripts";
     }
 }
 
-function send_expiring_email($member, $details)
+function send_expiring_email($member)
 {
     $body = "Dear %s,
     
@@ -199,8 +182,8 @@ PLUG Membership Scripts";
 
     $body = sprintf(
         $body,
-        $details['displayName'],
-        $details['formattedexpiry'],
+        $member->displayName,
+        $member->formattedexpiry,
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );
@@ -218,7 +201,7 @@ PLUG Membership Scripts";
     }
 }
 
-function send_waitingpayment_email($member, $details)
+function send_waitingpayment_email($member)
 {
     $body = "Dear %s,
     
@@ -245,7 +228,7 @@ PLUG Membership Scripts";
 
     $body = sprintf(
         $body,
-        $details['displayName'],
+        $member->displayName,
         FULL_AMOUNT / 100,
         CONCESSION_AMOUNT / 100
     );

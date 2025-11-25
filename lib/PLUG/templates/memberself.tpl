@@ -3,16 +3,16 @@
 {block name=title}Your Membership Details{/block}
 {block name=body}
 
-<h2>Welcome, {$memberself.displayName}</h2>
+<h2>Welcome, {$memberself->displayName}</h2>
 
 <p>Here you may check and update your current details in the PLUG membership
 database, enable or disable your shell account, configure email forwarding, and more.</p>
 
-Your membership will expire on {$memberself.formattedexpiry}.
+Your membership will expire on {$memberself->formattedexpiry}.
 {*
 <p>You are also a member of the following groups:
 <ul>
-{foreach from=$memberself.groups item=group}
+{foreach from=$memberself->groups item=group}
     <li><a href="#grouplink">{$group}</a></li>
 {/foreach}
 
@@ -34,11 +34,11 @@ to edit them.
 </p>
 
 <table border="0">
-<tr><th>E-mail Address</th><td>{foreach from=$memberself.mail item=mail}{$mail}<br/>{/foreach}</td></tr>
-<tr><th>Postal Address</th><td>{$memberself.street|default:'N/A'}</td></tr>
-<tr><th>Home Phone</th><td>{$memberself.homePhone|default:'N/A'}</td></tr>
-<tr><th>Work Phone</th><td>{$memberself.pager|default:'N/A'}</td></tr>
-<tr><th>Mobile Phone</th><td>{$memberself.mobile|default:'N/A'}</td></tr>
+<tr><th>E-mail Address</th><td>{foreach from=$memberself->mail item=mail}{$mail}<br/>{/foreach}</td></tr>
+<tr><th>Postal Address</th><td>{$memberself->street|default:'N/A'}</td></tr>
+<tr><th>Home Phone</th><td>{$memberself->homePhone|default:'N/A'}</td></tr>
+<tr><th>Work Phone</th><td>{$memberself->pager|default:'N/A'}</td></tr>
+<tr><th>Mobile Phone</th><td>{$memberself->mobile|default:'N/A'}</td></tr>
 
 </table>
 
@@ -46,28 +46,28 @@ to edit them.
 <ul><li><a href="{$submenuitems.home.editselfdetails.link}">Edit your personal details</a>
 <li>Requests to change your name should be sent to {mailto address=$emails.committee encode="hex"}.</ul></p>
 <h3><a name="email"></a>E-mail Forwarding</h3>
-{if isset($memberself.mailForward) and $memberself.mailForward}
-<p>Mail sent to your PLUG email address ({$memberself.uid}@members.plug.org.au) is being redirected to {$memberself.mailForward}.</p>
+{if $memberself->mailForward}
+<p>Mail sent to your PLUG email address ({$memberself->uid}@members.plug.org.au) is being redirected to {$memberself->mailForward}.</p>
 {else}
-<p>Mail sent to your PLUG email address ({$memberself.uid}@members.plug.org.au) is currently being delivered to your home directory</p>
+<p>Mail sent to your PLUG email address ({$memberself->uid}@members.plug.org.au) is currently being delivered to your home directory</p>
 {/if}
 
 <p>
 <ul><li><a href="{$submenuitems.home.editselfforwarding.link}">Change your e-mail forwarding</a></ul></p>
 <h3><a name="shell"></a>Shell Account Details</h3>
-{if $memberself.shellEnabled && $memberself.membershipCurrent}
+{if $memberself->shellEnabled && $memberself->membershipCurrent}
 <p>Your shell account is enabled</p>
-{elseif $memberself.shellEnabled && ! $memberself.membershipCurrent}
+{elseif $memberself->shellEnabled && ! $memberself->membershipCurrent}
 <p>Your shell account is enabled but your membership is not current. You will not be able to login to services until your membership is current</p>
 {else}
 <p>Your shell account is disabled. You will not be able to login to any services other than this members area.</p>
 {/if}
 
 <table border="0">
-<tr><th>Username</th><td>{$memberself.uid}</td></tr>
-<tr><th>Unix User ID</th><td>{$memberself.uidNumber}</td></tr>
-<tr><th>Shell</th><td>{$memberself.loginShell}</td></tr>
-<tr><th>Account expires</th><td>{$memberself.formattedexpiry}</td></tr>
+<tr><th>Username</th><td>{$memberself->uid}</td></tr>
+<tr><th>Unix User ID</th><td>{$memberself->uidNumber}</td></tr>
+<tr><th>Shell</th><td>{$memberself->loginShell}</td></tr>
+<tr><th>Account expires</th><td>{$memberself->formattedexpiry}</td></tr>
 </table>
 <p>If you do not require your PLUG account (including POP3/IMAP access), you
 may wish to disable it using the link below. You might want to ensure your
