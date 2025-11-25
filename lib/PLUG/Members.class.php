@@ -36,7 +36,7 @@ class Members
         $searchbase = "ou=Users,".LDAP_BASE;
         $options = array(
             'scope' => 'sub',
-            'attributes' => array_keys(Person::_DEFAULTS),
+            'attributes' => Person::_ATTRS,
         );
 
         $search = $this->ldap->search($searchbase, $filter, $options);
@@ -95,7 +95,7 @@ class Members
         $searchbase = "ou=Users,".LDAP_BASE;
         $options = array(
             'scope' => 'one',
-            'attributes' => array_keys(Person::_DEFAULTS)
+            'attributes' => Person::_ATTRS
         );
 
         $search = $this->ldap->search($searchbase, $filter, $options);
@@ -217,14 +217,14 @@ class Payment
     private const attrPaymentType = 'x-plug-paymentType';
     private const attrPaymentDescription = 'x-plug-paymentDescription';
     private const attrPaymentYears = 'x-plug-paymentYears';
-    private const _DEFAULTS = array(
-        'objectClass' => array('top', 'x-plug-payment'),
-        self::attrPaymentAmount => 0,
-        self::attrPaymentDate => '',
-        self::attrPaymentID => '',
-        self::attrPaymentType => FULL_TYPE,
-        self::attrPaymentDescription => '',
-        self::attrPaymentYears => 0);
+    private const _ATTRS = array(
+        self::attrPaymentAmount,
+        self::attrPaymentDate,
+        self::attrPaymentID,
+        self::attrPaymentType,
+        self::attrPaymentDescription,
+        self::attrPaymentYears,
+    );
 
     public function __construct(Net_LDAP2_Entry $entry)
     {
@@ -276,7 +276,7 @@ class Payment
 
     public static function load_ldap(Net_LDAP2 $ldap, string $dn): Payment
     {
-        $ldapentry = $ldap->getEntry($dn, array_keys(self::_DEFAULTS));
+        $ldapentry = $ldap->getEntry($dn, self::_ATTRS);
         if (PEAR::isError($ldapentry)) {
             throw new Exception('LDAP Error: '.$ldapentry->getMessage());
         }
@@ -289,7 +289,7 @@ class Payment
         $filter = Net_LDAP2_Filter::create('objectClass', 'equals', 'x-plug-payment');
         $options = array(
             'scope' => 'sub',
-            'attributes' => array_keys(self::_DEFAULTS),
+            'attributes' => self::_ATTRS,
         );
 
         $search = $ldap->search($parentdn, $filter, $options);
@@ -428,29 +428,28 @@ class Person
     private const attrCreateTimestamp = 'createTimestamp';
     private const attrModifyTimestamp = 'modifyTimestamp';
 
-    public const _DEFAULTS = array(
-        'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount'),
-        self::attrUid => '',
-        self::attrDisplayName => '',
-        self::attrUidNumber => '',
-        self::attrGidNumber => '',
-        self::attrHomeDirectory => '',
-        self::attrUserPassword => '',
-        self::attrLoginShell => '',
-        self::attrMail => '',
-        self::attrMailForward => '',
-        self::attrGivenName => '',
-        self::attrSn => '',
-        self::attrCn => '',
-        self::attrStreet => '',
-        self::attrHomePhone => '',
-        self::attrMobile => '',
-        self::attrPager => '',
-        self::attrDescription => '',
-        self::attrShadowExpire => '1', // Start all users off as expired
-        self::attrMemberOf => array(),
-        self::attrCreateTimestamp => '',
-        self::attrModifyTimestamp => '',
+    public const _ATTRS = array(
+        self::attrUid,
+        self::attrDisplayName,
+        self::attrUidNumber,
+        self::attrGidNumber,
+        self::attrHomeDirectory,
+        self::attrUserPassword,
+        self::attrLoginShell,
+        self::attrMail,
+        self::attrMailForward,
+        self::attrGivenName,
+        self::attrSn,
+        self::attrCn,
+        self::attrStreet,
+        self::attrHomePhone,
+        self::attrMobile,
+        self::attrPager,
+        self::attrDescription,
+        self::attrShadowExpire,
+        self::attrMemberOf,
+        self::attrCreateTimestamp,
+        self::attrModifyTimestamp,
     );
 
     public function __construct(Net_LDAP2 $ldap, Net_LDAP2_Entry $ldapentry)
@@ -461,7 +460,7 @@ class Person
 
     private function reload_ldap(): void
     {
-        $ldapentry = $this->ldap->getEntry($this->dn, array_keys(self::_DEFAULTS));
+        $ldapentry = $this->ldap->getEntry($this->dn, self::_ATTRS);
         if (PEAR::isError($ldapentry)) {
             throw new Exception('LDAP Error: reload_ldap: '.$ldapentry->getMessage());
         }
@@ -471,7 +470,7 @@ class Person
 
     public static function load(Net_LDAP2 $ldap, string $dn): self
     {
-        $ldapentry = $ldap->getEntry($dn, array_keys(self::_DEFAULTS));
+        $ldapentry = $ldap->getEntry($dn, self::_ATTRS);
         if (PEAR::isError($ldapentry)) {
             throw new Exception('LDAP Error: Person::load: '.$ldapentry->getMessage());
         }
@@ -484,7 +483,7 @@ class Person
         $dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
         $entry = Net_LDAP2_Entry::createFresh($dn, array(
             'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount'),
-            self::attrShadowExpire => 1,
+            self::attrShadowExpire => '1', // Start all users off as expired
         ));
         $person = new self($ldap, $entry);
         $person->change_uid($uid, $uid);
