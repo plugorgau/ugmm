@@ -130,35 +130,25 @@
 
   <h4>Past Payments</h4>
 
-  <table id="past-payments">
+  <table id="past-payments" class="payments">
     <thead>
-      <tr bgcolor="#8888AA">
+      <tr>
         <th>Date</th>
-
         <th>Amount</th>
-
         <th>Membership Type</th>
-
         <td># Years</td>
-
         <th>Description</th>
-
         <th></th>
       </tr>
     </thead>
     <tbody>
 {foreach from=$member->payments item=payment}
-      <tr bgcolor="#DDDDFF">
+      <tr>
         <td>{$payment->formatteddate}</td>
-
         <td>{$payment->formattedamount}</td>
-
         <td>{$payment->formattedtype}</td>
-
         <td>{$payment->years}</td>
-
         <td>{$payment->description}</td>
-
         <td><a href=
         "{$submenuitems.ctte.resendack.link}{$member->uidNumber}&payment_id={$payment->id}">Resend
         Ack</a></td>

@@ -53,10 +53,10 @@ h3 { font-size: 1.2em; }
 }
 
 /* member table */
-.membertable thead {
+.membertable thead, .payments thead {
     background: #8888aa;
 }
-.membertable tbody {
+.membertable tbody, .payments tbody {
     background: #ddddff;
 }
 .membertable .elevated_user {
