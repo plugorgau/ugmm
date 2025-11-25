@@ -53,6 +53,7 @@ $submenu = array(
         'members' => array('label' => "Membership List", 'link' => 'ctte-members'),
         'expiredmembers' => array('label' => "Expired Members", 'link' => 'ctte-members?expiredmembers=1#expired'),
         'newmember' => array('label' => "New Member", 'link' => 'ctte-newmember'),
+        'payments' => array('label' => "Recent Payments", 'link' => 'ctte-payments'),
         'editmember' => array('label' => '', 'link' => 'ctte-editmember?id='),
         'resendack' => array('label' => '', 'link' => 'resendack?member_id='),
     ),
