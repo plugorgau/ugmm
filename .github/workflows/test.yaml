@@ -13,7 +13,7 @@ jobs:
         shell: podman exec -w ${{ github.workspace }} ugmm-test bash -e {0}
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
       - name: Set up Debian container
@@ -68,7 +68,7 @@ jobs:
   code-style:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           submodules: true
       - name: Check PHP coding style
