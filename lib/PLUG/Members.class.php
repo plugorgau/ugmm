@@ -211,14 +211,20 @@ class Payment
 {
     private readonly Net_LDAP2_Entry $entry;
 
+    private const attrPaymentAmount = 'x-plug-paymentAmount';
+    private const attrPaymentDate = 'x-plug-paymentDate';
+    private const attrPaymentID = 'x-plug-paymentID';
+    private const attrPaymentType = 'x-plug-paymentType';
+    private const attrPaymentDescription = 'x-plug-paymentDescription';
+    private const attrPaymentYears = 'x-plug-paymentYears';
     private const _DEFAULTS = array(
         'objectClass' => array('top', 'x-plug-payment'),
-        'x-plug-paymentAmount' => 0,
-        'x-plug-paymentDate' => '',
-        'x-plug-paymentID' => '',
-        'x-plug-paymentType' => FULL_TYPE,
-        'x-plug-paymentDescription' => '',
-        'x-plug-paymentYears' => 0);
+        self::attrPaymentAmount => 0,
+        self::attrPaymentDate => '',
+        self::attrPaymentID => '',
+        self::attrPaymentType => FULL_TYPE,
+        self::attrPaymentDescription => '',
+        self::attrPaymentYears => 0);
 
     public function __construct(Net_LDAP2_Entry $entry)
     {
@@ -310,24 +316,26 @@ class Payment
         if (! $id) {
             $id = self::next_paymentID($ldap);
         }
-
-        $dn = "x-plug-paymentID=$id,$parentdn";
-        $attrs = self::_DEFAULTS;
-        $attrs['x-plug-paymentYears'] = $years;
-        $attrs['x-plug-paymentDate'] = $date->format('YmdHisO');
-        $attrs['x-plug-paymentID'] = $id;
-        $attrs['x-plug-paymentType'] = $type;
-        $attrs['x-plug-paymentDescription'] = $description;
         if ($type == CONCESSION_TYPE) {
             // Concession
-            $attrs['x-plug-paymentAmount'] = $years * CONCESSION_AMOUNT * $payment_modifier_amount;
+            $amount = $years * CONCESSION_AMOUNT * $payment_modifier_amount;
         } else {
             // Assume full
-            $attrs['x-plug-paymentAmount'] = $years * FULL_AMOUNT * $payment_modifier_amount;
+            $amount = $years * FULL_AMOUNT * $payment_modifier_amount;
         }
 
-        // TODO: Check if exists first
-        $entry = Net_LDAP2_Entry::createFresh($dn, array_filter($attrs));
+        $dn = self::attrPaymentID."=$id,$parentdn";
+        $entry = Net_LDAP2_Entry::createFresh($dn, array(
+            'objectClass' => array('top', 'x-plug-payment'),
+        ));
+        $entry->replace(array(
+            self::attrPaymentID => $id,
+            self::attrPaymentType => $type,
+            self::attrPaymentYears => $years,
+            self::attrPaymentDate => $date->format('YmdHisO'),
+            self::attrPaymentAmount => $amount,
+            self::attrPaymentDescription => $description,
+        ));
         $ldapres = $ldap->add($entry);
         if (PEAR::isError($ldapres)) {
             throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
@@ -341,18 +349,18 @@ class Payment
         $dn = "cn=maxUid,ou=Users,".LDAP_BASE;
         // Get next paymentID from maxUid
 
-        $entry = $ldap->getEntry($dn, array('x-plug-paymentID'));
+        $entry = $ldap->getEntry($dn, array(self::attrPaymentID));
 
         if (PEAR::isError($entry)) {
             throw new Exception('LDAP Error: '.$entry->getMessage());
         }
 
-        $paymentID = $entry->getValue('x-plug-paymentID');
+        $paymentID = $entry->getValue(self::attrPaymentID);
 
         // Search and ensure not already exists
         $filter2 = Net_LDAP2_Filter::combine('not', Net_LDAP2_Filter::create('cn', 'equals', 'maxUid'));
         do {
-            $filter1 = Net_LDAP2_Filter::create('x-plug-paymentID', 'equals', $paymentID);
+            $filter1 = Net_LDAP2_Filter::create(self::attrPaymentID, 'equals', $paymentID);
             $filter = Net_LDAP2_Filter::combine('and', array($filter1, $filter2));
             $searchbase = "ou=Users,".LDAP_BASE;
             $options = array(
@@ -374,7 +382,7 @@ class Payment
 
         // Increment maxUid
         $entry->replace(array(
-            'x-plug-paymentID' => $paymentID));
+            self::attrPaymentID => $paymentID));
 
         $result = $entry->update();
 
@@ -398,29 +406,51 @@ class Person
     private bool $errorstate = false;
     private array $passworderrors = array();
 
+    private const attrUid = 'uid';
+    private const attrDisplayName = 'displayName';
+    private const attrUidNumber = 'uidNumber';
+    private const attrGidNumber = 'gidNumber';
+    private const attrHomeDirectory = 'homeDirectory';
+    private const attrUserPassword = 'userPassword';
+    private const attrLoginShell = 'loginShell';
+    private const attrMail = 'mail';
+    private const attrMailForward = 'mailForward';
+    private const attrGivenName = 'givenName';
+    private const attrSn = 'sn';
+    private const attrCn = 'cn';
+    private const attrStreet = 'street';
+    private const attrHomePhone = 'homePhone';
+    private const attrMobile = 'mobile';
+    private const attrPager = 'pager';
+    private const attrDescription = 'description';
+    private const attrShadowExpire = 'shadowExpire';
+    private const attrMemberOf = 'memberOf';
+    private const attrCreateTimestamp = 'createTimestamp';
+    private const attrModifyTimestamp = 'modifyTimestamp';
+
     public const _DEFAULTS = array(
         'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount'),
-        'uid' => '',
-        'displayName' => '',
-        'uidNumber' => '',
-        'gidNumber' => '',
-        'homeDirectory' => '',
-        'userPassword' => '',
-        'loginShell' => '',
-        'mail' => '',
-        'mailForward' => '',
-        'givenName' => '',
-        'sn' => '',
-        'cn' => '',
-        'street' => '',
-        'homePhone' => '',
-        'mobile' => '',
-        'pager' => '',
-        'description' => '',
-        'shadowExpire' => '1', // Start all users off as expired
-        'memberOf' => array(),
-        'createTimestamp' => '',
-        'modifyTimestamp' => '',
+        self::attrUid => '',
+        self::attrDisplayName => '',
+        self::attrUidNumber => '',
+        self::attrGidNumber => '',
+        self::attrHomeDirectory => '',
+        self::attrUserPassword => '',
+        self::attrLoginShell => '',
+        self::attrMail => '',
+        self::attrMailForward => '',
+        self::attrGivenName => '',
+        self::attrSn => '',
+        self::attrCn => '',
+        self::attrStreet => '',
+        self::attrHomePhone => '',
+        self::attrMobile => '',
+        self::attrPager => '',
+        self::attrDescription => '',
+        self::attrShadowExpire => '1', // Start all users off as expired
+        self::attrMemberOf => array(),
+        self::attrCreateTimestamp => '',
+        self::attrModifyTimestamp => '',
     );
 
     public function __construct(Net_LDAP2 $ldap, Net_LDAP2_Entry $ldapentry)
@@ -454,7 +484,7 @@ class Person
         $dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
         $entry = Net_LDAP2_Entry::createFresh($dn, array(
             'objectClass' => array('top', 'person', 'posixAccount', 'inetOrgPerson', 'shadowAccount', 'mailForwardingAccount'),
-            'shadowExpire' => 1,
+            self::attrShadowExpire => 1,
         ));
         $person = new self($ldap, $entry);
         $person->change_uid($uid, $uid);
@@ -511,79 +541,79 @@ class Person
     }
 
     public string $uid {
-        get => (string)$this->ldapentry->getValue('uid', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrUid, 'single');
     }
 
     public string $displayName {
-        get => (string)$this->ldapentry->getValue('displayName', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrDisplayName, 'single');
     }
 
     public int $uidNumber {
-        get => (int)$this->ldapentry->getValue('uidNumber', 'single');
+        get => (int)$this->ldapentry->getValue(self::attrUidNumber, 'single');
     }
 
     public int $gidNumber {
-        get => (int)$this->ldapentry->getValue('gidNumber', 'single');
+        get => (int)$this->ldapentry->getValue(self::attrGidNumber, 'single');
     }
 
     public array $memberOf {
-        get => $this->ldapentry->getValue('memberOf', 'all');
+        get => $this->ldapentry->getValue(self::attrMemberOf, 'all');
     }
 
     public string $homeDirectory {
-        get => (string)$this->ldapentry->getValue('homeDirectory', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrHomeDirectory, 'single');
     }
 
     public string $userPassword {
-        get => (string)$this->ldapentry->getValue('userPassword', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrUserPassword, 'single');
     }
 
     public string $loginShell {
-        get => (string)$this->ldapentry->getValue('loginShell', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrLoginShell, 'single');
     }
 
     public string $mail {
-        get => (string)$this->ldapentry->getValue('mail', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrMail, 'single');
     }
 
     public string $mailForward {
-        get => (string)$this->ldapentry->getValue('mailForward', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrMailForward, 'single');
     }
 
     public string $givenName {
-        get => (string)$this->ldapentry->getValue('givenName', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrGivenName, 'single');
     }
 
     public string $sn {
-        get => (string)$this->ldapentry->getValue('sn', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrSn, 'single');
     }
 
     public string $cn {
-        get => (string)$this->ldapentry->getValue('cn', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrCn, 'single');
     }
 
     public string $street {
-        get => (string)$this->ldapentry->getValue('street', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrStreet, 'single');
     }
 
     public string $homePhone {
-        get => (string)$this->ldapentry->getValue('homePhone', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrHomePhone, 'single');
     }
 
     public string $mobile {
-        get => (string)$this->ldapentry->getValue('mobile', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrMobile, 'single');
     }
 
     public string $pager {
-        get => (string)$this->ldapentry->getValue('pager', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrPager, 'single');
     }
 
     public string $description {
-        get => (string)$this->ldapentry->getValue('description', 'single');
+        get => (string)$this->ldapentry->getValue(self::attrDescription, 'single');
     }
 
     public int $shadowExpire {
-        get => (int)$this->ldapentry->getValue('shadowExpire', 'single');
+        get => (int)$this->ldapentry->getValue(self::attrShadowExpire, 'single');
     }
 
     public string $expiry {
@@ -603,7 +633,7 @@ class Person
     public function change_expiry(DateTimeImmutable $date): void
     {
         $this->ldapentry->replace(array(
-            'shadowExpire' => date_to_shadow_expire($date),
+            self::attrShadowExpire => date_to_shadow_expire($date),
         ));
     }
 
@@ -615,10 +645,10 @@ class Person
         $lastname = $lastname ? $lastname : "_";
         if ($firstname != $this->givenName || $lastname != $this->sn) {
             $this->ldapentry->replace(array(
-                'sn' => $lastname,
-                'givenName' => $firstname,
-                'displayName' => "$firstname $lastname",
-                'cn' => "$firstname $lastname",
+                self::attrSn => $lastname,
+                self::attrGivenName => $firstname,
+                self::attrDisplayName => "$firstname $lastname",
+                self::attrCn => "$firstname $lastname",
             ));
             $this->messages[] = "Name changed";
         }
@@ -632,7 +662,7 @@ class Person
         }
         if ($address != $this->street) {
             $this->ldapentry->replace(array(
-                'street' => $address,
+                self::attrStreet => $address,
             ));
             $this->messages[] = "Address changed";
         }
@@ -647,7 +677,7 @@ class Person
                 $this->errors[] = "Username must be at least 3 characters long";
             } elseif ($this->check_username_available($username)) {
                 $this->ldapentry->replace(array(
-                    'uid' => $username,
+                    self::attrUid => $username,
                 ));
                 $this->messages[] = "Username changed";
             } else {
@@ -662,8 +692,8 @@ class Person
             $this->errors[] = "UID or GID out of Range";
         } else {
             $this->ldapentry->replace(array(
-                'uidNumber' => $uid,
-                'gidNumber' => $gid,
+                self::attrUidNumber => $uid,
+                self::attrGidNumber => $gid,
             ));
         }
     }
@@ -672,7 +702,7 @@ class Person
     {
         if ($loginShell != $this->loginShell) {
             $this->ldapentry->replace(array(
-                'loginShell' => $loginShell,
+                self::attrLoginShell => $loginShell,
             ));
             $this->messages[] = "Shell details changed";
         }
@@ -682,7 +712,7 @@ class Person
     {
         if ($homedir != $this->homeDirectory) {
             $this->ldapentry->replace(array(
-                'homeDirectory' => $homedir,
+                self::attrHomeDirectory => $homedir,
             ));
             $this->messages[] = "Home directory changed";
         }
@@ -700,7 +730,7 @@ class Person
                 $this->errors[] = "Email address($email) is already registered. Please use another email address for password recovery purposes";
             } elseif (filter_var($email, FILTER_VALIDATE_EMAIL)) {
                 $this->ldapentry->replace(array(
-                    'mail' => $email,
+                    self::attrMail => $email,
                 ));
                 $this->messages[] = "Email changed";
             } else {
@@ -714,7 +744,7 @@ class Person
         if ($forward != $this->mailForward) {
             if ($forward == "" || filter_var($forward, FILTER_VALIDATE_EMAIL)) {
                 $this->ldapentry->replace(array(
-                    'mailForward' => $forward,
+                    self::attrMailForward => $forward,
                 ));
                 $this->messages[] = "Email forwarding changed";
             } else {
@@ -729,11 +759,11 @@ class Person
         // Check if we are passing an already crypted password
         if (substr($password, 0, 7) == '{crypt}') {
             $this->ldapentry->replace(array(
-                'userPassword' => $password,
+                self::attrUserPassword => $password,
             ));
         } else {
             $this->ldapentry->replace(array(
-                'userPassword' => '{crypt}'.createPasswordHash($password),
+                self::attrUserPassword => '{crypt}'.createPasswordHash($password),
             ));
         }
         $this->messages[] = "Password changed";
@@ -745,16 +775,16 @@ class Person
     public function change_phone(string $home, string $work, string $mobile): void
     {
         $this->ldapentry->replace(array(
-            'homePhone' => $home,
-            'mobile' => $mobile,
-            'pager' => $work,
+            self::attrHomePhone => $home,
+            self::attrMobile => $mobile,
+            self::attrPager => $work,
         ));
     }
 
     public function change_description(string $description): void
     {
         $this->ldapentry->replace(array(
-            'description' => $description,
+            self::attrDescription => $description,
         ));
     }
 
@@ -913,8 +943,7 @@ class Person
     public function add_to_group(string $group): bool
     {
         $groupdn = "cn=$group,ou=Groups,".LDAP_BASE;
-        $groups = $this->ldapentry->getValue('memberOf', 'all');
-        if (!in_array($groupdn, $groups)) {
+        if (!in_array($groupdn, $this->memberOf)) {
             //echo "Adding to group $groupdn";
             //print_r($this->userldaparray['memberOf']);
             // Fetch entry for group and all member attributes
@@ -957,9 +986,7 @@ class Person
     public function remove_from_group(string $group): bool
     {
         $groupdn = "cn=$group,ou=Groups,".LDAP_BASE;
-        $groups = $this->ldapentry->getValue('memberOf', 'all');
-
-        if (in_array($groupdn, $groups)) {
+        if (in_array($groupdn, $this->memberOf)) {
             // Fetch entry for group and all member attributes
             $entry = $this->ldap->getEntry($groupdn, array('member'));
 
