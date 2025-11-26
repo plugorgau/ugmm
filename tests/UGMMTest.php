@@ -334,6 +334,16 @@ final class UGMMTest extends TestCase
         $this->assertText($payment->eq(4), 'td', 'test payment');
     }
 
+    public function testCommitteeRecentPayments()
+    {
+        $client = new HttpBrowser();
+        $this->login($client, 'chair', 'chairpass');
+        $page = $client->clickLink('Committee');
+        $this->assertText($page, 'title', ' - Membership List');
+        $page = $client->clickLink('Recent Payments');
+        $this->assertText($page, 'title', ' - Recent Payments');
+    }
+
     public function testResetPassword()
     {
         $client = new HttpBrowser();

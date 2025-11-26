@@ -136,7 +136,7 @@
         <th>Date</th>
         <th>Amount</th>
         <th>Membership Type</th>
-        <td># Years</td>
+        <th># Years</th>
         <th>Description</th>
         <th></th>
       </tr>
