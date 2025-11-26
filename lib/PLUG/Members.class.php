@@ -205,10 +205,15 @@ class Members
         }
     }
 
+    public function payments_since(DateTimeImmutable $date): array
+    {
+        return Payment::load_since($this->ldap, $date);
+    }
 }
 
 class Payment
 {
+    private readonly Net_LDAP2 $ldap;
     private readonly Net_LDAP2_Entry $entry;
 
     private const attrPaymentAmount = 'x-plug-paymentAmount';
@@ -226,8 +231,9 @@ class Payment
         self::attrPaymentYears,
     );
 
-    public function __construct(Net_LDAP2_Entry $entry)
+    private function __construct(Net_LDAP2 $ldap, Net_LDAP2_Entry $entry)
     {
+        $this->ldap = $ldap;
         $this->entry = $entry;
     }
 
@@ -236,30 +242,30 @@ class Payment
     }
 
     public int $amount {
-        get => intval($this->entry->getValue('x-plug-paymentAmount', 'single'));
+        get => intval($this->entry->getValue(self::attrPaymentAmount, 'single'));
     }
 
     public DateTimeImmutable $date {
-        get => new DateTimeImmutable($this->entry->getValue('x-plug-paymentDate', 'single'));
+        get => new DateTimeImmutable($this->entry->getValue(self::attrPaymentDate, 'single'));
     }
 
     public int $id {
-        get => intval($this->entry->getValue('x-plug-paymentID', 'single'));
+        get => intval($this->entry->getValue(self::attrPaymentID, 'single'));
     }
 
     public int $type {
-        get => intval($this->entry->getValue('x-plug-paymentType', 'single'));
+        get => intval($this->entry->getValue(self::attrPaymentType, 'single'));
     }
 
     public string $description {
         get {
-            $d = $this->entry->getValue('x-plug-paymentDescription', 'single');
+            $d = $this->entry->getValue(self::attrPaymentDescription, 'single');
             return $d ? $d : '';
         }
     }
 
     public int $years {
-        get => intval($this->entry->getValue('x-plug-paymentYears', 'single'));
+        get => intval($this->entry->getValue(self::attrPaymentYears, 'single'));
     }
 
     public string $formatteddate {
@@ -274,6 +280,14 @@ class Payment
         get => $this->type == FULL_TYPE ? "Full" : "Concession";
     }
 
+    public Person $member {
+        get {
+            // The member DN is our DN with the x-plug-paymentID bit stripped
+            $dn = preg_replace('/^'.self::attrPaymentID.'=\d+,/', '', $this->entry->dn());
+            return Person::load($this->ldap, $dn);
+        }
+    }
+
     public static function load_ldap(Net_LDAP2 $ldap, string $dn): Payment
     {
         $ldapentry = $ldap->getEntry($dn, self::_ATTRS);
@@ -281,7 +295,7 @@ class Payment
             throw new Exception('LDAP Error: '.$ldapentry->getMessage());
         }
 
-        return new self($ldapentry);
+        return new self($ldap, $ldapentry);
     }
 
     public static function load_for(Net_LDAP2 $ldap, string $parentdn): array
@@ -300,7 +314,33 @@ class Payment
 
         $payments = array();
         foreach ($search->entries() as $entry) {
-            $payment = new self($entry);
+            $payment = new self($ldap, $entry);
+            $payments[$payment->id] = $payment;
+        }
+        krsort($payments);
+        return $payments;
+    }
+
+    public static function load_since(Net_LDAP2 $ldap, DateTimeImmutable $date): array
+    {
+        $searchbase = 'ou=Users,'.LDAP_BASE;
+        $filter = Net_LDAP2_Filter::combine('and', array(
+            Net_LDAP2_Filter::create('objectClass', 'equals', 'x-plug-payment'),
+            Net_LDAP2_Filter::create(self::attrPaymentDate, 'greaterOrEqual', $date->format('YmdHisO')),
+        ));
+        $options = array(
+            'scope' => 'sub',
+            'attributes' => self::_ATTRS,
+        );
+
+        $search = $ldap->search($searchbase, $filter, $options);
+        if (PEAR::isError($search)) {
+            throw new Exception('LDAP Error: '.$search->getMessage());
+        }
+
+        $payments = array();
+        while ($entry = $search->popEntry()) {
+            $payment = new self($ldap, $entry);
             $payments[$payment->id] = $payment;
         }
         krsort($payments);
@@ -341,7 +381,7 @@ class Payment
             throw new Exception('LDAP Error: '.$ldapres->getMessage()); //TODO: Better error handling
         }
 
-        return new self($entry);
+        return new self($ldap, $entry);
     }
 
     private static function next_paymentID(Net_LDAP2 $ldap): int
