@@ -1,3 +1,10 @@
+plug-ugmm (0.7.5) unstable; urgency=medium
+
+  * refactor and simplify the Person class.
+  * Add a ctte-payments page showing recent payments across all members.
+
+ -- James Henstridge <james@jamesh.id.au>  Wed, 26 Nov 2025 22:02:19 +0800
+
 plug-ugmm (0.7.4) unstable; urgency=medium
 
   * ci: run the expiredmembers script as part of the test workflow
