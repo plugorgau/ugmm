@@ -49,8 +49,10 @@ class Members
             if ($entry->dn() == DEFAULT_MEMBER) {
                 continue;
             }
-            $members[] = new Person($this->ldap, $entry);
+            $member = new Person($this->ldap, $entry);
+            $members[$member->uidNumber] = $member;
         }
+        ksort($members);
         return $members;
     }
 
