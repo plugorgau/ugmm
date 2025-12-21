@@ -58,10 +58,6 @@
       <input type="text" name="membership_expiry" value="{$member->expiry}" size="10" disabled>
     </div>
 
-    <label>Groups</label>
-    <div class="field">{foreach from=$member->groups item=group name=groups}{$group}{if ! $smarty.foreach.groups.last},{/if}
-          {/foreach}</div>
-
     <label for="notes">Notes</label>
     <div class="field">
       <textarea name="notes" rows="3" cols="40">{$member->description|default}</textarea>
@@ -126,6 +122,20 @@
 {/foreach}
     </tbody>
   </table>
+
+  <h3>Group Membership</h3>
+  <form method="post" action="">
+    <input type="hidden" name="groups_form" value="1">
+    <input type="hidden" name="nonce" value="{'updategroups'|nonce}">
+    <input type="hidden" name="id" value="{$member->uidNumber}">
+
+{$member_groups = $member->groups}
+{foreach from=$all_groups item=group}
+    <label><input type="checkbox" name="groups[]" value="{$group}"{if in_array($group, $member_groups)} checked{/if}> {$group}</label><br>
+{/foreach}
+
+    <input type="submit" name="go_go_button" value="Update Membership">
+  </form>
 
   <h3>E-mail Forwarding</h3>
 

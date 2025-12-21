@@ -85,6 +85,21 @@ if (isset($_POST['payment_form']) && ! $error) {
     }
 }
 
+// Process group membership form
+if (isset($_POST['groups_form']) && !verify_nonce($_POST['nonce'], 'updategroups')) {
+    $error[] = "Attempt to double submit form? No changes made.";
+}
+
+if (isset($_POST['groups_form']) && isset($_POST['go_go_button']) && ! $error) {
+    // process form
+    // Ignore GET value and use POST value from form
+    $memberid = intval($_POST['id']);
+
+    echo $memberid;
+    var_dump($_POST['groups']);
+    exit();
+}
+
 // Process email forwarding format_ph
 if (isset($_POST['email_form']) && !verify_nonce($_POST['nonce'], 'updateemailforwarding')) {
     $error[] = "Attempt to double submit form? No changes made.";
@@ -208,6 +223,7 @@ if (!isset($member)) {
 
 
 $smarty->assign('member', $member);
+$smarty->assign('all_groups', $OrgMembers->list_groups());
 //print_r($memberdetails);
 //print_r($error);
 //print_r($success);
