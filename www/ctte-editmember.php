@@ -85,13 +85,38 @@ if (isset($_POST['payment_form']) && ! $error) {
     }
 }
 
+// Process group membership form
+if (isset($_POST['groups_form']) && !verify_nonce($_POST['nonce'], 'updategroups')) {
+    $error[] = "Attempt to double submit form? No changes made.";
+}
+
+if (isset($_POST['groups_form']) && isset($_POST['go_go_button']) && ! $error) {
+    // process form
+    // Ignore GET value and use POST value from form
+    $memberid = intval($_POST['id']);
+
+    $member = $OrgMembers->get_member_object($memberid);
+
+    // Update memberships as desired
+    $memberships = isset($_POST['groups']) ? $_POST['groups'] : array();
+    foreach ($OrgMembers->list_groups() as $group) {
+        if (in_array($group, $memberships)) {
+            $member->add_to_group($group);
+        } else {
+            $member->remove_from_group($group);
+        }
+    }
+    $success[] = "Group membership updated";
+    $success = array_merge($success, $member->get_messages());
+    $error = array_merge($error, $member->get_errors());
+}
+
 // Process email forwarding format_ph
 if (isset($_POST['email_form']) && !verify_nonce($_POST['nonce'], 'updateemailforwarding')) {
     $error[] = "Attempt to double submit form? No changes made.";
 }
 
 if (isset($_POST['email_form']) && isset($_POST['go_go_button']) && ! $error) {
-
     // process form
     // Ignore GET value and use POST value from form
     $memberid = intval($_POST['id']);
@@ -172,7 +197,6 @@ if (isset($_POST['password_form']) && !verify_nonce($_POST['nonce'], 'updatepass
 }
 
 if (isset($_POST['password_form']) && isset($_POST['go_go_button']) && ! $error) {
-
     // Ignore GET value and use POST value from form
     $memberid = intval($_POST['id']);
 
@@ -190,16 +214,19 @@ if (isset($_POST['password_form']) && isset($_POST['go_go_button']) && ! $error)
         } else {
             $member->update_ldap();
             $success = array_merge($success, $member->get_messages());
-
         }
     } else {
         $error = array_merge($error, $member->get_password_errors());
-
     }
 
     // Send reset email?
 }
 // Delete member
+
+// If we've processed a POST request, redirect back to ourself
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    redirect_with_messages('ctte-editmember?id=' . $memberid);
+}
 
 // Finished processing all the forms
 if (!isset($member)) {
@@ -208,7 +235,5 @@ if (!isset($member)) {
 
 
 $smarty->assign('member', $member);
-//print_r($memberdetails);
-//print_r($error);
-//print_r($success);
+$smarty->assign('all_groups', $OrgMembers->list_groups());
 display_page('editmember.tpl');

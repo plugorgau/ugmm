@@ -273,6 +273,121 @@ final class UGMMTest extends TestCase
         $this->assertSame($client->getResponse()->getStatusCode(), 403);
     }
 
+    public function testCommitteeEditMemberDetails()
+    {
+        $client = new HttpBrowser();
+        $this->login($client, 'chair', 'chairpass');
+        $page = $client->clickLink('Committee');
+        $this->assertText($page, 'title', ' - Membership List');
+
+        // Find the bobtest user, and click their edit link
+        $link = $page->filter('tr')->reduce(
+            function (Crawler $node, $i): bool {
+                return $node->children()->eq(1)->text() === 'bobtest';
+            }
+        )->filter('a')->link();
+        $page = $client->click($link);
+        $this->assertText($page, 'title', ' - Edit Member');
+
+        $form = $page->selectButton('Update Personal Details')->form();
+        $this->assertSame($form['uid']->getValue(), 'bobtest');
+        $this->assertSame($form['givenName']->getValue(), 'Bob');
+        $this->assertSame($form['sn']->getValue(), 'Test');
+        $this->assertSame($form['mail']->getValue(), 'bob@plug.org.au');
+        $this->assertSame($form['street']->getValue(), '42 Test Bvd, Nowheresville 6969');
+        $this->assertSame($form['homePhone']->getValue(), '');
+        $this->assertSame($form['pager']->getValue(), '');
+        $this->assertSame($form['mobile']->getValue(), '0469 000000');
+        $this->assertSame($form['notes']->getValue(), 'A test user created by Alastair');
+
+        $page = $client->submitForm('Update Personal Details', [
+            'homePhone' => '1234 5678',
+        ]);
+        $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#successmessages li', 'Member details updated');
+
+        // Now revert change
+        $page = $client->submitForm('Update Personal Details', [
+            'homePhone' => '',
+        ]);
+        $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#successmessages li', 'Member details updated');
+    }
+
+    public function testCommitteeEditMemberGroups()
+    {
+        $client = new HttpBrowser();
+        $this->login($client, 'chair', 'chairpass');
+        $page = $client->clickLink('Committee');
+        $this->assertText($page, 'title', ' - Membership List');
+
+        // Find the bobtest user, and click their edit link
+        $link = $page->filter('tr')->reduce(
+            function (Crawler $node, $i): bool {
+                return $node->children()->eq(1)->text() === 'bobtest';
+            }
+        )->filter('a')->link();
+        $page = $client->click($link);
+        $this->assertText($page, 'title', ' - Edit Member');
+
+        $form = $page->selectButton('Update Group Membership')->form();
+        $this->assertSame($form['groups'][0]->getLabel()->textContent, ' admin');
+        $this->assertSame($form['groups'][0]->getValue(), null);
+        $this->assertSame($form['groups'][1]->getLabel()->textContent, ' committee');
+        $this->assertSame($form['groups'][1]->getValue(), null);
+        $this->assertSame($form['groups'][2]->getLabel()->textContent, ' librarian');
+        $this->assertSame($form['groups'][2]->getValue(), null);
+        $this->assertSame($form['groups'][3]->getLabel()->textContent, ' webslave');
+        $this->assertSame($form['groups'][3]->getValue(), null);
+
+        // Add the user to the librarian group
+        $form['groups'][2]->tick();
+        $page = $client->submit($form);
+        $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#successmessages li', 'Group membership updated');
+        $this->assertText($page, '#successmessages li', 'Added to librarian group');
+
+        // We're now a member of the librarian group
+        $form = $page->selectButton('Update Group Membership')->form();
+        $this->assertSame($form['groups'][0]->getValue(), null);
+        $this->assertSame($form['groups'][1]->getValue(), null);
+        $this->assertSame($form['groups'][2]->getValue(), 'librarian');
+        $this->assertSame($form['groups'][3]->getValue(), null);
+
+        // Switch to the admin group
+        $form['groups'][0]->tick();
+        $form['groups'][2]->untick();
+        $page = $client->submit($form);
+        $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#successmessages li', 'Added to admin group');
+        $this->assertText($page, '#successmessages li', 'Removed from librarian group');
+
+        // We're now a member of the librarian group
+        $form = $page->selectButton('Update Group Membership')->form();
+        $this->assertSame($form['groups'][0]->getValue(), 'admin');
+        $this->assertSame($form['groups'][1]->getValue(), null);
+        $this->assertSame($form['groups'][2]->getValue(), null);
+        $this->assertSame($form['groups'][3]->getValue(), null);
+
+        // Remove from the admin group
+        $form['groups'][0]->untick();
+        $page = $client->submit($form);
+        $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#successmessages li', 'Removed from admin group');
+
+        // We're now a member of no groups
+        $form = $page->selectButton('Update Group Membership')->form();
+        $this->assertSame($form['groups'][0]->getValue(), null);
+        $this->assertSame($form['groups'][1]->getValue(), null);
+        $this->assertSame($form['groups'][2]->getValue(), null);
+        $this->assertSame($form['groups'][3]->getValue(), null);
+
+        // Submitting with no boxes checked works
+        $form = $page->selectButton('Update Group Membership')->form();
+        $page = $client->submit($form);
+        $this->assertText($page, 'title', ' - Edit Member');
+    }
+
     public function testCommitteeNewMember()
     {
         $client = new HttpBrowser();

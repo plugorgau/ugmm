@@ -23,6 +23,12 @@ final class MembersTest extends TestCase
         return $this->members->new_member($uid, "First", "Last", "123 Fake St", "08 9555 1111", "08 9555 2222", "08 9555 3333", $uid."@example.com", "password", "notes");
     }
 
+    public function testListGroups(): void
+    {
+        $groups = $this->members->list_groups();
+        $this->assertSame($groups, array('admin', 'committee', 'librarian', 'webslave'));
+    }
+
     public function testNewMember(): void
     {
         $member = $this->newMember();
