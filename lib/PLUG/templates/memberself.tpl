@@ -33,14 +33,22 @@ to edit them.
 
 </p>
 
-<table border="0">
-<tr><th>E-mail Address</th><td>{foreach from=$memberself->mail item=mail}{$mail}<br/>{/foreach}</td></tr>
-<tr><th>Postal Address</th><td>{$memberself->street|default:'N/A'}</td></tr>
-<tr><th>Home Phone</th><td>{$memberself->homePhone|default:'N/A'}</td></tr>
-<tr><th>Work Phone</th><td>{$memberself->pager|default:'N/A'}</td></tr>
-<tr><th>Mobile Phone</th><td>{$memberself->mobile|default:'N/A'}</td></tr>
+<div class="grid">
+<div class="label">E-mail Address</div>
+<div>{foreach from=$memberself->mail item=mail}{$mail}<br/>{/foreach}</div>
 
-</table>
+<div class="label">Postal Address</div>
+<div>{$memberself->street|default:'N/A'}</div>
+
+<div class="label">Home Phone</div>
+<div>{$memberself->homePhone|default:'N/A'}</div>
+
+<div class="label">Work Phone</div>
+<div>{$memberself->pager|default:'N/A'}</div>
+
+<div class="label">Mobile Phone</div>
+<div>{$memberself->mobile|default:'N/A'}</div>
+</div>
 
 <p>
 <ul><li><a href="{$submenuitems.home.editselfdetails.link}">Edit your personal details</a>
@@ -63,12 +71,20 @@ to edit them.
 <p>Your shell account is disabled. You will not be able to login to any services other than this members area.</p>
 {/if}
 
-<table border="0">
-<tr><th>Username</th><td>{$memberself->uid}</td></tr>
-<tr><th>Unix User ID</th><td>{$memberself->uidNumber}</td></tr>
-<tr><th>Shell</th><td>{$memberself->loginShell}</td></tr>
-<tr><th>Account expires</th><td>{$memberself->formattedexpiry}</td></tr>
-</table>
+<div class="grid">
+<div class="label">Username</div>
+<div>{$memberself->uid}</div>
+
+<div class="label">Unix User ID</div>
+<div>{$memberself->uidNumber}</div>
+
+<div class="label">Shell</div>
+<div>{$memberself->loginShell}</div>
+
+<div class="label">Account expires</div>
+<div>{$memberself->formattedexpiry}</div>
+</div>
+
 <p>If you do not require your PLUG account (including POP3/IMAP access), you
 may wish to disable it using the link below. You might want to ensure your
 <a href="#email">mail forwarding</a> is set up before doing so, to avoid
