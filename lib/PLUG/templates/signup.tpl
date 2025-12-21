@@ -52,82 +52,83 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
 <p>
 
   <form method="post" action="" enctype=
-  "application/x-www-form-urlencoded" id="membersignup">
+  "application/x-www-form-urlencoded" class="grid">
     <input name="membersignup_form" value="1" type="hidden">
 
+    <p class="hints"><strong>Your Details</strong></p>
+
+    <label for="givenName">First name</label>
+    <div class="field">
+      <input id="givenName" name="givenName" type="text" size="30" placeholder="First Name" required autofocus value="{$newmember.givenName|default}"/>
+    </div>
+
+    <label for="sn">Last name</label>
+    <div class="field">
+      <input id="sn" name="sn" type="text" size="30" placeholder="Surname" value="{$newmember.sn|default}"/>
+    </div>
+
+    <label for="mail">Email</label>
+    <div class="field">
+      <input id="mail" name="mail" type="email" size="30" placeholder="name@example.com" required value="{$newmember.mail|default}"/>
+    </div>
+
+    <label for="street">Postal Address</label>
+    <div class="field">
+      <input id="street" name="street" type="text" size="50" required value="{$newmember.street|default}"/>
+    </div>
+
+    <label for="homePhone">Home Phone</label>
+    <div class="field">
+      <input id="homePhone" name="homePhone" type="tel" size="20" value="{$newmember.homePhone|default}"/>
+    </div>
+
+    <label for="pager">Work Phone</label>
+    <div class="field">
+      <input id="pager" name="pager" type="tel" size="20" value="{$newmember.pager|default}"/>
+    </div>
+
+    <label for="mobile">Mobile Phone</label>
+    <div class="field">
+      <input id="mobile" name="mobile" type="tel" size="20" value="{$newmember.mobile|default}"/>
+    </div>
+
+    <p class="hints">
+      <strong>Account Details</strong><br>
+      These account details are not related to your mailing list subscription.
+    </p>
+
+    <label for="uid">Username</label>
+    <div class="field">
+      <input id="uid" name="uid" type="text" size="30" required value="{$newmember.uid|default}" placeholder="Choose a username"/><div id="uidcheckLoading"></div>
+      <div id="uidcheck"></div>
+      <div>Your username becomes the start of your @members.plug.org.au email address</div>
+    </div>
 
 
-    <fieldset>
-        <legend>Your Details</legend>
-        <ol>
-            <li>
-                <label for="givenName">First name</label>
-                <input id="givenName" name="givenName" type="text" placeholder="First Name" required autofocus value="{$newmember.givenName|default}"/>
-            </li>
-            <li>
-                <label for="sn">Last name</label>
-                <input id="sn" name="sn" type="text" placeholder="Surname" value="{$newmember.sn|default}"/>
-            </li>
+    <label for="password">Password</label>
+    <div class="field">
+      <input id="password" name="password" type="password" placeholder="Choose a password"/>
+      <div>If no password is chosen, your account will be locked until you set a password using the password reset facility</div>
+    </div>
 
-            <li>
-                <label for="mail">Email</label>
-                <input id="mail" name="mail" type="email" placeholder="name@example.com" required value="{$newmember.mail|default}"/>
-            </li>
 
-            <li>
-                <label for="street">Postal Address</label>
-                <input id="street" name="street" type="text" required value="{$newmember.street|default}"/>
-            </li>
+    <label for="vpassword">Verify Password</label>
+    <div class="field">
+      <input id="vpassword" name="vpassword" type="password" placeholder="Verify Password"/>
+    </div>
 
-            <li>
-                <label for="homePhone">Home Phone</label>
-                <input id="homePhone" name="homePhone" type="tel" value="{$newmember.homePhone|default}"/>
-            </li>
-            <li>
-                <label for="pager">Work Phone</label>
-                <input id="pager" name="pager" type="tel" value="{$newmember.pager|default}"/>
-            </li>
-            <li>
-                <label for="mobile">Mobile Phone</label>
-                <input id="mobile" name="mobile" type="tel" value="{$newmember.mobile|default}"/>
-            </li>
-        </ol>
-    </fieldset>
+    <p class="hints">
+      <strong>Other Details</strong>
+    </p>
 
-    <fieldset>
-        <legend>Account Details</legend>
-        These account details are not related to your mailing list subscription.
-        <ol>
-            <li>
-                <label for="uid">Username</label>
-                <input id="uid" name="uid" type="text" required value="{$newmember.uid|default}" placeholder="Choose a username"/><div id="uidcheckLoading"></div>
-                <div id="uidcheck"></div>
-                <p>Your username becomes the start of your @members.plug.org.au email address</p>
-            </li>
-            <li>
-                <label for="password">Password</label>
-                <input id="password" name="password" type="password" placeholder="Choose a password"/><p>If no password is chosen, your account will be locked until you set a password using the password reset facility</p>
-            </li>
-            <li>
-                <label for="vpassword">Verify Password</label>
-                <input id="vpassword" name="vpassword" type="password" placeholder="Verify Password"/>
-            </li>
-        </ol>
-    </fieldset>
+    <label for="notes">Other notes?</label>
+    <div class="field">
+      <textarea id="notes" name="notes" rows="3" cols="40" placeholder="Any other details we may need to know?">{$newmembernotes|default}</textarea>
+    </div>
 
-    <fieldset>
-        <legend>Other Details</legend>
-        <ol>
-            <li>
-                <label for="notes">Other notes?</label>
-                <textarea id="notes" name="notes" rows="4" placeholder="Any other details we may need to know?">{$newmembernotes|default}</textarea>
-            </li>
-        </ol>
-    </fieldset>
-    <fieldset>
-        <button name="go_go_button" value=
-    "Signup" type="submit">Signup</button>
-    </fieldset>
+    <div class="actions">
+      <button name="go_go_button" value="Signup" type="submit">Signup</button>
+    </div>
   </form>
 
 {/block}

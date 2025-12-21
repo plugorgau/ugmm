@@ -1,14 +1,14 @@
 
 
 html { background: #f0f0f0; font-family: helvetica, arial; /*font-size: 12px*/ }
-body { background: #ffffff; max-width: 960px; margin: 10px auto; padding: 1em; 
+body { background: #ffffff; max-width: 960px; margin: 10px auto; padding: 1em;
 	border-left: 1px solid #e0e0e0; border-right: 1px solid #e0e0e0 }
 footer { border-top: 1px dashed #e0e0e0; margin-top: 1em }
-table th { text-align: right; font-size: 1em }
 h1 { font-size: 2em; }
 h2 { font-size: 1.5em; }
 h3 { font-size: 1.2em; }
 
+/* navigation menus */
 #toplevelmenu {
     display: flex;
     margin: 0;
@@ -68,8 +68,7 @@ summary > h3 {
 }
 
 
-/* Signup form, new css */
-
+/* grid layout forms */
 .grid {
     display: grid;
     grid-template-columns: max-content 1fr;
@@ -105,113 +104,7 @@ summary > h3 {
     }
 }
 
-form#membersignup, form#membersignup ol {
-    margin: 0;
-    padding: 0;
-}
-
-
-
-form#membersignup {
-    background: #006699;
-    border-radius: 5px;
-    counter-reset: fieldsets;
-    padding: 20px;
-    width: 400px;
-    /*color: #111111;*/
-}
-
-form#membersignup fieldset {
-    border: none;
-    margin-bottom: 10px;
-}
-form#membersignup fieldset:last-of-type {
-    margin-bottom: 0;
-}
-
-form#membersignup legend {
-    color: #cccccc;
-    font-size: 16px;
-    font-weight: bold;
-    padding-bottom: 10px;
-    text-shadow: 0 1px 1px black;
-}
-
-form#membersignup > fieldset > legend:before {
-    content: "Step " counter(fieldsets) ": ";
-    counter-increment: fieldsets;
-}
-form#membersignup ol li {
-    background: #4D94B8;
-    background: rgba(255,255,255,.3);
-    border-color: #B8D4E3;
-    border-color: rgba(255,255,255,.6);
-    border-style: solid;
-    border-width: 2px;
-    border-radius: 5px;
-    line-height: 30px;
-    list-style: none;
-    padding: 5px 10px;
-    margin-bottom: 2px;
-}
-
-form#membersignup ol li p {
-    line-height: 20px;
-}
-
-form#membersignup ol ol li {
-    background: none;
-    border: none;
-    float: left;
-}
-
-form#membersignup label {
-    float: left;
-    font-size: 13px;
-    width: 110px;
-}
-
-
-
-form#membersignup input:not([type=radio]),
-form#membersignup textarea {
-    background: #ffffff;
-    border: none;
-    border-radius: 3px;
-    font: italic 13px Georgia, "Times New Roman", Times, serif;
-    outline: none;
-    padding: 5px;
-    width: 200px;
-}
-form#membersignup input:not([type=submit]):focus,
-form#membersignup textarea:focus {
-    background: #eaeaea;    
-}
-
-form#membersignup button {
-    border-radius: 20px;
-    color: #ffffff;
-    display: block;
-    font: 18px Georgia, "Times New Roman", Times, serif;
-    letter-spacing: 1px;
-    margin: auto;
-    padding: 7px 25px;
-    text-shadow: 0 1px 1px #000000;
-    text-transform: uppercase;
-    
-    background: #4D94B8;
-    background: rgba(255,255,255,.3);
-    border-color: #B8D4E3;
-    border-color: rgba(255,255,255,.6);
-    border-style: solid;
-    border-width: 2px;
-
-}
-form#membersignup button:hover {
-    background: #294e61;
-    cursor: pointer;
-}
-
+/* signup form uid checker */
 #uidcheckLoading {
     background: url('ajax-loader.gif');
     margin-top: 5px;
