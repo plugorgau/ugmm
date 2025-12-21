@@ -55,9 +55,9 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
   "application/x-www-form-urlencoded" class="grid">
     <input name="membersignup_form" value="1" type="hidden">
 
-    <p class="hints"><strong>Your Details</strong></p>
+    <div class="hints"><h2>Your Details</h2></div>
 
-    <label for="givenName">First name</label>
+    <label for="givenName">First name <span class="required">*</span></label>
     <div class="field">
       <input id="givenName" name="givenName" type="text" size="30" placeholder="First Name" required autofocus value="{$newmember.givenName|default}"/>
     </div>
@@ -67,12 +67,12 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
       <input id="sn" name="sn" type="text" size="30" placeholder="Surname" value="{$newmember.sn|default}"/>
     </div>
 
-    <label for="mail">Email</label>
+    <label for="mail">Email <span class="required">*</span></label>
     <div class="field">
       <input id="mail" name="mail" type="email" size="30" placeholder="name@example.com" required value="{$newmember.mail|default}"/>
     </div>
 
-    <label for="street">Postal Address</label>
+    <label for="street">Postal Address <span class="required">*</span></label>
     <div class="field">
       <input id="street" name="street" type="text" size="50" required value="{$newmember.street|default}"/>
     </div>
@@ -92,12 +92,12 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
       <input id="mobile" name="mobile" type="tel" size="20" value="{$newmember.mobile|default}"/>
     </div>
 
-    <p class="hints">
-      <strong>Account Details</strong><br>
+    <div class="hints">
+      <h2>Account Details</h2>
       These account details are not related to your mailing list subscription.
-    </p>
+    </div>
 
-    <label for="uid">Username</label>
+    <label for="uid">Username <span class="required">*</span></label>
     <div class="field">
       <input id="uid" name="uid" type="text" size="30" required value="{$newmember.uid|default}" placeholder="Choose a username"/><div id="uidcheckLoading"></div>
       <div id="uidcheck"></div>
@@ -105,21 +105,21 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
     </div>
 
 
-    <label for="password">Password</label>
+    <label for="password">Password <span class="required">*</span></label>
     <div class="field">
       <input id="password" name="password" type="password" placeholder="Choose a password"/>
       <div>If no password is chosen, your account will be locked until you set a password using the password reset facility</div>
     </div>
 
 
-    <label for="vpassword">Verify Password</label>
+    <label for="vpassword">Verify Password <span class="required">*</span></label>
     <div class="field">
       <input id="vpassword" name="vpassword" type="password" placeholder="Verify Password"/>
     </div>
 
-    <p class="hints">
-      <strong>Other Details</strong>
-    </p>
+    <div class="hints">
+      <h2>Other Details</h2>
+    </div>
 
     <label for="notes">Other notes?</label>
     <div class="field">
