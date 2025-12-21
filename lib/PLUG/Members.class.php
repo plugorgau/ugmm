@@ -200,6 +200,34 @@ class Members
         return $newmember;
     }
 
+    public function list_groups(): array
+    {
+        $searchbase = "ou=Groups,".LDAP_BASE;
+        $filter = Net_LDAP2_Filter::create('objectClass', 'equals', 'groupOfNames');
+        $options = array(
+            'scope' => 'one',
+            'attributes' => array('cn'),
+        );
+
+        $search = $this->ldap->search($searchbase, $filter, $options);
+
+        if (PEAR::isError($search)) {
+            throw new Exception('LDAP Error: '.$search->getMessage());
+        }
+
+        $groups = array();
+        while ($entry = $search->popEntry()) {
+            $groups[] = $entry->getValue('cn', 'single');
+        }
+
+        // Filter out membership management groups
+        $filtergroups = array('expiredmembers', 'currentmembers', 'overduemembers', 'pendingmembers', 'shell');
+        $groups = array_diff($groups, $filtergroups);
+
+        sort($groups);
+        return $groups;
+    }
+
     public function delete_member(string $dn): void
     {
         if ($this->ldap->dnExists($dn)) {
