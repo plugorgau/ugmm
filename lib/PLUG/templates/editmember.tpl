@@ -14,39 +14,49 @@
     <div class="field">{$member->uidNumber}</div>
 
     <label for="uid">Username</label>
-    <div class="field"><input name="uid" value="{$member->uid}"
-          size="30" type="text"></div>
+    <div class="field">
+      <input name="uid" value="{$member->uid}" size="30" type="text">
+    </div>
 
     <label for="givenName">First Name</label>
-    <div class="field"><input name="givenName" value="{$member->givenName}"
-          size="30" type="text"></div>
+    <div class="field">
+      <input name="givenName" value="{$member->givenName}" size="30" type="text">
+    </div>
 
     <label for="sn">Last Name</label>
-    <div class="field"><input name="sn" value="{$member->sn}" size=
-          "30" type="text"></div>
+    <div class="field">
+      <input name="sn" value="{$member->sn}" size="30" type="text">
+    </div>
 
     <label for="mail">E-mail Address</label>
-    <div class="field"><input name="mail" value="{$member->mail}" size="30" type="text"></div>
+    <div class="field">
+      <input name="mail" value="{$member->mail}" size="30" type="text">
+    </div>
 
     <label for="street">Postal Address</label>
-    <div class="field"><input name="street" value="{$member->street|default}"
-          size="50" type="text"></div>
+    <div class="field">
+      <input name="street" value="{$member->street|default}" size="50" type="text">
+    </div>
 
     <label for="homePhone">Home Phone</label>
-    <div class="field"><input name="homePhone" size="20" type="text" value=
-          "{$member->homePhone|default}"></div>
+    <div class="field">
+      <input name="homePhone" size="20" type="text" value="{$member->homePhone|default}">
+    </div>
 
     <label for="pager">Work Phone</label>
-    <div class="field"><input name="pager" value="{$member->pager|default}"
-          size="20" type="text"></div>
+    <div class="field">
+      <input name="pager" value="{$member->pager|default}" size="20" type="text">
+    </div>
 
     <label for="mobile">Mobile Phone</label>
-    <div class="field"><input name="mobile" value="{$member->mobile|default}"
-          size="20" type="text"></div>
+    <div class="field">
+      <input name="mobile" value="{$member->mobile|default}" size="20" type="text">
+    </div>
 
     <label for="membership_expiry">Membership Expires</label>
-    <div class="field"><input name="membership_expiry" value=
-          "{$member->expiry}" size="10" type="text" disabled></div>
+    <div class="field">
+      <input name="membership_expiry" value="{$member->expiry}" size="10" type="text" disabled>
+    </div>
 
     <label>Groups</label>
     <div class="field">{foreach from=$member->groups item=group name=groups}{$group}{if ! $smarty.foreach.groups.last},{/if}
@@ -157,8 +167,7 @@
   <p>It is recommended that you force users to change their password using the password reset facility. You can direct the user to <a href="resetpassword">Password Reset</a> or can change the password to something random and force a reset via email.</p>
   <p>If locking an account due to abuse, disable the shell account as well</p>
 
-  <form method="post" action="" enctype=
-  "application/x-www-form-urlencoded">
+  <form method="post" action="" enctype="application/x-www-form-urlencoded">
     <input name="passwordlock_form" value="1" type="hidden">
     <input name="nonce" value="{'lockpassword'|nonce}" type="hidden">
     <input name="id" value="{$member->uidNumber}" type="hidden">
@@ -166,37 +175,24 @@
     <input type="submit" name="force_pw_change" value="Disable password and force reset"/><p>This will disable the account by resetting the password to an invalid value and disable shell access. Please direct the user to <a href="resetpassword">Password Reset</a> to renable access.</p>
 </form>
 
-  <form method="post" action="" enctype=
-  "application/x-www-form-urlencoded">
+  <form method="post" action="" enctype="application/x-www-form-urlencoded" class="grid">
     <input name="password_form" value="1" type="hidden">
     <input name="nonce" value="{'updatepassword'|nonce}" type="hidden">
     <input name="id" value="{$member->uidNumber}" type="hidden">
 
-    <table>
-      <tbody>
-        <tr>
-          <th>New Password</th>
+    <label for="new_password">New Password</label>
+    <div class="field">
+      <input name="new_password" size="20" type="password">
+    </div>
 
-          <td><input name="new_password" size="20" type=
-          "password"></td>
-        </tr>
+    <label for="verify_password">Verify Password</label>
+    <div class="field">
+      <input name="verify_password" size="20" type="password">
+    </div>
 
-        <tr>
-          <th>Verify Password</th>
-
-          <td><input name="verify_password" size="20" type=
-          "password"></td>
-        </tr>
-
-        <tr>
-          <td></td>
-
-          <td><input name="go_go_button" value="Reset Password"
-          type="submit"><br></td>
-        </tr>
-      </tbody>
-    </table>
-
+    <div class="actions">
+      <input name="go_go_button" value="Reset Password" type="submit">
+    </div>
   </form>
 
   <em>Delete User Not Implemented at this time</em>
