@@ -29,35 +29,29 @@
 
   <p>Accounts detected with weak passwords will be disabled</p>
 
-  <form method="post" action="" enctype=
-  "application/x-www-form-urlencoded">
+  <form method="post" action="" enctype="application/x-www-form-urlencoded" class="grid">
     <input name="nonce" value="{'editselfpassword'|nonce}" type="hidden">
     <input type="hidden" name="edit_selfpassword" value="1">
 
-    <table border="0">
-      <tr>
-        <th>Current Password</th>
+    <label for="password">Current Password</label>
+    <div class="field">
+      <input type="password" name="current_password" size="30">
+    </div>
 
-        <td><input type="password" name="current_password" size=
-        "30"></td>
-      </tr>
+    <label for="newpassword">New Password</label>
+    <div class="field">
+      <input type="password" name="newpassword" size="30">
+    </div>
 
-      <tr>
-        <th>New Password</th>
+    <label for="newpasswordconfirm">Verify Password</label>
+    <div class="field">
+      <input type="password" name="newpasswordconfirm" size="30">
+    </div>
 
-        <td><input type="password" name="newpassword" size=
-        "30"></td>
-      </tr>
-
-      <tr>
-        <th>Verify Password</th>
-
-        <td><input type="password" name="newpasswordconfirm" size=
-        "30"></td>
-      </tr>
-    </table><input type="submit" name="go_go_button" value=
-    "Change Password"> <input type="submit" name="oops_button"
-    value="Cancel">
+    <div class="actions">
+      <input type="submit" name="go_go_button" value="Change Password">
+      <input type="submit" name="oops_button" value="Cancel">
+    </div>
   </form>
 
 {/block}

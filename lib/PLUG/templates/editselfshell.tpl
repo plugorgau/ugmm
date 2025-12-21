@@ -19,42 +19,34 @@
     <p>Your shell account is disabled</p>
     <p><input type="submit" name="enable_shell" value=
     "Enable Shell Account"></p>
-
     {/if}
 
     <h3>Shell Account Details</h3>
 
-    <table border="0">
-      <tr>
-        <th>Username</th>
+    <div class="grid">
+      <div class="label">Username</div>
+      <div class="field">{$member->uid}</div>
 
-        <td>{$member->uid}</td>
-      </tr>
+      <div class="label">Unix User ID</div>
+      <div class="field">{$member->uidNumber}</div>
 
-      <tr>
-        <th>Unix User ID</th>
+      <div class="label">Account expires</div>
+      <div class="field">{$member->formattedexpiry}</div>
 
-        <td>{$member->uidNumber}</td>
-      </tr>
-
-      <tr>
-        <th>Account expires</th>
-
-        <td>{$member->formattedexpiry}</td>
-      </tr>
-
-      <tr>
-        <th>Shell</th>
-
-        <td><select name="account_shell">
+      <label for="account_shell">Shell</label>
+      <div class="field">
+        <select name="account_shell">
         {foreach from=$shells item=shell key=name}
           <option {if $shell==$member->loginShell}selected="selected"{/if} value="{$name}" >{$name}</option>
         {/foreach}
-        </select></td>
-      </tr>
-    </table><input type="submit" name="go_go_button" value=
-    "Change Shell"> <input type="submit" name="oops_button" value=
-    "Cancel">
+        </select>
+      </div>
+
+      <div class="actions">
+        <input type="submit" name="go_go_button" value="Change Shell">
+        <input type="submit" name="oops_button" value="Cancel">
+      </div>
+    </div>
 
     <!-- byobu-enable-->
 

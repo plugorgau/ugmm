@@ -91,7 +91,7 @@ summary > h3 {
     max-width: 90vw;
 }
 
-.grid .actions {
+.grid .hints, .grid .actions {
     grid-column: 1 / -1;
 }
 

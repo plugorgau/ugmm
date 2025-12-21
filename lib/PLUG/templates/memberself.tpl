@@ -35,19 +35,19 @@ to edit them.
 
 <div class="grid">
 <div class="label">E-mail Address</div>
-<div>{foreach from=$memberself->mail item=mail}{$mail}<br/>{/foreach}</div>
+<div class="field">{foreach from=$memberself->mail item=mail}{$mail}<br/>{/foreach}</div>
 
 <div class="label">Postal Address</div>
-<div>{$memberself->street|default:'N/A'}</div>
+<div class="field">{$memberself->street|default:'N/A'}</div>
 
 <div class="label">Home Phone</div>
-<div>{$memberself->homePhone|default:'N/A'}</div>
+<div class="field">{$memberself->homePhone|default:'N/A'}</div>
 
 <div class="label">Work Phone</div>
-<div>{$memberself->pager|default:'N/A'}</div>
+<div class="field">{$memberself->pager|default:'N/A'}</div>
 
 <div class="label">Mobile Phone</div>
-<div>{$memberself->mobile|default:'N/A'}</div>
+<div class="field">{$memberself->mobile|default:'N/A'}</div>
 </div>
 
 <p>
@@ -73,16 +73,16 @@ to edit them.
 
 <div class="grid">
 <div class="label">Username</div>
-<div>{$memberself->uid}</div>
+<div class="field">{$memberself->uid}</div>
 
 <div class="label">Unix User ID</div>
-<div>{$memberself->uidNumber}</div>
+<div class="field">{$memberself->uidNumber}</div>
 
 <div class="label">Shell</div>
-<div>{$memberself->loginShell}</div>
+<div class="field">{$memberself->loginShell}</div>
 
 <div class="label">Account expires</div>
-<div>{$memberself->formattedexpiry}</div>
+<div class="field">{$memberself->formattedexpiry}</div>
 </div>
 
 <p>If you do not require your PLUG account (including POP3/IMAP access), you
