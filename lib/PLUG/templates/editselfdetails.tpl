@@ -11,49 +11,40 @@
     <li>Required fields are marked with a <sup>*</sup>.</li>
   </ul>
 
-  <form method="post" action="" enctype=
-  "application/x-www-form-urlencoded">
-    <input name="nonce" value="{'editselfdetails'|nonce}" type="hidden">
-    <input type="hidden" name="edit_selfmember" value="1"><input type=
-    "hidden" name="forced" value="0">
+  <form method="post" action="" class="grid">
+    <input type="hidden" name="nonce" value="{'editselfdetails'|nonce}">
+    <input type="hidden" name="edit_selfmember" value="1">
+    <input type="hidden" name="forced" value="0">
 
-    <table border="0">
-      <tr>
-        <th>E-mail Address<sup>*</sup></th>
+    <label for="email_address">E-mail Address <span class="required">*</span></label>
+    <div class="field">
+      <input type="email" name="email_address" value="{$member->mail}" size="30">
+    </div>
 
-        <td><input type="text" name="email_address" value=
-        "{$member->mail}" size="30"></td>
-      </tr>
+    <label for="street_address">Postal Address <span class="required">*</span></label>
+    <div class="field">
+      <input type="text" name="street_address" value="{$member->street|default}" size="50">
+    </div>
 
-      <tr>
-        <th>Postal Address<sup>*</sup></th>
+    <label for="home_phone">Home Phone</label>
+    <div class="field">
+      <input type="tel" name="home_phone" value="{$member->homePhone|default}" size="20">
+    </div>
 
-        <td><input type="text" name="street_address" value=
-        "{$member->street|default}" size="50"></td>
-      </tr>
+    <label for="work_phone">Work Phone</label>
+    <div class="field">
+      <input type="tel" name="work_phone" value="{$member->pager|default}" size="20">
+    </div>
 
-      <tr>
-        <th>Home Phone</th>
+    <label for="mobile_phone">Mobile Phone</label>
+    <div class="field">
+      <input type="tel" name="mobile_phone" value="{$member->mobile|default}" size="20">
+    </div>
 
-        <td><input type="text" name="home_phone" size="20" value="{$member->homePhone|default}"></td>
-      </tr>
-
-      <tr>
-        <th>Work Phone</th>
-
-        <td><input type="text" name="work_phone" value=
-        "{$member->pager|default}" size="20"></td>
-      </tr>
-
-      <tr>
-        <th>Mobile Phone</th>
-
-        <td><input type="text" name="mobile_phone" value=
-        "{$member->mobile|default}" size="20"></td>
-      </tr>
-    </table><input type="submit" name="go_go_button" value=
-    "Update"> <input type="submit" name="oops_button" value=
-    "Cancel">
+    <div class="actions">
+      <input type="submit" name="go_go_button" value="Update">
+      <input type="submit" name="oops_button" value="Cancel">
+    </div>
   </form>
 
 {/block}

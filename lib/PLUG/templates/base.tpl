@@ -5,7 +5,7 @@
 
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
 <meta name="generator" content="UGMM V0.7" />
-<!-- CSS Stylesheet -->
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" type="text/css" href="style.css" id="plug_css" />
 <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
 {block name=head_extra}{/block}

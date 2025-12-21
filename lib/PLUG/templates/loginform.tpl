@@ -8,8 +8,6 @@ are not yet a financial member, you may be interested in
 <a href="{$external_links.membership}">joining PLUG</a>. (<a href="signup">Signup Form</a>)
 
 </p><h3>Log in</h3>
-<form action="" method="POST">
-<input name="plug_members_auth" value="1" type="hidden">
 {if isset($error)}
 <div class="ui-widget messagewidget" id="errormessages">
         <div class="ui-state-error ui-corner-all"  style="margin-top: 20px; padding: 0pt 0.7em;" >
@@ -18,26 +16,23 @@ are not yet a financial member, you may be interested in
         </div>
 </div>
 {/if}
-<table border="0">
-<tbody><tr>
- <td>PLUG Username</td>
+<form method="post" action="" class="grid">
+  <input type="hidden" name="plug_members_auth" value="1">
 
- <td><input size="15" name="username" type="text"></td>
-</tr>
-<tr>
- <td>Password</td>
- <td><input size="15" name="password" type="password"></td>
-</tr>
-<tr>
- <td colspan="2" align="right">
+  <label for="username">PLUG Username</label>
+  <div class="field">
+    <input type="text" name="username" size="15">
+  </div>
 
-  <input name="submit" value="Log In" type="submit">
- <br/><a style="font-size: 80%" href='resetpassword'>Forgotten your password?</a>
- </td>
+  <label for="password">Password</label>
+  <div class="field">
+    <input type="password" name="password" size="15">
+  </div>
 
-</tr>
-</tbody></table>
-
+  <div class="actions">
+    <input type="submit" name="submit" value="Log In">
+    <a href="resetpassword">Forgotten your password?</a>
+  </div>
 </form>
 
 <p><b>Note:</b> You will need to enable cookies in your browser to log in.

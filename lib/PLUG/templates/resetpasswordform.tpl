@@ -9,17 +9,35 @@ Please continue to <a href="memberself">login page to login</a> with your new pa
 
 {elseif $resetform}
 <p>Set a new password for {$username}.</p>
-<form method="post" action="" enctype="application/x-www-form-urlencoded">
-    <input name="newpasswordreset_form" value="1" type="hidden">
-    Password: <input type="password" name="newpassword" value=""/><br/>
-    Password again: <input type="password" name="newpasswordconfirm" value=""/>    <br/>
+<form method="post" action="" class="grid">
+  <input type="hidden" name="newpasswordreset_form" value="1">
+
+  <label for="newpassword">Password</label>
+  <div class="field">
+    <input type="password" name="newpassword" value=""/>
+  </div>
+
+  <label for="newpasswordconfirm">Password again</label>
+  <div class="field">
+    <input type="password" name="newpasswordconfirm" value=""/>
+  </div>
+
+  <div class="actions">
     <input type="submit" value="Change Password"/>
+  </div>
 </form>
 {else}
-<form method="post" action="" enctype="application/x-www-form-urlencoded">
-    <input name="resetpassword_form" value="1" type="hidden">
-    Email Address: <input name="email" value=""/>
+<form method="post" action="" class="grid">
+  <input type="hidden" name="resetpassword_form" value="1">
+
+  <label for="email">Email Address</label>
+  <div class="field">
+    <input type="email" name="email" value=""/>
+  </div>
+
+  <div class="actions">
     <input type="submit" value="Send Reset Email"/>
+  </div>
 </form>
 {/if}
 

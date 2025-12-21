@@ -63,27 +63,29 @@ final class UGMMTest extends TestCase
         $client = new HttpBrowser();
         $page = $this->login($client, 'bobtest', 'test432bob');
 
-        $rows = $page->filter('table')->eq(0)->children();
-        $this->assertText($rows->eq(0), 'th', 'E-mail Address');
-        $this->assertText($rows->eq(0), 'td', 'bob@plug.org.au');
-        $this->assertText($rows->eq(1), 'th', 'Postal Address');
-        $this->assertText($rows->eq(1), 'td', '42 Test Bvd, Nowheresville 6969');
-        $this->assertText($rows->eq(2), 'th', 'Home Phone');
-        $this->assertText($rows->eq(2), 'td', 'N/A');
-        $this->assertText($rows->eq(3), 'th', 'Work Phone');
-        $this->assertText($rows->eq(3), 'td', 'N/A');
-        $this->assertText($rows->eq(4), 'th', 'Mobile Phone');
-        $this->assertText($rows->eq(4), 'td', '0469 000000');
+        $labels = $page->filter('.grid')->eq(0)->filter('.label');
+        $fields = $page->filter('.grid')->eq(0)->filter('.field');
+        $this->assertText($labels->eq(0), '*', 'E-mail Address');
+        $this->assertText($fields->eq(0), '*', 'bob@plug.org.au');
+        $this->assertText($labels->eq(1), '*', 'Postal Address');
+        $this->assertText($fields->eq(1), '*', '42 Test Bvd, Nowheresville 6969');
+        $this->assertText($labels->eq(2), '*', 'Home Phone');
+        $this->assertText($fields->eq(2), '*', 'N/A');
+        $this->assertText($labels->eq(3), '*', 'Work Phone');
+        $this->assertText($fields->eq(3), '*', 'N/A');
+        $this->assertText($labels->eq(4), '*', 'Mobile Phone');
+        $this->assertText($fields->eq(4), '*', '0469 000000');
 
-        $rows = $page->filter('table')->eq(1)->children();
-        $this->assertText($rows->eq(0), 'th', 'Username');
-        $this->assertText($rows->eq(0), 'td', 'bobtest');
-        $this->assertText($rows->eq(1), 'th', 'Unix User ID');
-        $this->assertText($rows->eq(1), 'td', '10001');
-        $this->assertText($rows->eq(2), 'th', 'Shell');
-        $this->assertText($rows->eq(2), 'td', '/bin/bash');
-        $this->assertText($rows->eq(3), 'th', 'Account expires');
-        $this->assertText($rows->eq(3), 'td', 'Wednesday, 31 December 1969');
+        $labels = $page->filter('.grid')->eq(1)->filter('.label');
+        $fields = $page->filter('.grid')->eq(1)->filter('.field');
+        $this->assertText($labels->eq(0), '*', 'Username');
+        $this->assertText($fields->eq(0), '*', 'bobtest');
+        $this->assertText($labels->eq(1), '*', 'Unix User ID');
+        $this->assertText($fields->eq(1), '*', '10001');
+        $this->assertText($labels->eq(2), '*', 'Shell');
+        $this->assertText($fields->eq(2), '*', '/bin/bash');
+        $this->assertText($labels->eq(3), '*', 'Account expires');
+        $this->assertText($fields->eq(3), '*', 'Wednesday, 31 December 1969');
     }
 
     public function testMemberEditDetails()
@@ -105,9 +107,10 @@ final class UGMMTest extends TestCase
             'home_phone' => '08 5550 1234',
         ]);
         $this->assertText($page, 'title', ' - Member Details');
-        $rows = $page->filter('table')->eq(0)->children();
-        $this->assertText($rows->eq(2), 'th', 'Home Phone');
-        $this->assertText($rows->eq(2), 'td', '08 5550 1234');
+        $labels = $page->filter('.grid')->eq(0)->filter('.label');
+        $fields = $page->filter('.grid')->eq(0)->filter('.field');
+        $this->assertText($labels->eq(2), '*', 'Home Phone');
+        $this->assertText($fields->eq(2), '*', '08 5550 1234');
 
         // And change it back
         $page = $client->clickLink('Edit your personal details');
@@ -126,9 +129,10 @@ final class UGMMTest extends TestCase
         $page = $client->submitForm('Cancel', [
             'home_phone' => '08 5550 1234',
         ]);
-        $rows = $page->filter('table')->eq(0)->children();
-        $this->assertText($rows->eq(2), 'th', 'Home Phone');
-        $this->assertText($rows->eq(2), 'td', 'N/A');
+        $labels = $page->filter('.grid')->eq(0)->filter('.label');
+        $fields = $page->filter('.grid')->eq(0)->filter('.field');
+        $this->assertText($labels->eq(2), '*', 'Home Phone');
+        $this->assertText($fields->eq(2), '*', 'N/A');
     }
 
     public function testMemberEditForwarding()
