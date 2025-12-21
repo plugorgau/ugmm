@@ -12,10 +12,10 @@
     <label for="email_forward">Redirect email to</label>
     <div class="field">
       <input type="text" name="email_forward" value="{$member->mailForward|default}" size="30">
+      <div>If you would not like your PLUG email to be redirected, the
+      above field should be blank.</div>
     </div>
 
-    <div class="hints">If you would not like your PLUG email to be redirected,
-    the above field should be blank.</div>
 
     <div class="actions">
       <input type="submit" name="go_go_button" value="Change">
