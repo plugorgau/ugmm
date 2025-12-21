@@ -117,7 +117,6 @@ if (isset($_POST['email_form']) && !verify_nonce($_POST['nonce'], 'updateemailfo
 }
 
 if (isset($_POST['email_form']) && isset($_POST['go_go_button']) && ! $error) {
-
     // process form
     // Ignore GET value and use POST value from form
     $memberid = intval($_POST['id']);
@@ -198,7 +197,6 @@ if (isset($_POST['password_form']) && !verify_nonce($_POST['nonce'], 'updatepass
 }
 
 if (isset($_POST['password_form']) && isset($_POST['go_go_button']) && ! $error) {
-
     // Ignore GET value and use POST value from form
     $memberid = intval($_POST['id']);
 
@@ -216,11 +214,9 @@ if (isset($_POST['password_form']) && isset($_POST['go_go_button']) && ! $error)
         } else {
             $member->update_ldap();
             $success = array_merge($success, $member->get_messages());
-
         }
     } else {
         $error = array_merge($error, $member->get_password_errors());
-
     }
 
     // Send reset email?
@@ -240,7 +236,4 @@ if (!isset($member)) {
 
 $smarty->assign('member', $member);
 $smarty->assign('all_groups', $OrgMembers->list_groups());
-//print_r($memberdetails);
-//print_r($error);
-//print_r($success);
 display_page('editmember.tpl');
