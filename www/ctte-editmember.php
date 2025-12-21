@@ -108,6 +108,7 @@ if (isset($_POST['groups_form']) && isset($_POST['go_go_button']) && ! $error) {
     }
     $success[] = "Group membership updated";
     $success = array_merge($success, $member->get_messages());
+    $error = array_merge($error, $member->get_errors());
 }
 
 // Process email forwarding format_ph

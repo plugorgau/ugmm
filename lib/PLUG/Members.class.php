@@ -1043,8 +1043,9 @@ class Person
                     throw new Exception($res->getMessage() . "\n");
                 }
 
-                // TODO: add to array so object is correct as well? Or reload from ldap
-
+                // Reload entry so memberOf is correct
+                $this->reload_ldap();
+                $this->messages[] = "Added to ".$group." group";
             }
 
         }
@@ -1080,7 +1081,9 @@ class Person
                     throw new Exception($res->getMessage() . "\n");
                 }
 
-                // TODO: remove from array so object is correct as well? Or reload from ldap
+                // Reload entry so memberOf is correct
+                $this->reload_ldap();
+                $this->messages[] = "Removed from ".$group." group";
             }
 
         }
