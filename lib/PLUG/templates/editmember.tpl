@@ -5,100 +5,63 @@
 
   <h3>Personal Details</h3>
 
-  <form method="post" action="" enctype=
-  "application/x-www-form-urlencoded">
+  <form method="post" action="" enctype="application/x-www-form-urlencoded" class="grid">
     <input name="personals_form" value="1" type="hidden">
     <input name="nonce" value="{'editmember'|nonce}" type="hidden">
     <input name="id" value="{$member->uidNumber}" type="hidden">
 
-    <table border="0">
-      <tbody>
-        <tr>
-          <th>Member ID</th>
+    <label>Member ID</label>
+    <div>{$member->uidNumber}</div>
 
-          <td>{$member->uidNumber}</td>
-        </tr>
+    <label for="uid">Username</label>
+    <div><input name="uid" value="{$member->uid}"
+          size="30" type="text"></div>
 
-        <tr>
-          <th>Username</th>
+    <label for="givenName">First Name</label>
+    <div><input name="givenName" value="{$member->givenName}"
+          size="30" type="text"></div>
 
-          <td><input name="uid" value="{$member->uid}"
-          size="30" type="text"></td>
-        </tr>
+    <label for="sn">Last Name</label>
+    <div><input name="sn" value="{$member->sn}" size=
+          "30" type="text"></div>
 
-        <tr>
-          <th>First Name</th>
+    <label for="mail">E-mail Address</label>
+    <div><input name="mail" value="{$member->mail}" size="30" type="text"></div>
 
-          <td><input name="givenName" value="{$member->givenName}"
-          size="30" type="text"></td>
-        </tr>
+    <label for="street">Postal Address</label>
 
-        <tr>
-          <th>Last Name</th>
+    <div><input name="street" value="{$member->street|default}"
+          size="50" type="text"></div>
 
-          <td><input name="sn" value="{$member->sn}" size=
-          "30" type="text"></td>
-        </tr>
+    <label for="homePhone">Home Phone</label>
+    <div><input name="homePhone" size="20" type="text" value=
+          "{$member->homePhone|default}"></div>
 
-        <tr>
-          <th>E-mail Address</th>
+    <label for="pager">Work Phone</label>
+    <div><input name="pager" value="{$member->pager|default}"
+          size="20" type="text"></div>
 
-          <td><input name="mail" value="{$member->mail}" size="30" type="text"></td>
-        </tr>
+    <label for="mobile">Mobile Phone</label>
+    <div><input name="mobile" value="{$member->mobile|default}"
+          size="20" type="text"></div>
 
-        <tr>
-          <th>Postal Address</th>
+    <label for="membership_expiry">Membership Expires</label>
+    <div><input name="membership_expiry" value=
+          "{$member->expiry}" size="10" type="text" disabled></div>
 
-          <td><input name="street" value="{$member->street|default}"
-          size="50" type="text"></td>
-        </tr>
+    <label>Groups</label>
+    <div>{foreach from=$member->groups item=group name=groups}{$group}{if ! $smarty.foreach.groups.last},{/if}
+          {/foreach}</div>
 
-        <tr>
-          <th>Home Phone</th>
+    <label for="notes">Notes</label>
+    <div>
+      <textarea name="notes" rows="3" cols="40">{$member->description|default}</textarea>
+    </div>
 
-          <td><input name="homePhone" size="20" type="text" value=
-          "{$member->homePhone|default}"></td>
-        </tr>
-
-        <tr>
-          <th>Work Phone</th>
-
-          <td><input name="pager" value="{$member->pager|default}"
-          size="20" type="text"></td>
-        </tr>
-
-        <tr>
-          <th>Mobile Phone</th>
-
-          <td><input name="mobile" value="{$member->mobile|default}"
-          size="20" type="text"></td>
-        </tr>
-
-        <tr>
-          <th>Membership Expires</th>
-
-          <td><input name="membership_expiry" value=
-          "{$member->expiry}" size="10" type="text" disabled></td>
-        </tr>
-
-        <tr>
-          <th>Groups</th>
-
-          <td>{foreach from=$member->groups item=group name=groups}{$group}{if ! $smarty.foreach.groups.last},{/if}
-          {/foreach}</td>
-        </tr>
-
-        <tr>
-          <th valign="top">Notes</th>
-
-          <td>
-          <textarea name="notes" rows="3" cols="40">{$member->description|default}</textarea>
-          </td>
-        </tr>
-      </tbody>
-    </table><input name="go_go_button" value=
-    "Update Personal Details" type="submit"> <input name=
-    "reset_button" value="Reset Fields" type="reset">
+    <div class="actions">
+      <input name="go_go_button" value="Update Personal Details" type="submit">
+      <input name="reset_button" value="Reset Fields" type="reset">
+    </div>
   </form>
 
   <h3>Make Membership Payment</h3>
