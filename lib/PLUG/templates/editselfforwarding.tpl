@@ -11,7 +11,7 @@
 
     <label for="email_forward">Redirect email to</label>
     <div class="field">
-      <input type="email" name="email_forward" value="{$member->mailForward|default}" size="30">
+      <input type="email" name="mailForward" value="{$member->mailForward|default}" size="30">
       <div>If you would not like your PLUG email to be redirected, the
       above field should be blank.</div>
     </div>

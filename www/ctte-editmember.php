@@ -99,7 +99,7 @@ if (isset($_POST['email_form']) && isset($_POST['go_go_button']) && ! $error) {
     $member = $OrgMembers->get_member_object($memberid);
 
     // TODO: Class validates objects and maintains errors/successs messages
-    $member->change_forward($_POST['email_forward']);
+    $member->change_forward($_POST['mailForward']);
 
     if ($member->is_error()) {
         $error = array_merge($error, $member->get_errors());

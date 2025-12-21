@@ -96,15 +96,15 @@ final class UGMMTest extends TestCase
         $this->assertText($page, 'title', ' - Editing Member Details');
 
         $data = $page->selectButton('Update')->form()->getValues();
-        $this->assertSame($data['email_address'], 'bob@plug.org.au');
-        $this->assertSame($data['street_address'], '42 Test Bvd, Nowheresville 6969');
-        $this->assertSame($data['home_phone'], '');
-        $this->assertSame($data['work_phone'], '');
-        $this->assertSame($data['mobile_phone'], '0469 000000');
+        $this->assertSame($data['mail'], 'bob@plug.org.au');
+        $this->assertSame($data['street'], '42 Test Bvd, Nowheresville 6969');
+        $this->assertSame($data['homePhone'], '');
+        $this->assertSame($data['pager'], '');
+        $this->assertSame($data['mobile'], '0469 000000');
 
         // Set home phone, and verify it has changed in the member details
         $page = $client->submitForm('Update', [
-            'home_phone' => '08 5550 1234',
+            'homePhone' => '08 5550 1234',
         ]);
         $this->assertText($page, 'title', ' - Member Details');
         $labels = $page->filter('.grid')->eq(0)->filter('.label');
@@ -115,9 +115,9 @@ final class UGMMTest extends TestCase
         // And change it back
         $page = $client->clickLink('Edit your personal details');
         $data = $page->selectButton('Update')->form()->getValues();
-        $this->assertSame($data['home_phone'], '08 5550 1234');
+        $this->assertSame($data['homePhone'], '08 5550 1234');
         $page = $client->submitForm('Update', [
-            'home_phone' => '',
+            'homePhone' => '',
         ]);
     }
 
@@ -127,7 +127,7 @@ final class UGMMTest extends TestCase
         $this->login($client, 'bobtest', 'test432bob');
         $page = $client->clickLink('Edit your personal details');
         $page = $client->submitForm('Cancel', [
-            'home_phone' => '08 5550 1234',
+            'homePhone' => '08 5550 1234',
         ]);
         $labels = $page->filter('.grid')->eq(0)->filter('.label');
         $fields = $page->filter('.grid')->eq(0)->filter('.field');
@@ -143,7 +143,7 @@ final class UGMMTest extends TestCase
         $this->assertText($page, 'title', ' - Editing Member Email Forwarding');
 
         $data = $page->selectButton('Change')->form()->getValues();
-        $this->assertSame($data['email_forward'], 'bob@example.com');
+        $this->assertSame($data['mailForward'], 'bob@example.com');
 
         // TODO: test posting the form
     }

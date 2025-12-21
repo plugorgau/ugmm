@@ -16,9 +16,9 @@ if (isset($_POST['edit_selfmember']) && !verify_nonce($_POST['nonce'], 'editself
 
 if (isset($_POST['edit_selfmember']) && isset($_POST['go_go_button']) && ! $error) {
     // TODO: Class validates objects and maintains errors/successs messages
-    $memberself->change_email($_POST['email_address']);
-    $memberself->change_address($_POST['street_address']);
-    $memberself->change_phone($_POST['home_phone'], $_POST['work_phone'], $_POST['mobile_phone']);
+    $memberself->change_email($_POST['mail']);
+    $memberself->change_address($_POST['street']);
+    $memberself->change_phone($_POST['homePhone'], $_POST['pager'], $_POST['mobile']);
 
     if ($memberself->is_error()) {
         //$error[] = "Member details not updated";

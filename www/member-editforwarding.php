@@ -16,7 +16,7 @@ if (isset($_POST['edit_selfforwarding']) && !verify_nonce($_POST['nonce'], 'edit
 
 if (isset($_POST['edit_selfforwarding']) && isset($_POST['go_go_button']) && ! $error) {
     // TODO: Class validates objects and maintains errors/successs messages
-    $memberself->change_forward($_POST['email_forward']);
+    $memberself->change_forward($_POST['mailForward']);
 
     if ($memberself->is_error()) {
         //$error[] = "Member details not updated";
