@@ -55,6 +55,7 @@ h3 { font-size: 1.2em; }
 /* member table */
 .membertable thead, .payments thead {
     background: #8888aa;
+    text-wrap: nowrap;
 }
 .membertable tbody, .payments tbody {
     background: #ddddff;
