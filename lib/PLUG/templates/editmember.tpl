@@ -30,7 +30,7 @@
 
     <label for="mail">E-mail Address</label>
     <div class="field">
-      <input name="mail" value="{$member->mail}" size="30" type="text">
+      <input name="mail" value="{$member->mail}" size="30" type="email">
     </div>
 
     <label for="street">Postal Address</label>
@@ -40,17 +40,17 @@
 
     <label for="homePhone">Home Phone</label>
     <div class="field">
-      <input name="homePhone" size="20" type="text" value="{$member->homePhone|default}">
+      <input name="homePhone" size="20" type="tel" value="{$member->homePhone|default}">
     </div>
 
     <label for="pager">Work Phone</label>
     <div class="field">
-      <input name="pager" value="{$member->pager|default}" size="20" type="text">
+      <input name="pager" value="{$member->pager|default}" size="20" type="tel">
     </div>
 
     <label for="mobile">Mobile Phone</label>
     <div class="field">
-      <input name="mobile" value="{$member->mobile|default}" size="20" type="text">
+      <input name="mobile" value="{$member->mobile|default}" size="20" type="tel">
     </div>
 
     <label for="membership_expiry">Membership Expires</label>
@@ -84,7 +84,7 @@
     "1" checked="checked" type="radio">Full ({$FULL_AMOUNT}/yr)</label>
     <label><input name="membership_type" value="2" type=
     "radio">Concession ({$CONCESSION_AMOUNT}/yr)</label> for <input name="years"
-    value="1" size="2" type="text"> year(s).<br>
+    value="1" size="2" type="number"> year(s).<br>
     Backdate this payment to <input name="payment_date" size="10"
     type="date"> (leave blank for "now").<br>
     Receipt # (or comment) <input name="receipt_number" size="30"
@@ -136,7 +136,7 @@
     <input name="email_form" value="1" type="hidden">
     <input name="nonce" value="{'updateemailforwarding'|nonce}" type="hidden">
     <input name="id" value="{$member->uidNumber}" type="hidden">
-    E-mail forwarded to <input name="email_forward" value="{if isset($member->mailForward) and $member->mailForward}{$member->mailForward}{/if}" size="30" type="text">
+    E-mail forwarded to <input name="email_forward" value="{if isset($member->mailForward) and $member->mailForward}{$member->mailForward}{/if}" size="30" type="email">
     <input name="go_go_button" value="Update Forwarding" type="submit"><br>
     A blank address means that email is delivered to their PLUG
     home directory. (Currently a blank email will deliver email to

@@ -25,7 +25,7 @@
 
     <label for="mail">E-mail Address <span class="required">*</span></label>
     <div class="field">
-      <input name="mail" value="{$member.mail|default}" size="30" type="text">
+      <input name="mail" value="{$member.mail|default}" size="30" type="email">
     </div>
 
     <label for="street">Postal Address <span class="required">*</span></label>
@@ -40,12 +40,12 @@
 
     <label for="pager">Work Phone</label>
     <div class="field">
-      <td><input name="pager" value="{$member.pager|default}" size="20" type="text">
+      <td><input name="pager" value="{$member.pager|default}" size="20" type="tel">
     </div>
 
     <label for="mobile">Mobile Phone</label>
     <div class="field">
-      <input name="mobile" value="{$member.mobile|default}" size="20" type="text">
+      <input name="mobile" value="{$member.mobile|default}" size="20" type="tel">
     </div>
 
     <label for="uid">Username <span class="required">*</span></label>

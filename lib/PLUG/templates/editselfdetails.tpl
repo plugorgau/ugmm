@@ -18,7 +18,7 @@
 
     <label for="email_address">E-mail Address <span class="required">*</span></label>
     <div class="field">
-      <input type="text" name="email_address" value="{$member->mail}" size="30">
+      <input type="email" name="email_address" value="{$member->mail}" size="30">
     </div>
 
     <label for="street_address">Postal Address <span class="required">*</span></label>
@@ -28,17 +28,17 @@
 
     <label for="home_phone">Home Phone</label>
     <div class="field">
-      <input type="text" name="home_phone" size="20" value="{$member->homePhone|default}">
+      <input type="tel" name="home_phone" size="20" value="{$member->homePhone|default}">
     </div>
 
     <label for="work_phone">Work Phone</label>
     <div class="field">
-      <input type="text" name="work_phone" value="{$member->pager|default}" size="20">
+      <input type="tel" name="work_phone" value="{$member->pager|default}" size="20">
     </div>
 
     <label for="mobile_phone">Mobile Phone</label>
     <div class="field">
-      <input type="text" name="mobile_phone" value="{$member->mobile|default}" size="20">
+      <input type="tel" name="mobile_phone" value="{$member->mobile|default}" size="20">
     </div>
 
     <div class="actions">
