@@ -282,16 +282,16 @@ final class UGMMTest extends TestCase
         $uid = sprintf('test%05d', rand(0, 99999));
         // First try signing up with an existing user ID
         $page = $client->submitForm('Add New Member', [
-            'first_name' => 'Test',
-            'last_name' => 'Last-name',
-            'email_address' => $uid . '@example.com',
-            'street_address' => '123 Fake St',
-            'home_phone' => '08 5550 1111',
-            'work_phone' => '08 5550 2222',
-            'mobile_phone' => '08 5550 3333',
+            'givenName' => 'Test',
+            'sn' => 'Last-name',
+            'mail' => $uid . '@example.com',
+            'street' => '123 Fake St',
+            'homePhone' => '08 5550 1111',
+            'pager' => '08 5550 2222',
+            'mobile' => '08 5550 3333',
             'uid' => 'bobtest',
             'password' => 'pass1234',
-            'verifypassword' => 'pass1234',
+            'vpassword' => 'pass1234',
             'notes' => 'Sign up for testing',
         ]);
         $this->assertText($page, 'title', ' - Add Member');
@@ -301,7 +301,7 @@ final class UGMMTest extends TestCase
         $page = $client->submitForm('Add New Member', [
             'uid' => $uid,
             'password' => 'pass1234',
-            'verifypassword' => 'pass1234',
+            'vpassword' => 'pass1234',
         ]);
         $this->assertText($page, 'title', ' - Add Member');
         $this->assertText($page, '#successmessages li', 'New member created with id ');

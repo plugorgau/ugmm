@@ -20,48 +20,48 @@
         <tr>
           <th>First Name *</th>
 
-          <td><input name="first_name" value="{$member.givenName|default}"
+          <td><input name="givenName" value="{$member.givenName|default}"
           size="30" type="text"></td>
         </tr>
 
         <tr>
           <th>Last Name</th>
 
-          <td><input name="last_name" value="{$member.sn|default}" size=
+          <td><input name="sn" value="{$member.sn|default}" size=
           "30" type="text"></td>
         </tr>
 
         <tr>
           <th>E-mail Address *</th>
 
-          <td><input name="email_address" value="{$member.mail|default}" size="30" type="text"></td>
+          <td><input name="mail" value="{$member.mail|default}" size="30" type="text"></td>
         </tr>
 
         <tr>
           <th>Postal Address *</th>
 
-          <td><input name="street_address" value="{$member.street|default}"
+          <td><input name="street" value="{$member.street|default}"
           size="50" type="text"></td>
         </tr>
 
         <tr>
           <th>Home Phone</th>
 
-          <td><input name="home_phone" size="20" type="text" value=
+          <td><input name="homePhone" size="20" type="text" value=
           "{$member.homePhone|default}"></td>
         </tr>
 
         <tr>
           <th>Work Phone</th>
 
-          <td><input name="work_phone" value="{$member.pager|default}"
+          <td><input name="pager" value="{$member.pager|default}"
           size="20" type="text"></td>
         </tr>
 
         <tr>
           <th>Mobile Phone</th>
 
-          <td><input name="mobile_phone" value="{$member.mobile|default}"
+          <td><input name="mobile" value="{$member.mobile|default}"
           size="20" type="text"></td>
         </tr>
         <tr>
@@ -81,7 +81,7 @@
         <tr>
           <th>Verify Password *</th>
 
-          <td><input name="verifypassword" value=""
+          <td><input name="vpassword" value=""
            type="password"></td>
         </tr>
 

@@ -16,7 +16,7 @@ if (isset($_POST['newmember_form']) && !verify_nonce($_POST['nonce'], 'newmember
 }
 
 // Check password matches
-if (isset($_POST['newmember_form']) && $_POST['password'] != $_POST['verifypassword']) {
+if (isset($_POST['newmember_form']) && $_POST['password'] != $_POST['vpassword']) {
     $error[] = "Passwords don't match";
 }
 
@@ -26,13 +26,13 @@ if (isset($_POST['newmember_form']) && $_POST['password'] != $_POST['verifypassw
 
 $memberdetails = array(
     'uid' => isset($_POST['uid']) ? trim($_POST['uid']) : '',
-    'givenName' => isset($_POST['first_name']) ? trim($_POST['first_name']) : '',
-    'sn' => isset($_POST['last_name']) ? trim($_POST['last_name']) : '',
-    'mail' => isset($_POST['email_address']) ? trim($_POST['email_address']) : '',
-    'street' => isset($_POST['street_address']) ? trim($_POST['street_address']) : '',
-    'homePhone' => isset($_POST['home_phone']) ? trim($_POST['home_phone']) : '',
-    'pager' => isset($_POST['work_phone']) ? trim($_POST['work_phone']) : '',
-    'mobile' => isset($_POST['mobile_phone']) ? trim($_POST['mobile_phone']) : '',
+    'givenName' => isset($_POST['givenName']) ? trim($_POST['givenName']) : '',
+    'sn' => isset($_POST['sn']) ? trim($_POST['sn']) : '',
+    'mail' => isset($_POST['mail']) ? trim($_POST['mail']) : '',
+    'street' => isset($_POST['street']) ? trim($_POST['street']) : '',
+    'homePhone' => isset($_POST['homePhone']) ? trim($_POST['homePhone']) : '',
+    'pager' => isset($_POST['pager']) ? trim($_POST['pager']) : '',
+    'mobile' => isset($_POST['mobile']) ? trim($_POST['mobile']) : '',
 );
 
 if (isset($_POST['newmember_form']) && ! $error) {
