@@ -21,7 +21,7 @@
       <input type="email" name="mail" value="{$member->mail}" size="30">
     </div>
 
-    <label for="street">Postal Address <span class="required">*</span></label>
+    <label for="street">Postal Address</label>
     <div class="field">
       <input type="text" name="street" value="{$member->street|default}" size="50">
     </div>

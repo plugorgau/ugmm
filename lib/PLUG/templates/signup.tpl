@@ -71,9 +71,9 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
       <input type="email" name="mail" value="{$newmember.mail|default}" size="30" placeholder="name@example.com" required/>
     </div>
 
-    <label for="street">Postal Address <span class="required">*</span></label>
+    <label for="street">Postal Address</label>
     <div class="field">
-      <input type="text" name="street" value="{$newmember.street|default}" size="50" required/>
+      <input type="text" name="street" value="{$newmember.street|default}" size="50"/>
     </div>
 
     <label for="homePhone">Home Phone</label>
