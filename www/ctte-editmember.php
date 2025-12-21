@@ -227,6 +227,11 @@ if (isset($_POST['password_form']) && isset($_POST['go_go_button']) && ! $error)
 }
 // Delete member
 
+// If we've processed a POST request, redirect back to ourself
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    redirect_with_messages('ctte-editmember?id=' . $memberid);
+}
+
 // Finished processing all the forms
 if (!isset($member)) {
     $member = $OrgMembers->get_member_object($memberid);
