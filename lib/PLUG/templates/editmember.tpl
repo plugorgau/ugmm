@@ -131,10 +131,10 @@
 
 {$member_groups = $member->groups}
 {foreach from=$all_groups item=group}
-    <label><input type="checkbox" name="groups[]" value="{$group}"{if in_array($group, $member_groups)} checked{/if}> {$group}</label><br>
+    <div><label><input type="checkbox" name="groups[]" value="{$group}"{if in_array($group, $member_groups)} checked{/if}> {$group}</label></div>
 {/foreach}
 
-    <input type="submit" name="go_go_button" value="Update Membership">
+    <input type="submit" name="go_go_button" value="Update Group Membership">
   </form>
 
   <h3>E-mail Forwarding</h3>

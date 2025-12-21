@@ -98,7 +98,7 @@ if (isset($_POST['groups_form']) && isset($_POST['go_go_button']) && ! $error) {
     $member = $OrgMembers->get_member_object($memberid);
 
     // Update memberships as desired
-    $memberships = ($_POST['groups']);
+    $memberships = isset($_POST['groups']) ? $_POST['groups'] : array();
     foreach ($OrgMembers->list_groups() as $group) {
         if (in_array($group, $memberships)) {
             $member->add_to_group($group);
