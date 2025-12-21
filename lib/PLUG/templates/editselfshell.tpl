@@ -7,7 +7,7 @@
 
   <form method="post" action="" enctype=
   "application/x-www-form-urlencoded">
-    <input name="nonce" value="{'editselfshell'|nonce}" type="hidden">
+    <input type="hidden" name="nonce" value="{'editselfshell'|nonce}">
     <input type="hidden" name="edit_selfshell" value="1">
 
     {if $member->shellEnabled}
@@ -37,7 +37,7 @@
       <div class="field">
         <select name="account_shell">
         {foreach from=$shells item=shell key=name}
-          <option {if $shell==$member->loginShell}selected="selected"{/if} value="{$name}" >{$name}</option>
+          <option value="{$name}" {if $shell==$member->loginShell}selected{/if}>{$name}</option>
         {/foreach}
         </select>
       </div>

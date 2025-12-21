@@ -51,45 +51,44 @@ If you would like to become a financial PLUG member, please fill in the followin
 Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for students / concession.
 <p>
 
-  <form method="post" action="" enctype=
-  "application/x-www-form-urlencoded" class="grid">
-    <input name="membersignup_form" value="1" type="hidden">
+  <form method="post" action="" class="grid">
+    <input type="hidden" name="membersignup_form" value="1">
 
     <div class="hints"><h2>Your Details</h2></div>
 
     <label for="givenName">First name <span class="required">*</span></label>
     <div class="field">
-      <input id="givenName" name="givenName" type="text" size="30" placeholder="First Name" required autofocus value="{$newmember.givenName|default}"/>
+      <input type="text" name="givenName" value="{$newmember.givenName|default}" size="30" placeholder="First Name" required autofocus/>
     </div>
 
     <label for="sn">Last name</label>
     <div class="field">
-      <input id="sn" name="sn" type="text" size="30" placeholder="Surname" value="{$newmember.sn|default}"/>
+      <input type="text" name="sn" value="{$newmember.sn|default}" size="30" placeholder="Surname"/>
     </div>
 
     <label for="mail">Email <span class="required">*</span></label>
     <div class="field">
-      <input id="mail" name="mail" type="email" size="30" placeholder="name@example.com" required value="{$newmember.mail|default}"/>
+      <input type="email" name="mail" value="{$newmember.mail|default}" size="30" placeholder="name@example.com" required/>
     </div>
 
     <label for="street">Postal Address <span class="required">*</span></label>
     <div class="field">
-      <input id="street" name="street" type="text" size="50" required value="{$newmember.street|default}"/>
+      <input type="text" name="street" value="{$newmember.street|default}" size="50" required/>
     </div>
 
     <label for="homePhone">Home Phone</label>
     <div class="field">
-      <input id="homePhone" name="homePhone" type="tel" size="20" value="{$newmember.homePhone|default}"/>
+      <input type="tel" name="homePhone" value="{$newmember.homePhone|default}" size="20"/>
     </div>
 
     <label for="pager">Work Phone</label>
     <div class="field">
-      <input id="pager" name="pager" type="tel" size="20" value="{$newmember.pager|default}"/>
+      <input type="tel" name="pager" value="{$newmember.pager|default}" size="20"/>
     </div>
 
     <label for="mobile">Mobile Phone</label>
     <div class="field">
-      <input id="mobile" name="mobile" type="tel" size="20" value="{$newmember.mobile|default}"/>
+      <input type="tel" name="mobile" value="{$newmember.mobile|default}" size="20"/>
     </div>
 
     <div class="hints">
@@ -99,7 +98,8 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
 
     <label for="uid">Username <span class="required">*</span></label>
     <div class="field">
-      <input id="uid" name="uid" type="text" size="30" required value="{$newmember.uid|default}" placeholder="Choose a username"/><div id="uidcheckLoading"></div>
+      <input type="text" name="uid" value="{$newmember.uid|default}" size="30" required placeholder="Choose a username"/>
+      <div id="uidcheckLoading"></div>
       <div id="uidcheck"></div>
       <div>Your username becomes the start of your @members.plug.org.au email address</div>
     </div>
@@ -107,14 +107,14 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
 
     <label for="password">Password <span class="required">*</span></label>
     <div class="field">
-      <input id="password" name="password" type="password" placeholder="Choose a password"/>
+      <input type="password" name="password" placeholder="Choose a password"/>
       <div>If no password is chosen, your account will be locked until you set a password using the password reset facility</div>
     </div>
 
 
     <label for="vpassword">Verify Password <span class="required">*</span></label>
     <div class="field">
-      <input id="vpassword" name="vpassword" type="password" placeholder="Verify Password"/>
+      <input type="password" name="vpassword" placeholder="Verify Password"/>
     </div>
 
     <div class="hints">
@@ -123,11 +123,11 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
 
     <label for="notes">Other notes?</label>
     <div class="field">
-      <textarea id="notes" name="notes" rows="3" cols="40" placeholder="Any other details we may need to know?">{$newmembernotes|default}</textarea>
+      <textarea name="notes" rows="3" cols="40" placeholder="Any other details we may need to know?">{$newmembernotes|default}</textarea>
     </div>
 
     <div class="actions">
-      <button name="go_go_button" value="Signup" type="submit">Signup</button>
+      <button type="submit" name="go_go_button" value="Signup">Signup</button>
     </div>
   </form>
 

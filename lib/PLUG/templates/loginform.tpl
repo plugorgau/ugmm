@@ -16,21 +16,21 @@ are not yet a financial member, you may be interested in
         </div>
 </div>
 {/if}
-<form action="" method="POST" class="grid">
-  <input name="plug_members_auth" value="1" type="hidden">
+<form method="post" action="" class="grid">
+  <input type="hidden" name="plug_members_auth" value="1">
 
   <label for="username">PLUG Username</label>
   <div class="field">
-    <input size="15" name="username" type="text">
+    <input type="text" name="username" size="15">
   </div>
 
   <label for="password">Password</label>
   <div class="field">
-    <input size="15" name="password" type="password">
+    <input type="password" name="password" size="15">
   </div>
 
   <div class="actions">
-    <input name="submit" value="Log In" type="submit">
+    <input type="submit" name="submit" value="Log In">
     <a href="resetpassword">Forgotten your password?</a>
   </div>
 </form>

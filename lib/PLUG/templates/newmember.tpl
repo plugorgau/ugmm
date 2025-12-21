@@ -9,58 +9,58 @@
 </p>
 
 {/if}
-  <form method="post" action="" enctype="application/x-www-form-urlencoded" class="grid">
-    <input name="newmember_form" value="1" type="hidden">
-    <input name="nonce" value="{'newmember'|nonce}" type="hidden">
+  <form method="post" action="" class="grid">
+    <input type="hidden" name="newmember_form" value="1">
+    <input type="hidden" name="nonce" value="{'newmember'|nonce}">
 
     <label for="givenName">First Name <span class="required">*</span></label>
     <div class="field">
-      <input name="givenName" value="{$member.givenName|default}" size="30" type="text">
+      <input type="text" name="givenName" value="{$member.givenName|default}" size="30">
     </div>
 
     <label for="sn">Last Name</label>
     <div class="field">
-      <input name="sn" value="{$member.sn|default}" size="30" type="text">
+      <input type="text" name="sn" value="{$member.sn|default}" size="30">
     </div>
 
     <label for="mail">E-mail Address <span class="required">*</span></label>
     <div class="field">
-      <input name="mail" value="{$member.mail|default}" size="30" type="email">
+      <input type="email" name="mail" value="{$member.mail|default}" size="30">
     </div>
 
     <label for="street">Postal Address <span class="required">*</span></label>
     <div class="field">
-      <input name="street" value="{$member.street|default}" size="50" type="text">
+      <input type="text" name="street" value="{$member.street|default}" size="50">
     </div>
 
     <label for="homePhone">Home Phone</label>
     <div class="field">
-      <input name="homePhone" size="20" type="text" value="{$member.homePhone|default}">
+      <input type="text" name="homePhone" value="{$member.homePhone|default}" size="20">
     </div>
 
     <label for="pager">Work Phone</label>
     <div class="field">
-      <td><input name="pager" value="{$member.pager|default}" size="20" type="tel">
+      <td><input type="tel" name="pager" value="{$member.pager|default}" size="20">
     </div>
 
     <label for="mobile">Mobile Phone</label>
     <div class="field">
-      <input name="mobile" value="{$member.mobile|default}" size="20" type="tel">
+      <input type="tel" name="mobile" value="{$member.mobile|default}" size="20">
     </div>
 
     <label for="uid">Username <span class="required">*</span></label>
     <div class="field">
-      <input name="uid" value="{$member.uid|default}" size="30" type="text">
+      <input type="text" name="uid" value="{$member.uid|default}" size="30">
     </div>
 
     <label for="password">Password <span class="required">*</span></label>
     <div class="field">
-      <input name="password" value="{$member.password|default}" type="password">
+      <input type="password" name="password" value="{$member.password|default}">
     </div>
 
     <label for="vpassword">Verify Password <span class="required">*</span></label>
     <div class="field">
-      <input name="vpassword" value="" type="password">
+      <input type="password" name="vpassword" value="">
     </div>
 
     <label for="notes">Notes</label>
@@ -69,8 +69,8 @@
     </div>
 
     <div class="actions">
-      <input name="go_go_button" value="Add New Member" type="submit">
-      <input name="reset_button" value="Cancel" type="reset">
+      <input type="submit" name="go_go_button" value="Add New Member">
+      <input type="reset" name="reset_button" value="Cancel">
     </div>
   </form>
 

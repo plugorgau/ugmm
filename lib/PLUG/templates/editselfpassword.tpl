@@ -29,8 +29,8 @@
 
   <p>Accounts detected with weak passwords will be disabled</p>
 
-  <form method="post" action="" enctype="application/x-www-form-urlencoded" class="grid">
-    <input name="nonce" value="{'editselfpassword'|nonce}" type="hidden">
+  <form method="post" action="" class="grid">
+    <input type="hidden" name="nonce" value="{'editselfpassword'|nonce}">
     <input type="hidden" name="edit_selfpassword" value="1">
 
     <label for="password">Current Password</label>

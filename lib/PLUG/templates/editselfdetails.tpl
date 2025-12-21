@@ -11,10 +11,10 @@
     <li>Required fields are marked with a <sup>*</sup>.</li>
   </ul>
 
-  <form method="post" action="" enctype="application/x-www-form-urlencoded" class="grid">
-    <input name="nonce" value="{'editselfdetails'|nonce}" type="hidden">
-    <input type="hidden" name="edit_selfmember" value="1"><input type=
-    "hidden" name="forced" value="0">
+  <form method="post" action="" class="grid">
+    <input type="hidden" name="nonce" value="{'editselfdetails'|nonce}">
+    <input type="hidden" name="edit_selfmember" value="1">
+    <input type="hidden" name="forced" value="0">
 
     <label for="email_address">E-mail Address <span class="required">*</span></label>
     <div class="field">
@@ -28,7 +28,7 @@
 
     <label for="home_phone">Home Phone</label>
     <div class="field">
-      <input type="tel" name="home_phone" size="20" value="{$member->homePhone|default}">
+      <input type="tel" name="home_phone" value="{$member->homePhone|default}" size="20">
     </div>
 
     <label for="work_phone">Work Phone</label>

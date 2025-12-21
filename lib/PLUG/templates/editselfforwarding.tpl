@@ -5,8 +5,8 @@
 
   <h2>Change e-mail forwarding for {$member->uid}@members.plug.org.au</h2>
 
-  <form method="post" action="" enctype="application/x-www-form-urlencoded" class="grid">
-    <input name="nonce" value="{'editselfforwarding'|nonce}" type="hidden">
+  <form method="post" action="" class="grid">
+    <input type="hidden" name="nonce" value="{'editselfforwarding'|nonce}">
     <input type="hidden" name="edit_selfforwarding" value="1">
 
     <label for="email_forward">Redirect email to</label>
