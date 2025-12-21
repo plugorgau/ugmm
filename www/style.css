@@ -77,14 +77,34 @@ form.grid {
     row-gap: 0.25em;
 }
 
-form.grid label {
+form.grid label, form.grid .label {
     display: block;
     font-weight: bold;
     text-align: right;
 }
 
+form.grid label.required::after {
+    content: ' *';
+    color: red;
+}
+
+form.grid .field input, form.grid .field textarea, form.grid .field select {
+    display: block;
+    max-width: 90vw;
+}
+
 form.grid .actions {
     grid-column: 1 / -1;
+}
+
+@media screen and (max-width: 600px) {
+    /* Collapse to a single column on small screens */
+    form.grid {
+        grid-template-columns: 1fr;
+    }
+    form.grid label, form.grid .label {
+        text-align: left;
+    }
 }
 
 form#membersignup, form#membersignup ol {

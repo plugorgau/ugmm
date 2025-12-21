@@ -10,51 +10,50 @@
     <input name="nonce" value="{'editmember'|nonce}" type="hidden">
     <input name="id" value="{$member->uidNumber}" type="hidden">
 
-    <label>Member ID</label>
-    <div>{$member->uidNumber}</div>
+    <div class="label">Member ID</div>
+    <div class="field">{$member->uidNumber}</div>
 
     <label for="uid">Username</label>
-    <div><input name="uid" value="{$member->uid}"
+    <div class="field"><input name="uid" value="{$member->uid}"
           size="30" type="text"></div>
 
     <label for="givenName">First Name</label>
-    <div><input name="givenName" value="{$member->givenName}"
+    <div class="field"><input name="givenName" value="{$member->givenName}"
           size="30" type="text"></div>
 
     <label for="sn">Last Name</label>
-    <div><input name="sn" value="{$member->sn}" size=
+    <div class="field"><input name="sn" value="{$member->sn}" size=
           "30" type="text"></div>
 
     <label for="mail">E-mail Address</label>
-    <div><input name="mail" value="{$member->mail}" size="30" type="text"></div>
+    <div class="field"><input name="mail" value="{$member->mail}" size="30" type="text"></div>
 
     <label for="street">Postal Address</label>
-
-    <div><input name="street" value="{$member->street|default}"
+    <div class="field"><input name="street" value="{$member->street|default}"
           size="50" type="text"></div>
 
     <label for="homePhone">Home Phone</label>
-    <div><input name="homePhone" size="20" type="text" value=
+    <div class="field"><input name="homePhone" size="20" type="text" value=
           "{$member->homePhone|default}"></div>
 
     <label for="pager">Work Phone</label>
-    <div><input name="pager" value="{$member->pager|default}"
+    <div class="field"><input name="pager" value="{$member->pager|default}"
           size="20" type="text"></div>
 
     <label for="mobile">Mobile Phone</label>
-    <div><input name="mobile" value="{$member->mobile|default}"
+    <div class="field"><input name="mobile" value="{$member->mobile|default}"
           size="20" type="text"></div>
 
     <label for="membership_expiry">Membership Expires</label>
-    <div><input name="membership_expiry" value=
+    <div class="field"><input name="membership_expiry" value=
           "{$member->expiry}" size="10" type="text" disabled></div>
 
     <label>Groups</label>
-    <div>{foreach from=$member->groups item=group name=groups}{$group}{if ! $smarty.foreach.groups.last},{/if}
+    <div class="field">{foreach from=$member->groups item=group name=groups}{$group}{if ! $smarty.foreach.groups.last},{/if}
           {/foreach}</div>
 
     <label for="notes">Notes</label>
-    <div>
+    <div class="field">
       <textarea name="notes" rows="3" cols="40">{$member->description|default}</textarea>
     </div>
 
