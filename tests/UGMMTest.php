@@ -373,6 +373,19 @@ final class UGMMTest extends TestCase
         $form['groups'][0]->untick();
         $page = $client->submit($form);
         $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#successmessages li', 'Removed from admin group');
+
+        // We're now a member of no groups
+        $form = $page->selectButton('Update Group Membership')->form();
+        $this->assertSame($form['groups'][0]->getValue(), null);
+        $this->assertSame($form['groups'][1]->getValue(), null);
+        $this->assertSame($form['groups'][2]->getValue(), null);
+        $this->assertSame($form['groups'][3]->getValue(), null);
+
+        // Submitting with no boxes checked works
+        $form = $page->selectButton('Update Group Membership')->form();
+        $page = $client->submit($form);
+        $this->assertText($page, 'title', ' - Edit Member');
     }
 
     public function testCommitteeNewMember()
