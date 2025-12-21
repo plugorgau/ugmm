@@ -95,9 +95,19 @@ if (isset($_POST['groups_form']) && isset($_POST['go_go_button']) && ! $error) {
     // Ignore GET value and use POST value from form
     $memberid = intval($_POST['id']);
 
-    echo $memberid;
-    var_dump($_POST['groups']);
-    exit();
+    $member = $OrgMembers->get_member_object($memberid);
+
+    // Update memberships as desired
+    $memberships = ($_POST['groups']);
+    foreach ($OrgMembers->list_groups() as $group) {
+        if (in_array($group, $memberships)) {
+            $member->add_to_group($group);
+        } else {
+            $member->remove_from_group($group);
+        }
+    }
+    $success[] = "Group membership updated";
+    $success = array_merge($success, $member->get_messages());
 }
 
 // Process email forwarding format_ph
