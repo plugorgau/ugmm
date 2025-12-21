@@ -83,8 +83,7 @@ summary > h3 {
     text-align: right;
 }
 
-.grid label.required::after {
-    content: ' *';
+.required {
     color: red;
 }
 
