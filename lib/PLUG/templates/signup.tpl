@@ -49,7 +49,7 @@ If you would like to become a financial PLUG member, please fill in the followin
 </p>
 <p>
 Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for students / concession.
-<p>
+</p>
 
   <form method="post" action="" class="grid">
     <input type="hidden" name="membersignup_form" value="1">
@@ -69,6 +69,35 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
     <label for="mail">Email <span class="required">*</span></label>
     <div class="field">
       <input type="email" name="mail" value="{$newmember.mail|default}" size="30" placeholder="name@example.com" required/>
+      <div>We are required to collect contact information for the
+      membership register. Your email address will be used as a
+      recovery option for your account, and to send out notice of
+      annual general meetings.</div>
+    </div>
+
+    <label for="uid">Username <span class="required">*</span></label>
+    <div class="field">
+      <input type="text" name="uid" value="{$newmember.uid|default}" size="30" required placeholder="Choose a username"/>
+      <div id="uidcheckLoading"></div>
+      <div id="uidcheck"></div>
+      <div>Your username is used to log into the membership management system</div>
+    </div>
+
+    <label for="password">Password <span class="required">*</span></label>
+    <div class="field">
+      <input type="password" name="password" placeholder="Choose a password"/>
+      <div>If no password is chosen, your account will be locked until you set a password using the password reset facility</div>
+    </div>
+
+    <label for="vpassword">Verify Password <span class="required">*</span></label>
+    <div class="field">
+      <input type="password" name="vpassword" placeholder="Verify Password"/>
+    </div>
+
+    <div class="hints">
+      <h2>Other Details</h2>
+      The following details are optional. If provided, we may use them to
+      contact you where email is not appropriate.
     </div>
 
     <label for="street">Postal Address</label>
@@ -91,37 +120,7 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
       <input type="tel" name="mobile" value="{$newmember.mobile|default}" size="20"/>
     </div>
 
-    <div class="hints">
-      <h2>Account Details</h2>
-      These account details are not related to your mailing list subscription.
-    </div>
-
-    <label for="uid">Username <span class="required">*</span></label>
-    <div class="field">
-      <input type="text" name="uid" value="{$newmember.uid|default}" size="30" required placeholder="Choose a username"/>
-      <div id="uidcheckLoading"></div>
-      <div id="uidcheck"></div>
-      <div>Your username becomes the start of your @members.plug.org.au email address</div>
-    </div>
-
-
-    <label for="password">Password <span class="required">*</span></label>
-    <div class="field">
-      <input type="password" name="password" placeholder="Choose a password"/>
-      <div>If no password is chosen, your account will be locked until you set a password using the password reset facility</div>
-    </div>
-
-
-    <label for="vpassword">Verify Password <span class="required">*</span></label>
-    <div class="field">
-      <input type="password" name="vpassword" placeholder="Verify Password"/>
-    </div>
-
-    <div class="hints">
-      <h2>Other Details</h2>
-    </div>
-
-    <label for="notes">Other notes?</label>
+<label for="notes">Other notes?</label>
     <div class="field">
       <textarea name="notes" rows="3" cols="40" placeholder="Any other details we may need to know?">{$newmembernotes|default}</textarea>
     </div>
