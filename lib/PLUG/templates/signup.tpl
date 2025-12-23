@@ -72,7 +72,7 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
       <div>We are required to collect contact information for the
       membership register. Your email address will be used as a
       recovery option for your account, and to send out notice of
-      annual general meetings.</div>
+      general meetings.</div>
     </div>
 
     <label for="uid">Username <span class="required">*</span></label>
