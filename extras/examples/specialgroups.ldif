@@ -1,4 +1,0 @@
-dn: cn=currentmembers,ou=Groups,dc=plug,dc=org,dc=au
-cn: currentmembers
-objectClass: groupOfNames
-member: cn=admin,dc=plug,dc=org,dc=au
