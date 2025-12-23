@@ -45,6 +45,8 @@ jobs:
       - name: Set up fake sendmail
         run: |
           cp ci/fake-sendmail.sh /usr/sbin/sendmail
+          touch /tmp/ugmm-mbox
+          chmod a+rw /tmp/ugmm-mbox
 
       - name: Install testing dependencies
         run: |
