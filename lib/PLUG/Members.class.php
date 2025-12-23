@@ -726,9 +726,6 @@ class Person
 
     public function change_address(string $address): void
     {
-        if ($address == '') {
-            $this->errors[] = "Address is required";
-        }
         if ($address != $this->street) {
             $this->ldapentry->replace(array(
                 self::attrStreet => $address,
