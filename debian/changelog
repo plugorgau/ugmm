@@ -1,3 +1,26 @@
+plug-ugmm (0.8.0) unstable; urgency=medium
+
+  [ James Henstridge ]
+  * Sort people on ctte-members by uidNumber.
+  * Set <meta name="viewport"> to improve layout on mobile devices.
+  * Use CSS grid layout for a number of forms. On small screens, this lets
+    us adapt to a single column layout with labels above form fields.
+  * Convert the signup form to more closely resemble other forms, and
+    reorder so that required fields are groups first followed by optional
+    fields.
+  * Allow editing group membership via ctte-editmember.
+  * Make the postal address optional.
+  * Switch to asking for the "full name" of members, rather than separate
+    first and last name fields. The full name will be stored in the
+    displayName and cn LDAP attributes, with givenName left unset, and sn
+    set to a dummy value.
+
+  [ dependabot[bot] ]
+  * build(deps): bump actions/download-artifact from 6 to 7
+  * build(deps): bump actions/upload-artifact from 5 to 6
+
+ -- James Henstridge <james@jamesh.id.au>  Wed, 24 Dec 2025 17:05:14 +0800
+
 plug-ugmm (0.7.5) unstable; urgency=medium
 
   * refactor and simplify the Person class.
