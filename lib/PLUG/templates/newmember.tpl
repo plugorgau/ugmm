@@ -13,14 +13,9 @@
     <input type="hidden" name="newmember_form" value="1">
     <input type="hidden" name="nonce" value="{'newmember'|nonce}">
 
-    <label for="givenName">First Name <span class="required">*</span></label>
+    <label for="displayName">Full Name <span class="required">*</span></label>
     <div class="field">
-      <input type="text" name="givenName" value="{$member.givenName|default}" size="30">
-    </div>
-
-    <label for="sn">Last Name</label>
-    <div class="field">
-      <input type="text" name="sn" value="{$member.sn|default}" size="30">
+      <input type="text" name="displayName" value="{$member.displayName|default}" size="30">
     </div>
 
     <label for="mail">E-mail Address <span class="required">*</span></label>

@@ -199,8 +199,7 @@ final class UGMMTest extends TestCase
         // TODO: make sure we have a unique user ID
         $uid = sprintf('test%05d', rand(0, 99999));
         $page = $client->submitForm('Signup', [
-            'givenName' => 'Test',
-            'sn' => 'Last-name',
+            'displayName' => 'Test Last-name',
             'mail' => $uid . '@example.com',
             'street' => '123 Fake St',
             'homePhone' => '08 5550 1111',
@@ -227,8 +226,7 @@ final class UGMMTest extends TestCase
 
         // Try signing up with an existing user's details
         $page = $client->submitForm('Signup', [
-            'givenName' => ' Test',
-            'sn' => 'Last-name ',
+            'displayName' => ' Test Last-name ',
             'mail' => 'bob@example.com',
             'street' => '123 Fake St',
             'homePhone' => '08 5550 1111',
@@ -243,8 +241,7 @@ final class UGMMTest extends TestCase
         $this->assertText($page, '#errormessages strong', 'Username not available');
         // The previously entered information appears in the form
         $form = $page->selectButton('Signup')->form();
-        $this->assertSame($form['givenName']->getValue(), 'Test');
-        $this->assertSame($form['sn']->getValue(), 'Last-name');
+        $this->assertSame($form['displayName']->getValue(), 'Test Last-name');
         $this->assertSame($form['mail']->getValue(), 'bob@example.com');
         $this->assertSame($form['street']->getValue(), '123 Fake St');
         $this->assertSame($form['homePhone']->getValue(), '08 5550 1111');
@@ -291,8 +288,7 @@ final class UGMMTest extends TestCase
 
         $form = $page->selectButton('Update Personal Details')->form();
         $this->assertSame($form['uid']->getValue(), 'bobtest');
-        $this->assertSame($form['givenName']->getValue(), 'Bob');
-        $this->assertSame($form['sn']->getValue(), 'Test');
+        $this->assertSame($form['displayName']->getValue(), 'Bob Test');
         $this->assertSame($form['mail']->getValue(), 'bob@plug.org.au');
         $this->assertSame($form['street']->getValue(), '42 Test Bvd, Nowheresville 6969');
         $this->assertSame($form['homePhone']->getValue(), '');
@@ -401,8 +397,7 @@ final class UGMMTest extends TestCase
         $uid = sprintf('test%05d', rand(0, 99999));
         // First try signing up with an existing user ID
         $page = $client->submitForm('Add New Member', [
-            'givenName' => 'Test',
-            'sn' => 'Last-name',
+            'displayName' => 'Test Last-name',
             'mail' => $uid . '@example.com',
             'street' => '123 Fake St',
             'homePhone' => '08 5550 1111',

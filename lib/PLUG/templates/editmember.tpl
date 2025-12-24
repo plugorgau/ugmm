@@ -18,14 +18,9 @@
       <input type="text" name="uid" value="{$member->uid}" size="30">
     </div>
 
-    <label for="givenName">First Name</label>
+    <label for="displayName">Full Name</label>
     <div class="field">
-      <input type="text" name="givenName" value="{$member->givenName}" size="30">
-    </div>
-
-    <label for="sn">Last Name</label>
-    <div class="field">
-      <input type="text" name="sn" value="{$member->sn}" size="30">
+      <input type="text" name="displayName" value="{$member->displayName}" size="30">
     </div>
 
     <label for="mail">E-mail Address</label>

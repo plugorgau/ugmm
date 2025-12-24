@@ -15,8 +15,7 @@ $OrgMembers = new Members($ldap);
 if (isset($_POST['membersignup_form'])) {
     $memberdetails = array(
         'uid' => isset($_POST['uid']) ? trim($_POST['uid']) : '',
-        'givenName' => isset($_POST['givenName']) ? trim($_POST['givenName']) : '',
-        'sn' => isset($_POST['sn']) ? trim($_POST['sn']) : '',
+        'displayName' => isset($_POST['displayName']) ? trim($_POST['displayName']) : '',
         'mail' => isset($_POST['mail']) ? trim($_POST['mail']) : '',
         'street' => isset($_POST['street']) ? trim($_POST['street']) : '',
         'homePhone' => isset($_POST['homePhone']) ? trim($_POST['homePhone']) : '',
@@ -52,8 +51,7 @@ if (isset($_POST['membersignup_form'])) {
 
         $member = $OrgMembers->new_member(
             $memberdetails['uid'],
-            $memberdetails['givenName'],
-            $memberdetails['sn'],
+            $memberdetails['displayName'],
             $memberdetails['street'],
             $memberdetails['homePhone'],
             $memberdetails['pager'],

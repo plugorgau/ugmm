@@ -20,7 +20,7 @@ final class MembersTest extends TestCase
     private function newMember(): Person
     {
         $uid = sprintf('unit%05d', rand(0, 99999));
-        return $this->members->new_member($uid, "First", "Last", "123 Fake St", "08 9555 1111", "08 9555 2222", "08 9555 3333", $uid."@example.com", "password", "notes");
+        return $this->members->new_member($uid, "First Last", "123 Fake St", "08 9555 1111", "08 9555 2222", "08 9555 3333", $uid."@example.com", "password", "notes");
     }
 
     public function testListGroups(): void
@@ -32,7 +32,7 @@ final class MembersTest extends TestCase
     public function testNewMember(): void
     {
         $member = $this->newMember();
-        $this->assertSame($member->givenName, "First");
+        $this->assertSame($member->displayName, "First Last");
 
         // We can load the newly created member from LDAP too
         $member2 = $this->members->get_member_object($member->uidNumber);

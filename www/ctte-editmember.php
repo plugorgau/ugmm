@@ -30,7 +30,7 @@ if (isset($_POST['personals_form']) && ! $error) {
 
     // TODO: Class validates objects and maintains errors/successs messages
     $member->change_username($_POST['uid']);
-    $member->change_name($_POST['givenName'], $_POST['sn']);
+    $member->change_name($_POST['displayName']);
     $member->change_email($_POST['mail']);
     $member->change_address($_POST['street']);
     $member->change_phone($_POST['homePhone'], $_POST['pager'], $_POST['mobile']);
