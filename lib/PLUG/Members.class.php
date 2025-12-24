@@ -188,10 +188,10 @@ class Members
         return true;
     }
 
-    public function new_member(string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $password, string $notes): Person
+    public function new_member(string $username, string $fullname, string $address, string $home, string $work, string $mobile, string $email, string $password, string $notes): Person
     {
         $pendingID = isset($_SESSION['pendingID']) ? $this->next_freeuidNumber($_SESSION['pendingID']) : $this->next_uidNumber();
-        $newmember = Person::create($this->ldap, $pendingID, $username, $firstname, $lastname, $address, $home, $work, $mobile, $email, '', $password, $notes);
+        $newmember = Person::create($this->ldap, $pendingID, $username, $fullname, $address, $home, $work, $mobile, $email, '', $password, $notes);
         if ($newmember->is_error()) {
             $_SESSION['pendingID'] = $pendingID;
         } else {
@@ -548,7 +548,7 @@ class Person
         return new self($ldap, $ldapentry);
     }
 
-    public static function create(Net_LDAP2 $ldap, string $uid, string $username, string $firstname, string $lastname, string $address, string $home, string $work, string $mobile, string $email, string $forward, string $password, string $notes): self
+    public static function create(Net_LDAP2 $ldap, string $uid, string $username, string $fullname, string $address, string $home, string $work, string $mobile, string $email, string $forward, string $password, string $notes): self
     {
         $dn = "uidNumber=$uid,ou=Users,".LDAP_BASE;
         $entry = Net_LDAP2_Entry::createFresh($dn, array(
@@ -558,7 +558,7 @@ class Person
         $person = new self($ldap, $entry);
         $person->change_uid($uid, $uid);
         $person->change_username($username);
-        $person->change_name($firstname, $lastname);
+        $person->change_name($fullname);
         $person->change_address($address);
         $person->change_phone($home, $work, $mobile);
         $person->change_shell("/bin/bash");
@@ -649,14 +649,6 @@ class Person
         get => (string)$this->ldapentry->getValue(self::attrMailForward, 'single');
     }
 
-    public string $givenName {
-        get => (string)$this->ldapentry->getValue(self::attrGivenName, 'single');
-    }
-
-    public string $sn {
-        get => (string)$this->ldapentry->getValue(self::attrSn, 'single');
-    }
-
     public string $cn {
         get => (string)$this->ldapentry->getValue(self::attrCn, 'single');
     }
@@ -706,22 +698,19 @@ class Person
         ));
     }
 
-    public function change_name(string $firstname, string $lastname): void
+    public function change_name(string $fullname): void
     {
-        if ($firstname == '') {
-            $this->errors[] = "Firstname is required";
-        }
-        $lastname = $lastname ? $lastname : "_";
-        if ($firstname != $this->givenName || $lastname != $this->sn) {
+        if ($fullname == '') {
+            $this->errors[] = "Name is required";
+        } elseif ($fullname != $this->displayName) {
             $this->ldapentry->replace(array(
-                self::attrSn => $lastname,
-                self::attrGivenName => $firstname,
-                self::attrDisplayName => "$firstname $lastname",
-                self::attrCn => "$firstname $lastname",
+                self::attrSn => "_",
+                self::attrGivenName => null,
+                self::attrDisplayName => "$fullname",
+                self::attrCn => "$fullname",
             ));
             $this->messages[] = "Name changed";
         }
-
     }
 
     public function change_address(string $address): void

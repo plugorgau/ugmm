@@ -36,7 +36,7 @@ if (isset($_POST['resetpassword_form'])) {
         $reseturl .= "?uid=".$member->uidNumber;
         $reseturl .= "&reset=".$member->create_hash();
 
-        $name = $member->givenName;
+        $name = $member->displayName;
 
         //TODO move this into class as well?
         $resetemail = "

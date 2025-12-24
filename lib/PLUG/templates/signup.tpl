@@ -56,14 +56,9 @@ Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for stude
 
     <div class="hints"><h2>Your Details</h2></div>
 
-    <label for="givenName">First name <span class="required">*</span></label>
+    <label for="displayName">Full name <span class="required">*</span></label>
     <div class="field">
-      <input type="text" name="givenName" value="{$newmember.givenName|default}" size="30" placeholder="First Name" required autofocus/>
-    </div>
-
-    <label for="sn">Last name</label>
-    <div class="field">
-      <input type="text" name="sn" value="{$newmember.sn|default}" size="30" placeholder="Surname"/>
+      <input type="text" name="displayName" value="{$newmember.displayName|default}" size="30" placeholder="Full Name" required autofocus/>
     </div>
 
     <label for="mail">Email <span class="required">*</span></label>
