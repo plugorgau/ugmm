@@ -77,7 +77,7 @@ summary > h3 {
     row-gap: 0.25em;
 }
 
-.grid label, .grid .label {
+.grid > label, .grid > .label {
     display: block;
     font-weight: bold;
     text-align: right;
