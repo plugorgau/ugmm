@@ -76,8 +76,8 @@ $smarty->assign('topmenuitems', $toplevelmenu);
 $smarty->assign('submenuitems', $submenu);
 
 // Membership amount
-$smarty->assign('CONCESSION_AMOUNT', "$" . CONCESSION_AMOUNT / 100);
-$smarty->assign('FULL_AMOUNT', "$" . FULL_AMOUNT / 100);
+$smarty->assign('CONCESSION_AMOUNT', CONCESSION_AMOUNT / 100);
+$smarty->assign('FULL_AMOUNT', FULL_AMOUNT / 100);
 
 // External links
 $smarty->assign('external_links', EXTERNAL_LINKS);
