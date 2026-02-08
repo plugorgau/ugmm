@@ -76,7 +76,7 @@
 
     <label for="payment_date">Payment date</label>
     <div class="field">
-      <input type="date" name="payment_date" size="10"> (leave blank for "now")
+      <input type="date" name="payment_date" size="10"> (leave blank for "today")
     </div>
 
     <div class="label">Membership type</div>
@@ -87,7 +87,7 @@
 
     <label for="years">Duration</label>
     <div class="field">
-      <input type="number" name="years" value="1" size="2"> year(s)
+      <input type="number" name="years" value="1" min="1" size="2"> year(s)
     </div>
 
     <div class="label">Total</div>
