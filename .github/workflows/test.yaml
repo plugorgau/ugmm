@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: podman exec -w ${{ github.workspace }} ugmm-test bash -e {0}
+        shell: sudo podman exec -w ${{ github.workspace }} ugmm-test bash -e {0}
 
     steps:
       - uses: actions/checkout@v6
@@ -19,7 +19,7 @@ jobs:
       - name: Set up Debian container
         shell: bash
         run: |
-          podman run -d -t --name ugmm-test --privileged -v ${HOME}:${HOME} --env-host --env DEBIAN_FRONTEND=noninteractive jrei/systemd-debian:13
+          sudo podman run -d -t --name ugmm-test --privileged -v ${HOME}:${HOME} --env-host --env DEBIAN_FRONTEND=noninteractive jrei/systemd-debian:13
       - name: Install build-deps
         run: |
           rm -f /usr/sbin/policy-rc.d
