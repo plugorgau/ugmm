@@ -1296,6 +1296,25 @@ PLUG Membership Scripts";
 
         return $search->count();
     }
+
+	public function delete()
+	{
+		// Remove from all of the groups members currently belongs to
+		foreach ($this->allgroups as $group) {
+			$this->remove_from_group($group);
+		}
+
+		// Delete UPG group: gidNumber=<uid>,ou=UPG,ou=Groups,dc=plug,dc=org,dc=au
+		$upgdn = "gidNumber={$this->gidNumber},ou=UPG,ou=Groups," . LDAP_BASE;
+		if ($this->ldap->dnExists($upgdn)) {
+			$this->ldap->delete($upgdn, true);
+		}
+
+		// Delete the user entry (recursive = also deletes child payment entries)
+		if ($this->ldap->dnExists($this->dn)) {
+			$this->ldap->delete($this->dn, true);
+		}
+	}
 }
 
 class PLUGFunction
