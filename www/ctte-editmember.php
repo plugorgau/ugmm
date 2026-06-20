@@ -221,10 +221,26 @@ if (isset($_POST['password_form']) && isset($_POST['go_go_button']) && ! $error)
 
     // Send reset email?
 }
+
 // Delete member
+if (isset($_POST['delete_form']) && !verify_nonce($_POST['nonce'], 'deletemember')) {
+    $error[] = "Attempt to double submit form?";
+}
+
+if (isset($_POST['delete_form']) && !$error) {
+    $memberid = intval($_POST['id']);
+    if ($_POST['delete_verification'] !== "Yes I am sure.") {
+        $error[] = "You must enter the confirmation text exactly.";
+    } else {
+        $member = $OrgMembers->get_member_object($memberid);
+        $member->delete();
+        $success[] = "Member deleted.";
+        redirect_with_messages('ctte-members');
+    }
+}
 
 // If we've processed a POST request, redirect back to ourself
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && !isset($_POST['delete_form'])) {
     redirect_with_messages('ctte-editmember?id=' . $memberid);
 }
 
