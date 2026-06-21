@@ -66,28 +66,69 @@
 
   <h3>Make Membership Payment</h3>
 
-  <form method="post" action="">
+  <form method="post" action="" id="payment_form" class="grid">
     <input type="hidden" name="payment_form" value="1">
     <input type="hidden" name="nonce" value="{'makepayment'|nonce}">
     <input type="hidden" name="id" value="{$member->uidNumber}">
-    Receive payment for
-    <label><input type="radio" name="membership_type" value="1" checked>Full ({$FULL_AMOUNT}/yr)</label>
-    <label><input type="radio" name="membership_type" value="2">Concession ({$CONCESSION_AMOUNT}/yr)</label>
-    for <input type="number" name="years" value="1" size="2"> year(s).<br>
 
-    Backdate this payment to
-    <input type="date" name="payment_date" size="10"> (leave blank for "now").<br>
+    <input type="hidden" name=".cgifields" value="payment_ack">
+    <input type="hidden" name=".cgifields" value="membership_type">
 
-    Receipt # (or comment) <input type="text" name="receipt_number" size="30"><br>
-    <input type="submit" name="go_go_button" value="Make Payment">
-    <label><input type="checkbox" name="payment_ack" value="1" checked>
-    E-mail acknowledgement to member</label><br>
+    <label for="payment_date">Payment date</label>
+    <div class="field">
+      <input type="date" name="payment_date" size="10"> (leave blank for "today")
+    </div>
 
-    <div>
-      <input type="hidden" name=".cgifields" value="payment_ack">
-      <input type="hidden" name=".cgifields" value="membership_type">
+    <div class="label">Membership type</div>
+    <div class="field">
+      <label><input type="radio" name="membership_type" value="1" checked>Full (${$FULL_AMOUNT}/yr)</label>
+      <label><input type="radio" name="membership_type" value="2">Concession (${$CONCESSION_AMOUNT}/yr)</label>
+    </div>
+
+    <label for="years">Duration</label>
+    <div class="field">
+      <input type="number" name="years" value="1" min="1" size="2"> year(s)
+    </div>
+
+    <div class="label">Total</div>
+    <div class="field">
+      <output id="payment_total"></output>
+    </div>
+
+    <label for="receipt_number">Receipt # (or comment)</label>
+    <div class="field">
+      <input type="text" name="receipt_number" size="30"><br>
+    </div>
+
+    <div class="label"></div>
+    <div class="field">
+      <label><input type="checkbox" name="payment_ack" value="1" checked>
+      E-mail acknowledgement to member</label>
+    </div>
+
+    <div class="actions">
+      <input type="submit" name="go_go_button" value="Make Payment">
     </div>
   </form>
+
+  <script type="text/javascript">
+      const FULL_AMOUNT = {$FULL_AMOUNT};
+      const CONCESSION_AMOUNT = {$CONCESSION_AMOUNT};
+      {literal}
+      const payment_form = document.getElementById('payment_form');
+      const update_payment_total = () => {
+          const formdata = new FormData(payment_form);
+          const membership_type = formdata.get('membership_type');
+          const years = formdata.get('years');
+          const payment_total = document.getElementById('payment_total');
+
+          const total = (membership_type == '2' ? CONCESSION_AMOUNT : FULL_AMOUNT) * years;
+          payment_total.innerHTML = '$' + total.toString();
+      };
+      payment_form.addEventListener('input', update_payment_total);
+      update_payment_total();
+      {/literal}
+  </script>
 
   <h4>Past Payments</h4>
 

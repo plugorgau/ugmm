@@ -63,11 +63,11 @@ final class MembersTest extends TestCase
     {
         $member = $this->newMember();
 
-        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2025-11-15'), "", false);
+        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2025-11-15'), "description", false);
         $this->assertSame($member->expiry, '15 Nov 26');
 
         // Making a payment before the expiry date extends the old expiry
-        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2026-09-01'), "", false);
+        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2026-09-01'), "description", false);
         $this->assertSame($member->expiry, '15 Nov 27');
     }
 
@@ -75,11 +75,11 @@ final class MembersTest extends TestCase
     {
         $member = $this->newMember();
 
-        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2025-11-15'), "", false);
+        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2025-11-15'), "description", false);
         $this->assertSame($member->expiry, '15 Nov 26');
 
         // Making a payment after expiry, but within grace period extends expiry
-        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2026-12-25'), "", false);
+        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2026-12-25'), "description", false);
         $this->assertSame($member->expiry, '15 Nov 27');
     }
 
@@ -87,11 +87,11 @@ final class MembersTest extends TestCase
     {
         $member = $this->newMember();
 
-        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2025-11-15'), "", false);
+        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2025-11-15'), "description", false);
         $this->assertSame($member->expiry, '15 Nov 26');
 
         // Making a payment after grace period dates membership from payment date
-        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2027-03-14'), "", false);
+        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2027-03-14'), "description", false);
         $this->assertSame($member->expiry, '14 Mar 28');
     }
 
@@ -100,7 +100,37 @@ final class MembersTest extends TestCase
         $member = $this->newMember();
 
         // A payment will cover 366 days during a leap year
-        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2023-06-01'), "", false);
+        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2023-06-01'), "description", false);
         $this->assertSame($member->expiry, '01 Jun 24');
+    }
+
+    public function testMakePaymentInvalidType(): void
+    {
+        $member = $this->newMember();
+
+        // A payment with an invalid membership type
+        $member->makePayment(1000, 1, new DateTimeImmutable('2023-11-15'), "description", false);
+        $this->assertSame($member->is_error(), true);
+        $this->assertSame($member->get_errors(), ["Invalid membership type"]);
+    }
+
+    public function testMakePaymentInvalidDuration(): void
+    {
+        $member = $this->newMember();
+
+        // A payment with an invalid membership type
+        $member->makePayment(FULL_TYPE, -1, new DateTimeImmutable('2023-11-15'), "description", false);
+        $this->assertSame($member->is_error(), true);
+        $this->assertSame($member->get_errors(), ["Invalid membership duration"]);
+    }
+
+    public function testMakePaymentInvalidDescription(): void
+    {
+        $member = $this->newMember();
+
+        // A payment with an invalid membership type
+        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2023-11-15'), "", false);
+        $this->assertSame($member->is_error(), true);
+        $this->assertSame($member->get_errors(), ["Missing payment description"]);
     }
 }

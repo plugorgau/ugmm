@@ -13,7 +13,7 @@ shell account will not be actived. However, the mailing list is still freely
 accessible to non-members.
 </p>
 <p>
-Membership costs are {$FULL_AMOUNT} p.a., or {$CONCESSION_AMOUNT} p.a. for students / concession.
+Membership costs are ${$FULL_AMOUNT} p.a., or ${$CONCESSION_AMOUNT} p.a. for students / concession.
 <p>
 
 <p>
