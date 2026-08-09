@@ -3,6 +3,15 @@
 {block name=title}Recent Payments{/block}
 {block name=body}
 
+<p>
+  <form action="" method="GET">
+    <label>Payments since
+    <input type="date" name="since" value="{$since}"></label>
+    <button type="submit">Show</button>
+    <button type="submit" name="format" value="beancount">As Beancount transactions</button>
+  </form>
+</p>
+
 <table class="payments">
   <thead>
     <tr>
