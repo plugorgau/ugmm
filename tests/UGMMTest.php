@@ -505,4 +505,134 @@ final class UGMMTest extends TestCase
             'newpasswordconfirm' => 'test432bob',
         ]);
     }
+
+    public function testCommitteeDeleteMemberWrongConfirmation(): void
+    {
+        $client = new HttpBrowser();
+        $this->login($client, 'chair', 'chairpass');
+        $page = $client->clickLink('Committee');
+        $this->assertText($page, 'title', ' - Membership List');
+
+        $link = $page->filter('tr')->reduce(
+            function (Crawler $node, $i): bool {
+                return $node->children()->eq(1)->text() === 'bobtest';
+            }
+        )->filter('a')->link();
+        $page = $client->click($link);
+        $this->assertText($page, 'title', ' - Edit Member');
+
+        $page = $client->submitForm('Delete Member', [
+            'delete_verification' => 'wrong text',
+        ]);
+        $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#errormessages strong', 'You must enter the confirmation text exactly.');
+    }
+
+    public function testCommitteeDeleteMemberAccessDenied(): void
+    {
+        $client = new HttpBrowser();
+        $this->login($client, 'bobtest', 'test432bob');
+        $page = $client->request('GET', BASE_URL . '/ctte-editmember?id=10001');
+        $this->assertText($page, 'h1', 'WARNING');
+        $this->assertSame($client->getResponse()->getStatusCode(), 403);
+    }
+
+    public function testCommitteeDeleteMember(): void
+    {
+        $client = new HttpBrowser();
+        $this->login($client, 'chair', 'chairpass');
+        $page = $client->clickLink('Committee');
+        $this->assertText($page, 'title', ' - Membership List');
+        $page = $client->clickLink('New Member');
+        $this->assertText($page, 'title', ' - Add Member');
+
+        $uid = sprintf('deltest%05d', rand(0, 99999));
+        $page = $client->submitForm('Add New Member', [
+            'displayName' => 'Delete Me',
+            'mail' => $uid . '@example.com',
+            'street' => '123 Fake St',
+            'homePhone' => '08 5550 1111',
+            'pager' => '08 5550 2222',
+            'mobile' => '08 5550 3333',
+            'uid' => $uid,
+            'password' => 'pass1234',
+            'vpassword' => 'pass1234',
+            'notes' => 'Created for delete test',
+        ]);
+        $this->assertText($page, 'title', ' - Add Member');
+        $this->assertText($page, '#successmessages li', 'New member created with id ');
+
+        $link = $page->filter('a')->reduce(
+            function (Crawler $node, $i): bool {
+                return str_contains($node->text(), ' to make payment');
+            }
+        )->link();
+        $page = $client->click($link);
+        $this->assertText($page, 'title', ' - Edit Member');
+
+        $page = $client->submitForm('Delete Member', [
+            'delete_verification' => 'Yes I am sure.',
+        ]);
+        $this->assertText($page, 'title', ' - Membership List');
+        $this->assertText($page, '#successmessages li', 'Member deleted.');
+    }
+
+    public function testCommitteeDeleteMemberWithPayments(): void
+    {
+        $client = new HttpBrowser();
+        $this->login($client, 'chair', 'chairpass');
+        $page = $client->clickLink('Committee');
+        $this->assertText($page, 'title', ' - Membership List');
+        $page = $client->clickLink('New Member');
+        $this->assertText($page, 'title', ' - Add Member');
+
+        $uid = sprintf('paydel%05d', rand(0, 99999));
+        $page = $client->submitForm('Add New Member', [
+            'displayName' => 'Pay Delete',
+            'mail' => $uid . '@example.com',
+            'street' => '123 Fake St',
+            'homePhone' => '08 5550 1111',
+            'pager' => '08 5550 2222',
+            'mobile' => '08 5550 3333',
+            'uid' => $uid,
+            'password' => 'pass1234',
+            'vpassword' => 'pass1234',
+            'notes' => 'Created for delete with payments test',
+        ]);
+        $this->assertText($page, 'title', ' - Add Member');
+        $this->assertText($page, '#successmessages li', 'New member created with id ');
+
+        $link = $page->filter('a')->reduce(
+            function (Crawler $node, $i): bool {
+                return str_contains($node->text(), ' to make payment');
+            }
+        )->link();
+        $page = $client->click($link);
+        $this->assertText($page, 'title', ' - Edit Member');
+
+        // Make a payment
+        $payment_date = new DateTimeImmutable()->format('Y-m-d');
+        $page = $client->submitForm('Make Payment', [
+            'payment_date' => $payment_date,
+            'receipt_number' => 'delete test payment',
+            'payment_ack' => '1',
+        ]);
+        $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#successmessages li', 'Payment processed');
+
+        // Try to delete without confirming payment records
+        $page = $client->submitForm('Delete Member', [
+            'delete_verification' => 'Yes I am sure.',
+        ]);
+        $this->assertText($page, 'title', ' - Edit Member');
+        $this->assertText($page, '#errormessages strong', 'You must confirm deletion of a member with payment records.');
+
+        // Now delete with the payment confirmation checkbox
+        $page = $client->submitForm('Delete Member', [
+            'delete_verification' => 'Yes I am sure.',
+            'delete_confirm_payments' => '1',
+        ]);
+        $this->assertText($page, 'title', ' - Membership List');
+        $this->assertText($page, '#successmessages li', 'Member deleted.');
+    }
 }

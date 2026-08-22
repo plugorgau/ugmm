@@ -196,12 +196,11 @@
     </div>
   </form>
 
-  <em>Delete User Not Implemented at this time</em>
-{*
   <h3>Delete Member</h3>
 
   <form method="post" action="">
     <input type="hidden" name="delete_form" value="1">
+    <input type="hidden" name="nonce" value="{'deletemember'|nonce}">
     <input type="hidden" name="id" value="{$member->uidNumber}">
     If you are sure
     you want to delete this member, enter the text "<tt>Yes I am
@@ -209,9 +208,15 @@
     Very rarely should actual members be deleted. Instead accounts
     should be locked, or accounts and memberships will lapse and do
     so automatically.<br>
+{if $member->payments|count > 0}
+    <label>
+      <input type="checkbox" name="delete_confirm_payments" value="1">
+      This member has payment records &mdash; check to confirm deletion
+    </label><br>
+{/if}
     <input type="text" name="delete_verification" size="30">
     <input type="submit" name="go_go_button" value="Delete Member"><br>
   </form>
-*}
+
 
 {/block}

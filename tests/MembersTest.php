@@ -103,4 +103,56 @@ final class MembersTest extends TestCase
         $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2023-06-01'), "", false);
         $this->assertSame($member->expiry, '01 Jun 24');
     }
+
+    public function testDeleteMember(): void
+    {
+        $member = $this->newMember();
+        $dn = $member->dn;
+        $uid = $member->uidNumber;
+        $upgdn = "gidNumber=$uid,ou=UPG,ou=Groups," . LDAP_BASE;
+
+        $this->assertTrue($this->members->our_dnExists($dn));
+        $this->assertTrue($this->members->our_dnExists($upgdn));
+
+        $member->delete();
+
+        $this->assertFalse($this->members->our_dnExists($dn));
+        $this->assertFalse($this->members->our_dnExists($upgdn));
+    }
+
+    public function testDeleteMemberWithPayments(): void
+    {
+        $member = $this->newMember();
+        $dn = $member->dn;
+        $uid = $member->uidNumber;
+
+        $member->makePayment(FULL_TYPE, 1, new DateTimeImmutable('2025-11-15'), "test payment", false);
+
+        $this->assertTrue($this->members->our_dnExists($dn));
+
+        $member->delete();
+
+        $this->assertFalse($this->members->our_dnExists($dn));
+        $this->assertFalse($this->members->our_dnExists("gidNumber=$uid,ou=UPG,ou=Groups," . LDAP_BASE));
+    }
+
+    public function testDeleteMemberCleansUpGroups(): void
+    {
+        $member = $this->newMember();
+        $dn = $member->dn;
+        $uid = $member->uidNumber;
+
+        $member->add_to_group('webslave');
+        $this->assertContains('webslave', $member->allgroups);
+
+        $member->delete();
+
+        $this->assertFalse($this->members->our_dnExists($dn));
+
+        $groupdn = "cn=webslave,ou=Groups," . LDAP_BASE;
+        include '/etc/private/ldapconnection.inc.php';
+        $entry = $ldap->getEntry($groupdn, array('member'));
+        $members = $entry->getValue('member', 'all');
+        $this->assertNotContains($dn, $members);
+    }
 }
