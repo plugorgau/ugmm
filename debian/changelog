@@ -1,3 +1,28 @@
+plug-ugmm (0.9) unstable; urgency=medium
+
+  [ James Henstridge ]
+  * Update ctte-payments to allow customising the start date.
+  * Allow ctte-payments to output in Beancount transaction format.
+  * Update the payments form:
+    - Add a JavaScript preview of how much the payment amount is.
+    - Perform some validation checks on payment details
+    - Don't let the user reduce the membership period below 1 with the
+      spinner buttons
+    - Show a warning if the member has more than 9 months of membership
+      remaining.
+  * Simplify the HTML used for error and success messages.
+
+  [ Damien Bafile ]
+  * Allow deletion of membership records, to help handle spam signups.
+
+  [ dependabot[bot] ]
+  * build(deps): bump actions/upload-artifact from 6 to 7
+  * build(deps): bump actions/attest-build-provenance from 3 to 4
+  * build(deps): bump actions/download-artifact from 7 to 8
+  * build(deps): bump softprops/action-gh-release from 2 to 3
+
+ -- James Henstridge <james@jamesh.id.au>  Sun, 23 Aug 2026 13:07:42 +0800
+
 plug-ugmm (0.8.0) unstable; urgency=medium
 
   [ James Henstridge ]
