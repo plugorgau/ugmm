@@ -458,6 +458,18 @@ final class UGMMTest extends TestCase
         $this->assertText($page, 'title', ' - Recent Payments');
     }
 
+    public function testCommitteeRecentPaymentsAsBeancount()
+    {
+        $client = new HttpBrowser();
+        $this->login($client, 'chair', 'chairpass');
+
+        $client->request('GET', BASE_URL. '/ctte-payments?format=beancount');
+        $response = $client->getResponse();
+        $content_type = $response->getHeader('Content-Type');
+        $this->assertSame($content_type, 'text/plain;charset=UTF-8');
+        $this->assertStringStartsWith(';; -*- mode: beancount -*-', $response->getContent());
+    }
+
     public function testResetPassword()
     {
         $client = new HttpBrowser();
