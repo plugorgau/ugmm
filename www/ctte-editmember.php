@@ -63,7 +63,7 @@ if (isset($_POST['payment_form']) && ! $error) {
     $payment_years = trim($_POST['years']);
     $payment_date = trim($_POST['payment_date']);
     $payment_comment = trim($_POST['receipt_number']);
-    $payment_ack = trim($_POST['payment_ack']);
+    $payment_ack = trim(isset($_POST['payment_ack']) ? $_POST['payment_ack'] : "");
 
     // Allow future dating here? TODO: Prevent future dating
     // Class will ensure date is "now" if empty, we need to ensure it's valid
@@ -256,4 +256,7 @@ if (!isset($member)) {
 
 $smarty->assign('member', $member);
 $smarty->assign('all_groups', $OrgMembers->list_groups());
+
+$nineMonths = new DateTimeImmutable()->add(new DateInterval('P9M'));
+$smarty->assign('long_expiry', $member->expiryDate > $nineMonths);
 display_page('editmember.tpl');

@@ -677,17 +677,21 @@ class Person
         get => (int)$this->ldapentry->getValue(self::attrShadowExpire, 'single');
     }
 
+    public DateTimeImmutable $expiryDate {
+        get {
+            return shadow_expire_to_date($this->shadowExpire);
+        }
+    }
+
     public string $expiry {
         get {
-            $expiry = shadow_expire_to_date($this->shadowExpire);
-            return $expiry->format("d M y");
+            return $this->expiryDate->format("d M y");
         }
     }
 
     public string $formattedexpiry {
         get {
-            $expiry = shadow_expire_to_date($this->shadowExpire);
-            return $expiry->format("l, d F Y");
+            return $this->expiryDate->format("l, d F Y");
         }
     }
 
@@ -1101,6 +1105,21 @@ class Person
 
     public function makePayment(int $type, int $years, DateTimeImmutable $date, string $description, bool $ack, int|bool $id = false): int
     {
+        // Validate payment details
+        if ($type != FULL_TYPE && $type != CONCESSION_TYPE) {
+            $this->errors[] = "Invalid membership type";
+            return -1;
+        }
+        if ($years <= 0) {
+            $this->errors[] = "Invalid membership duration";
+            return -1;
+        }
+
+        if ($description === "") {
+            $this->errors[] = "Missing payment description";
+            return -1;
+        }
+
         $payment = Payment::create($this->ldap, $this->dn, $type, $years, $date, $description, $id);
 
         // If the payment date is before the expiry date, increase the expiry date.

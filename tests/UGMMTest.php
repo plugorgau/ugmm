@@ -238,7 +238,7 @@ final class UGMMTest extends TestCase
             'notes' => 'Sign up for testing',
         ]);
         $this->assertText($page, 'title', ' - Signup');
-        $this->assertText($page, '#errormessages strong', 'Username not available');
+        $this->assertText($page, '#errormessages li', 'Username not available');
         // The previously entered information appears in the form
         $form = $page->selectButton('Signup')->form();
         $this->assertSame($form['displayName']->getValue(), 'Test Last-name');
@@ -409,7 +409,7 @@ final class UGMMTest extends TestCase
             'notes' => 'Sign up for testing',
         ]);
         $this->assertText($page, 'title', ' - Add Member');
-        $this->assertText($page, '#errormessages strong', 'Username not available');
+        $this->assertText($page, '#errormessages li', 'Username not available');
 
         // Submit with unique user ID
         $page = $client->submitForm('Add New Member', [
@@ -537,7 +537,7 @@ final class UGMMTest extends TestCase
             'delete_verification' => 'wrong text',
         ]);
         $this->assertText($page, 'title', ' - Edit Member');
-        $this->assertText($page, '#errormessages strong', 'You must enter the confirmation text exactly.');
+        $this->assertText($page, '#errormessages li', 'You must enter the confirmation text exactly.');
     }
 
     public function testCommitteeDeleteMemberAccessDenied(): void
@@ -637,7 +637,7 @@ final class UGMMTest extends TestCase
             'delete_verification' => 'Yes I am sure.',
         ]);
         $this->assertText($page, 'title', ' - Edit Member');
-        $this->assertText($page, '#errormessages strong', 'You must confirm deletion of a member with payment records.');
+        $this->assertText($page, '#errormessages li', 'You must confirm deletion of a member with payment records.');
 
         // Now delete with the payment confirmation checkbox
         $page = $client->submitForm('Delete Member', [

@@ -52,6 +52,30 @@ h3 { font-size: 1.2em; }
     content: " | ";
 }
 
+/* Messages */
+.messages {
+    margin: 1em;
+    padding: 0.5em;
+    border: solid 1px;
+    color: black;
+}
+
+.messages.error {
+    background-color: #FFBFBf;
+    border-color: #BF0000;
+    font-weight: bold;
+}
+
+.messages.warning {
+    background-color: #FFDFBf;
+    border-color: #BF3F00;
+}
+
+.messages.notice {
+    background-color: #FFFFBF;
+    border-color: #BFBF00;
+}
+
 /* member table */
 .membertable thead, .payments thead {
     background: #8888aa;
@@ -77,7 +101,7 @@ summary > h3 {
     row-gap: 0.25em;
 }
 
-.grid label, .grid .label {
+.grid > label, .grid > .label {
     display: block;
     font-weight: bold;
     text-align: right;
