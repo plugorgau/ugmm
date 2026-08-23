@@ -677,17 +677,21 @@ class Person
         get => (int)$this->ldapentry->getValue(self::attrShadowExpire, 'single');
     }
 
+    public DateTimeImmutable $expiryDate {
+        get {
+            return shadow_expire_to_date($this->shadowExpire);
+        }
+    }
+
     public string $expiry {
         get {
-            $expiry = shadow_expire_to_date($this->shadowExpire);
-            return $expiry->format("d M y");
+            return $this->expiryDate->format("d M y");
         }
     }
 
     public string $formattedexpiry {
         get {
-            $expiry = shadow_expire_to_date($this->shadowExpire);
-            return $expiry->format("l, d F Y");
+            return $this->expiryDate->format("l, d F Y");
         }
     }
 

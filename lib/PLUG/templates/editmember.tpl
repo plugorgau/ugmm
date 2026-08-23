@@ -66,6 +66,12 @@
 
   <h3>Make Membership Payment</h3>
 
+  {if $long_expiry}
+  <div class="messages warning">
+    This member has more than nine months of membership remaining
+  </div>
+  {/if}
+
   <form method="post" action="" id="payment_form" class="grid">
     <input type="hidden" name="payment_form" value="1">
     <input type="hidden" name="nonce" value="{'makepayment'|nonce}">

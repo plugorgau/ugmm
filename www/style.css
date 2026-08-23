@@ -52,6 +52,30 @@ h3 { font-size: 1.2em; }
     content: " | ";
 }
 
+/* Messages */
+.messages {
+    margin: 1em;
+    padding: 0.5em;
+    border: solid 1px;
+    color: black;
+}
+
+.messages.error {
+    background-color: #FFBFBf;
+    border-color: #FF0000;
+    font-weight: bold;
+}
+
+.messages.warning {
+    background-color: #FFDFBf;
+    border-color: #FF7F00;
+}
+
+.messages.notice {
+    background-color: #FFFFBF;
+    border-color: #FFFF00;
+}
+
 /* member table */
 .membertable thead, .payments thead {
     background: #8888aa;
