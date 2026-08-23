@@ -62,18 +62,18 @@ h3 { font-size: 1.2em; }
 
 .messages.error {
     background-color: #FFBFBf;
-    border-color: #FF0000;
+    border-color: #BF0000;
     font-weight: bold;
 }
 
 .messages.warning {
     background-color: #FFDFBf;
-    border-color: #FF7F00;
+    border-color: #BF3F00;
 }
 
 .messages.notice {
     background-color: #FFFFBF;
-    border-color: #FFFF00;
+    border-color: #BFBF00;
 }
 
 /* member table */
